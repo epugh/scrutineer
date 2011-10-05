@@ -1,13 +1,17 @@
 package com.aconex.scrutineer.elasticsearch;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
+import org.elasticsearch.action.ListenableActionFuture;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.client.action.search.SearchRequestBuilder;
+import org.elasticsearch.client.action.search.SearchScrollRequestBuilder;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -15,16 +19,15 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
-import org.elasticsearch.action.ListenableActionFuture;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.action.search.SearchRequestBuilder;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ElasticSearchDownloaderTest {
 
@@ -35,6 +38,8 @@ public class ElasticSearchDownloaderTest {
     private TransportClient client;
     @Mock
     private SearchRequestBuilder searchRequestBuilder;
+    @Mock
+    private SearchScrollRequestBuilder searchScrollRequestBuilder;
 
     @Mock @SuppressWarnings("unchecked")
     private ListenableActionFuture listenableActionFuture;
@@ -63,9 +68,7 @@ public class ElasticSearchDownloaderTest {
 
     @Test public void shouldIterateOverResultsAndSendToOutputStream() throws IOException {
         ElasticSearchDownloader elasticSearchDownloader = spy(new ElasticSearchDownloader(client, INDEX_NAME));
-        doReturn(firstSearchResponse).when(elasticSearchDownloader).startScroll();
-        doReturn(secondSearchResponse).when(elasticSearchDownloader).nextBatch();
-        doReturn(true).when(elasticSearchDownloader).isCompleted();
+        doReturn(firstSearchResponse).when(elasticSearchDownloader).startScrollAndGetFirstBatch();
 
         when(firstSearchResponse.getHits()).thenReturn(firstHits);
         when(firstHits.hits()).thenReturn(new SearchHit[]{firstBatchHit});
@@ -75,6 +78,11 @@ public class ElasticSearchDownloaderTest {
         when(secondSearchResponse.getHits()).thenReturn(secondHits);
         when(secondHits.hits()).thenReturn(new SearchHit[0]);
 
+        when(client.prepareSearchScroll(any(String.class))).thenReturn(searchScrollRequestBuilder);
+        when(searchScrollRequestBuilder.execute()).thenReturn(listenableActionFuture);
+        when(searchScrollRequestBuilder.setScroll(any(TimeValue.class))).thenReturn(searchScrollRequestBuilder);
+        when(listenableActionFuture.actionGet()).thenReturn(secondSearchResponse);
+        
         elasticSearchDownloader.downloadTo(outputStream);
 
         ObjectInputStream objectInputStream = new ObjectInputStream(new ByteArrayInputStream(outputStream.toByteArray()));
@@ -98,7 +106,7 @@ public class ElasticSearchDownloaderTest {
         when(searchRequestBuilder.execute()).thenReturn(listenableActionFuture);
         when(listenableActionFuture.actionGet()).thenReturn(firstSearchResponse);
         ElasticSearchDownloader elasticSearchDownloader = new ElasticSearchDownloader(client, INDEX_NAME);
-        assertThat(elasticSearchDownloader.startScroll(), is(firstSearchResponse));
+        assertThat(elasticSearchDownloader.startScrollAndGetFirstBatch(), is(firstSearchResponse));
         verify(searchRequestBuilder).setSearchType(SearchType.SCAN);
         verify(searchRequestBuilder).setNoFields();
         verify(searchRequestBuilder).setVersion(true);
