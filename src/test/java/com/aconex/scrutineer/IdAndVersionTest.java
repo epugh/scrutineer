@@ -59,4 +59,15 @@ public class IdAndVersionTest {
         IdAndVersion idAndVersion2 = new IdAndVersion(2,2);
         assertThat(idAndVersion1.compareTo(idAndVersion2), is(1));
     }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNPEWhenComparedToNull() {
+        IdAndVersion idAndVersion = new IdAndVersion(2,3);
+        idAndVersion.compareTo(null);
+    }
+
+    @Test public void shouldPrintTheIdAndVersionInToString() {
+        IdAndVersion idAndVersion = new IdAndVersion(2,3);
+        assertThat(idAndVersion.toString(), is("2:3"));
+    }
 }
