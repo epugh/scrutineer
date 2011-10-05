@@ -12,6 +12,7 @@ import java.io.ObjectInputStream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -44,5 +45,10 @@ public class IdAndVersionDataReaderTest {
     @Test public void shouldReturnNullOnEndOfStream() throws IOException {
         when(objectInputStream.readLong()).thenThrow(new EOFException());
         assertThat(idAndVersionDataReader.readNext(), is(nullValue()));
+    }
+
+    @Test public void shouldCloseStream() throws IOException {
+        idAndVersionDataReader.close();
+        verify(objectInputStream).close();
     }
 }

@@ -33,6 +33,6 @@ class IdAndVersionDataReader extends DataReader<IdAndVersion> {
 
     @Override
     public void close() throws IOException {
-
+        objectInputStream.close();
     }
 }
