@@ -19,13 +19,12 @@ public class ElasticSearchIdAndVersionStream implements IdAndVersionStream {
 
     private static final String ELASTIC_SEARCH_UNSORTED_FILE = "elastic-search-unsorted.dat";
 
-    private final File unsortedFile;
-
     private static final String ELASTIC_SEARCH_SORTED_FILE = "elastic-search-sorted.dat";
 
     private final ElasticSearchDownloader elasticSearchDownloader;
     private final ElasticSearchSorter elasticSearchSorter;
     private final IteratorFactory iteratorFactory;
+    private final File unsortedFile;
     private final File sortedFile;
 
     public ElasticSearchIdAndVersionStream(ElasticSearchDownloader elasticSearchDownloader, ElasticSearchSorter elasticSearchSorter, IteratorFactory iteratorFactory, String workingDirectory) {
@@ -73,6 +72,8 @@ public class ElasticSearchIdAndVersionStream implements IdAndVersionStream {
 
     @Override
     public void close() {
+        unsortedFile.delete();
+        sortedFile.delete();
     }
 
 }
