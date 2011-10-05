@@ -1,17 +1,17 @@
 package com.aconex.scrutineer.elasticsearch;
 
-import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
-
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.action.search.SearchRequestBuilder;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.search.SearchHit;
+
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+
+import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
 public class ElasticSearchDownloader {
 
@@ -20,8 +20,6 @@ public class ElasticSearchDownloader {
 
     private final TransportClient client;
     private final String indexName;
-    private String scrollId;
-    private boolean completed;
 
     public ElasticSearchDownloader(TransportClient client, String indexName) {
         this.client = client;
@@ -31,40 +29,30 @@ public class ElasticSearchDownloader {
     public void downloadTo(OutputStream outputStream) {
         try {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-
-            startScrollAndProcessFirstBatch(objectOutputStream);
-            consumeAllOtherBatches(objectOutputStream);
-
+            consumeBatches(objectOutputStream, startScrollAndGetFirstBatch());
             objectOutputStream.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void consumeAllOtherBatches(ObjectOutputStream objectOutputStream) throws IOException {
-        while (!isCompleted()) {
-            SearchResponse searchResponse = nextBatch();
-            writeSearchResponseToOutputStream(objectOutputStream, searchResponse);
+    private void consumeBatches(ObjectOutputStream objectOutputStream, SearchResponse searchResponse) throws IOException {
+        String scrollId = searchResponse.getScrollId();
+        while (writeSearchResponseToOutputStream(objectOutputStream, searchResponse)) {
+            searchResponse = client.prepareSearchScroll(scrollId).setScroll(TimeValue.timeValueMinutes(SCROLL_TIME_IN_MINUTES)).execute().actionGet();
         }
     }
 
-    private void startScrollAndProcessFirstBatch(ObjectOutputStream objectOutputStream) throws IOException {
-        SearchResponse searchResponse = startScroll();
-        writeSearchResponseToOutputStream(objectOutputStream, searchResponse);
-    }
-
-    boolean isCompleted(){
-        return completed;
-    }
-
-    private void writeSearchResponseToOutputStream(ObjectOutputStream objectOutputStream, SearchResponse searchResponse) throws IOException {
-        for (SearchHit hit : searchResponse.getHits().hits()) {
+    private boolean writeSearchResponseToOutputStream(ObjectOutputStream objectOutputStream, SearchResponse searchResponse) throws IOException {
+        SearchHit[] hits = searchResponse.getHits().hits();
+        for (SearchHit hit : hits) {
             objectOutputStream.writeLong(Long.valueOf(hit.getId()));
             objectOutputStream.writeLong(hit.getVersion());
         }
+        return hits.length > 0;
     }
 
-    public SearchResponse startScroll() {
+    public SearchResponse startScrollAndGetFirstBatch() {
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(indexName);
         searchRequestBuilder.setSearchType(SearchType.SCAN);
         searchRequestBuilder.setQuery(matchAllQuery());
@@ -73,17 +61,8 @@ public class ElasticSearchDownloader {
         searchRequestBuilder.setNoFields();
         searchRequestBuilder.setVersion(true);
         searchRequestBuilder.setScroll(TimeValue.timeValueMinutes(SCROLL_TIME_IN_MINUTES));
-        SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
 
-        scrollId = searchResponse.getScrollId();
-        return searchResponse;
+        return searchRequestBuilder.execute().actionGet();
     }
 
-    SearchResponse nextBatch() {
-        SearchResponse searchResponse = client.prepareSearchScroll(scrollId).setScroll(TimeValue.timeValueMinutes(SCROLL_TIME_IN_MINUTES)).execute().actionGet();
-        if (searchResponse.getHits().hits().length == 0) {
-            completed = true;
-        }
-        return searchResponse;
-    }
 }
