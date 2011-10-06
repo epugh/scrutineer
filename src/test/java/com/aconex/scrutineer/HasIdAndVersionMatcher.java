@@ -23,7 +23,7 @@ public class HasIdAndVersionMatcher extends TypeSafeMatcher<IdAndVersion> {
 
     @Override
     public void describeTo(Description description) {
-        description.appendText(" had id and version "+id+":"+version);
+        description.appendText(" has id and version "+id+":"+version);
     }
 
     @Factory
