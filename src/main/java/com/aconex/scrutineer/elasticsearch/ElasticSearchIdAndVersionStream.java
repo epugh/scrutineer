@@ -41,6 +41,17 @@ public class ElasticSearchIdAndVersionStream implements IdAndVersionStream {
         elasticSearchSorter.sort(createUnSortedInputStream(), createSortedOutputStream());
     }
 
+    @Override
+    public Iterator<IdAndVersion> iterator() {
+        return iteratorFactory.forFile(sortedFile);
+    }
+
+    @Override
+    public void close() {
+        unsortedFile.delete();
+        sortedFile.delete();
+    }
+
     OutputStream createUnsortedOutputStream() {
         try {
             return new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(unsortedFile)));
@@ -63,17 +74,6 @@ public class ElasticSearchIdAndVersionStream implements IdAndVersionStream {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public Iterator<IdAndVersion> iterator() {
-        return iteratorFactory.forFile(sortedFile);
-    }
-
-    @Override
-    public void close() {
-        unsortedFile.delete();
-        sortedFile.delete();
     }
 
 }
