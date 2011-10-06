@@ -66,7 +66,8 @@ public class ElasticSearchDownloaderTest {
         outputStream = new ByteArrayOutputStream();
     }
 
-    @Test public void shouldIterateOverResultsAndSendToOutputStream() throws IOException {
+    @Test @SuppressWarnings("unchecked")
+    public void shouldIterateOverResultsAndSendToOutputStream() throws IOException {
         ElasticSearchDownloader elasticSearchDownloader = spy(new ElasticSearchDownloader(client, INDEX_NAME));
         doReturn(firstSearchResponse).when(elasticSearchDownloader).startScrollAndGetFirstBatch();
 
