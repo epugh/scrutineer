@@ -101,6 +101,24 @@ public class IdAndVersionStreamVerifierTest {
         verify(idAndVersionStreamVerifierListener).onMissingInPrimaryStream(argThat(hasIdAndVersion("1",1)));
     }
 
+    @Test
+    public void shouldReportMissingItemsInTheMiddleOfTheSecondaryStream() {
+        idAndVersionStreamVerifier.verify(
+                streamOf(item(1), item(2), item(3), item(4)),
+                streamOf(item(1), item(2),          item(4)),
+                idAndVersionStreamVerifierListener);
+        verify(idAndVersionStreamVerifierListener).onMissingInSecondaryStream(argThat(hasIdAndVersion("3",3)));
+    }
+
+    @Test
+    public void shouldReportMissingItemsInTheMiddleOfThePrimaryStream() {
+        idAndVersionStreamVerifier.verify(
+                streamOf(item(1),          item(3), item(4)),
+                streamOf(item(1), item(2), item(3), item(4)),
+                idAndVersionStreamVerifierListener);
+        verify(idAndVersionStreamVerifierListener).onMissingInPrimaryStream(argThat(hasIdAndVersion("2",2)));
+    }
+
     private static JavaIteratorIdAndVersionStream streamOf(IdAndVersion ... items) {
         return new JavaIteratorIdAndVersionStream(Iterators.forArray(items));
     }
