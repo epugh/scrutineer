@@ -1,13 +1,28 @@
 package com.aconex.scrutineer;
 
-import org.junit.Test;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.mockito.Mockito.verify;
+
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 
 public class IdAndVersionTest {
+
+    @Mock
+    ObjectOutputStream objectOutputStream;
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+    }
 
     @Test
     public void shouldBeEqualWhenIdAndVersionAreTheSame() {
@@ -78,5 +93,14 @@ public class IdAndVersionTest {
     public void shouldPrintTheIdAndVersionInToString() {
         IdAndVersion idAndVersion = new IdAndVersion("2",3);
         assertThat(idAndVersion.toString(), is("2:3"));
+    }
+
+    @Test
+    public void shouldWriteToOutputStream() throws IOException {
+        IdAndVersion idAndVersion = new IdAndVersion("2", 3);
+        idAndVersion.writeToStream(objectOutputStream);
+        verify(objectOutputStream).writeUTF(idAndVersion.getId());
+        verify(objectOutputStream).writeLong(idAndVersion.getVersion());
+
     }
 }

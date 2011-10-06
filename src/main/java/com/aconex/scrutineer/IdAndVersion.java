@@ -1,5 +1,9 @@
 package com.aconex.scrutineer;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import org.apache.commons.lang.builder.CompareToBuilder;
 
 public class IdAndVersion implements Comparable<IdAndVersion> {
@@ -43,5 +47,18 @@ public class IdAndVersion implements Comparable<IdAndVersion> {
 
     public long getVersion() {
         return version;
+    }
+
+    public void writeToStream(ObjectOutputStream objectOutputStream) throws IOException {
+        objectOutputStream.writeUTF(id);
+        objectOutputStream.writeLong(version);
+    }
+
+    public static IdAndVersion readFromStream(ObjectInputStream inputStream) throws IOException {
+        return new IdAndVersion(inputStream.readUTF(), inputStream.readLong());
+    }
+
+    public static IdAndVersion build(String id, int version) {
+        return new IdAndVersion(id, version);
     }
 }

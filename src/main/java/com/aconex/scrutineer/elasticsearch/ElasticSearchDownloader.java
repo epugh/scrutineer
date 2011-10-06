@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
+import com.aconex.scrutineer.IdAndVersion;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
@@ -46,8 +47,7 @@ public class ElasticSearchDownloader {
     boolean writeSearchResponseToOutputStream(ObjectOutputStream objectOutputStream, SearchResponse searchResponse) throws IOException {
         SearchHit[] hits = searchResponse.getHits().hits();
         for (SearchHit hit : hits) {
-            objectOutputStream.writeUTF(hit.getId());
-            objectOutputStream.writeLong(hit.getVersion());
+            new IdAndVersion(hit.getId(), hit.getVersion()).writeToStream(objectOutputStream);
         }
         return hits.length > 0;
     }

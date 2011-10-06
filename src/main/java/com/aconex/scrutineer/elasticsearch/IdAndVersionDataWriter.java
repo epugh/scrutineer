@@ -15,8 +15,7 @@ class IdAndVersionDataWriter extends DataWriter<IdAndVersion> {
 
     @Override
     public void writeEntry(IdAndVersion item) throws IOException {
-        objectOutputStream.writeUTF(item.getId());
-        objectOutputStream.writeLong(item.getVersion());
+        item.writeToStream(objectOutputStream);
     }
 
     @Override
