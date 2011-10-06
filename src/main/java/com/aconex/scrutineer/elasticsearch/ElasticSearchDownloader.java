@@ -52,7 +52,7 @@ public class ElasticSearchDownloader {
         return hits.length > 0;
     }
 
-    public SearchResponse startScrollAndGetFirstBatch() {
+    SearchResponse startScrollAndGetFirstBatch() {
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(indexName);
         searchRequestBuilder.setSearchType(SearchType.SCAN);
         searchRequestBuilder.setQuery(matchAllQuery());
