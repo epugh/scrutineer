@@ -13,22 +13,22 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.EOFException;
 import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+@SuppressWarnings("unchecked")
 public class ElasticSearchDownloaderTest {
 
     private static final String INDEX_NAME = "indexName";
@@ -40,74 +40,72 @@ public class ElasticSearchDownloaderTest {
     private SearchRequestBuilder searchRequestBuilder;
     @Mock
     private SearchScrollRequestBuilder searchScrollRequestBuilder;
-
-    @Mock @SuppressWarnings("unchecked")
+    @Mock
     private ListenableActionFuture listenableActionFuture;
-
     @Mock
-    private SearchResponse firstSearchResponse;
+    private SearchHits hits;
     @Mock
-    private SearchResponse secondSearchResponse;
-
+    private SearchHit hit;
     @Mock
-    private SearchHits firstHits;
+    private SearchResponse searchResponse;
     @Mock
-    private SearchHits secondHits;
-
-    @Mock
-    private SearchHit firstBatchHit;
-    @Mock
-    private SearchHit secondBatchHit;
-
-    private ByteArrayOutputStream outputStream;
+    private ObjectOutputStream objectOutputStream;
 
     @Before public void setup() {
         initMocks(this);
-        outputStream = new ByteArrayOutputStream();
     }
 
-    @Test @SuppressWarnings("unchecked")
-    public void shouldIterateOverResultsAndSendToOutputStream() throws IOException {
+    @Test
+    public void shouldEndAfterOnlyOneBatch() throws IOException {
         ElasticSearchDownloader elasticSearchDownloader = spy(new ElasticSearchDownloader(client, INDEX_NAME));
-        doReturn(firstSearchResponse).when(elasticSearchDownloader).startScrollAndGetFirstBatch();
-
-        when(firstSearchResponse.getHits()).thenReturn(firstHits);
-        when(firstHits.hits()).thenReturn(new SearchHit[]{firstBatchHit});
-        when(firstBatchHit.getId()).thenReturn(ID);
-        when(firstBatchHit.getVersion()).thenReturn(VERSION);
-
-        when(secondSearchResponse.getHits()).thenReturn(secondHits);
-        when(secondHits.hits()).thenReturn(new SearchHit[0]);
-
+        doReturn(false).when(elasticSearchDownloader).writeSearchResponseToOutputStream(any(ObjectOutputStream.class),any(SearchResponse.class));
         when(client.prepareSearchScroll(any(String.class))).thenReturn(searchScrollRequestBuilder);
         when(searchScrollRequestBuilder.execute()).thenReturn(listenableActionFuture);
         when(searchScrollRequestBuilder.setScroll(any(TimeValue.class))).thenReturn(searchScrollRequestBuilder);
-        when(listenableActionFuture.actionGet()).thenReturn(secondSearchResponse);
-        
-        elasticSearchDownloader.downloadTo(outputStream);
-
-        ObjectInputStream objectInputStream = new ObjectInputStream(new ByteArrayInputStream(outputStream.toByteArray()));
-
-        assertThat(objectInputStream.readLong(), is(Long.valueOf(ID)));
-        assertThat(objectInputStream.readLong(), is(VERSION));
-
-        // should assert the stream is complete, which alas for ObjectOutputStream, is an EOFException trap..
-        try {
-            objectInputStream.readInt();
-            fail("Should have EOF'd to indicate no more data to read");
-        } catch (EOFException eof) {
-
-        }
-
+        when(listenableActionFuture.actionGet()).thenReturn(searchResponse);
+        elasticSearchDownloader.consumeBatches(objectOutputStream,searchResponse);
+        verify(client).prepareSearchScroll(any(String.class));
     }
 
-    @SuppressWarnings("unchecked")
-    @Test public void shouldDoElasticSearchRequest() {
+    @Test
+    public void shouldRequestAndProcessNextBatch() throws IOException {
+        ElasticSearchDownloader elasticSearchDownloader = spy(new ElasticSearchDownloader(client, INDEX_NAME));
+        doReturn(true).doReturn(false).when(elasticSearchDownloader).writeSearchResponseToOutputStream(any(ObjectOutputStream.class),any(SearchResponse.class));
+        when(client.prepareSearchScroll(any(String.class))).thenReturn(searchScrollRequestBuilder);
+        when(searchScrollRequestBuilder.execute()).thenReturn(listenableActionFuture);
+        when(searchScrollRequestBuilder.setScroll(any(TimeValue.class))).thenReturn(searchScrollRequestBuilder);
+        when(listenableActionFuture.actionGet()).thenReturn(searchResponse);
+        elasticSearchDownloader.consumeBatches(objectOutputStream, searchResponse);
+        verify(client,times(2)).prepareSearchScroll(any(String.class));
+    }
+
+
+    @Test
+    public void shouldShouldReturnFalseWhenBatchIsEmpty() throws IOException {
+        ElasticSearchDownloader elasticSearchDownloader = new ElasticSearchDownloader(client, INDEX_NAME);
+        when(searchResponse.getHits()).thenReturn(hits);
+        when(hits.hits()).thenReturn(new SearchHit[0]);
+        assertThat(elasticSearchDownloader.writeSearchResponseToOutputStream(objectOutputStream, searchResponse), is(false));
+    }
+    @Test
+    public void shouldWriteHitsToOutputStream() throws IOException {
+        ElasticSearchDownloader elasticSearchDownloader = new ElasticSearchDownloader(client, INDEX_NAME);
+        when(searchResponse.getHits()).thenReturn(hits);
+        when(hits.hits()).thenReturn(new SearchHit[]{hit});
+        when(hit.getId()).thenReturn(ID);
+        when(hit.getVersion()).thenReturn(VERSION);
+        assertThat(elasticSearchDownloader.writeSearchResponseToOutputStream(objectOutputStream, searchResponse), is(true));
+        verify(objectOutputStream,times(2)).writeLong(anyLong());
+        verifyNoMoreInteractions(objectOutputStream);
+    }
+
+    @Test
+    public void shouldDoElasticSearchRequest() {
         when(client.prepareSearch(INDEX_NAME)).thenReturn(searchRequestBuilder);
         when(searchRequestBuilder.execute()).thenReturn(listenableActionFuture);
-        when(listenableActionFuture.actionGet()).thenReturn(firstSearchResponse);
+        when(listenableActionFuture.actionGet()).thenReturn(searchResponse);
         ElasticSearchDownloader elasticSearchDownloader = new ElasticSearchDownloader(client, INDEX_NAME);
-        assertThat(elasticSearchDownloader.startScrollAndGetFirstBatch(), is(firstSearchResponse));
+        assertThat(elasticSearchDownloader.startScrollAndGetFirstBatch(), is(searchResponse));
         verify(searchRequestBuilder).setSearchType(SearchType.SCAN);
         verify(searchRequestBuilder).setNoFields();
         verify(searchRequestBuilder).setVersion(true);

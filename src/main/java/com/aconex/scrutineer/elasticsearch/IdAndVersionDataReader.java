@@ -4,6 +4,7 @@ import com.aconex.scrutineer.IdAndVersion;
 import com.fasterxml.sort.DataReader;
 
 import java.io.EOFException;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
@@ -34,5 +35,12 @@ class IdAndVersionDataReader extends DataReader<IdAndVersion> {
     @Override
     public void close() throws IOException {
         objectInputStream.close();
+    }
+
+    public static void main(String[] args) throws IOException {
+        ObjectInputStream objectInputStream1 = new ObjectInputStream(new FileInputStream("/tmp/elastic-search-unsorted.dat"));
+        System.out.println(objectInputStream1.readLong()+":"+objectInputStream1.readLong());
+        System.out.println(objectInputStream1.readLong()+":"+objectInputStream1.readLong());
+        System.out.println(objectInputStream1.readLong()+":"+objectInputStream1.readLong());
     }
 }

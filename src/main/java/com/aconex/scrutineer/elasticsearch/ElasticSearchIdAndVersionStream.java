@@ -10,8 +10,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
 
@@ -47,6 +45,7 @@ public class ElasticSearchIdAndVersionStream implements IdAndVersionStream {
     }
 
     @Override
+    @SuppressWarnings({"ResultOfMethodCallIgnored"})
     public void close() {
         unsortedFile.delete();
         sortedFile.delete();
@@ -54,7 +53,7 @@ public class ElasticSearchIdAndVersionStream implements IdAndVersionStream {
 
     OutputStream createUnsortedOutputStream() {
         try {
-            return new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(unsortedFile)));
+            return new BufferedOutputStream(new FileOutputStream(unsortedFile));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -62,7 +61,7 @@ public class ElasticSearchIdAndVersionStream implements IdAndVersionStream {
 
     InputStream createUnSortedInputStream() {
         try {
-            return new ObjectInputStream(new BufferedInputStream(new FileInputStream(unsortedFile)));
+            return new BufferedInputStream(new FileInputStream(unsortedFile));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -70,7 +69,7 @@ public class ElasticSearchIdAndVersionStream implements IdAndVersionStream {
 
     OutputStream createSortedOutputStream() {
         try {
-            return new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(sortedFile)));
+            return new BufferedOutputStream(new FileOutputStream(sortedFile));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

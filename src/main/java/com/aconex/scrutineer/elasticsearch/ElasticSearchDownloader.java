@@ -36,14 +36,14 @@ public class ElasticSearchDownloader {
         }
     }
 
-    private void consumeBatches(ObjectOutputStream objectOutputStream, SearchResponse searchResponse) throws IOException {
+    void consumeBatches(ObjectOutputStream objectOutputStream, SearchResponse searchResponse) throws IOException {
         String scrollId = searchResponse.getScrollId();
-        while (writeSearchResponseToOutputStream(objectOutputStream, searchResponse)) {
+        do {
             searchResponse = client.prepareSearchScroll(scrollId).setScroll(TimeValue.timeValueMinutes(SCROLL_TIME_IN_MINUTES)).execute().actionGet();
-        }
+        } while (writeSearchResponseToOutputStream(objectOutputStream, searchResponse));
     }
 
-    private boolean writeSearchResponseToOutputStream(ObjectOutputStream objectOutputStream, SearchResponse searchResponse) throws IOException {
+    boolean writeSearchResponseToOutputStream(ObjectOutputStream objectOutputStream, SearchResponse searchResponse) throws IOException {
         SearchHit[] hits = searchResponse.getHits().hits();
         for (SearchHit hit : hits) {
             objectOutputStream.writeLong(Long.valueOf(hit.getId()));
@@ -56,7 +56,7 @@ public class ElasticSearchDownloader {
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(indexName);
         searchRequestBuilder.setSearchType(SearchType.SCAN);
         searchRequestBuilder.setQuery(matchAllQuery());
-        searchRequestBuilder.setSize(BATCH_SIZE);
+        searchRequestBuilder.setSize(3);
         searchRequestBuilder.setExplain(false);
         searchRequestBuilder.setNoFields();
         searchRequestBuilder.setVersion(true);
