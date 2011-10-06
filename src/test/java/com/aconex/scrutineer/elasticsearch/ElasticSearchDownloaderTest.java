@@ -3,9 +3,9 @@ package com.aconex.scrutineer.elasticsearch;
 import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.client.action.search.SearchRequestBuilder;
 import org.elasticsearch.client.action.search.SearchScrollRequestBuilder;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -35,7 +35,7 @@ public class ElasticSearchDownloaderTest {
     private static final String ID = "123";
     private static final long VERSION = 123L;
     @Mock
-    private TransportClient client;
+    private Client client;
     @Mock
     private SearchRequestBuilder searchRequestBuilder;
     @Mock

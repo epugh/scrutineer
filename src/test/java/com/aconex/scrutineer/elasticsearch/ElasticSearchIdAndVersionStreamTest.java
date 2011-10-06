@@ -1,5 +1,17 @@
 package com.aconex.scrutineer.elasticsearch;
 
+import com.aconex.scrutineer.IdAndVersion;
+import org.apache.commons.lang.SystemUtils;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Iterator;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.doReturn;
@@ -8,20 +20,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Iterator;
-
-import com.aconex.scrutineer.IdAndVersion;
-import org.apache.commons.lang.SystemUtils;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-
 @SuppressWarnings("unsafe")
-public class ElasticSearchIdAndVersionStreamTest {
+public class
+        ElasticSearchIdAndVersionStreamTest {
 
     private static final String UNSORTED_FILENAME = "elastic-search-unsorted.dat";
 

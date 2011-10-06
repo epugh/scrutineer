@@ -2,8 +2,8 @@ package com.aconex.scrutineer.elasticsearch;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.client.action.search.SearchRequestBuilder;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.search.SearchHit;
 
@@ -18,10 +18,10 @@ public class ElasticSearchDownloader {
     private static final int BATCH_SIZE = 100000;
     private static final int SCROLL_TIME_IN_MINUTES = 10;
 
-    private final TransportClient client;
+    private final Client client;
     private final String indexName;
 
-    public ElasticSearchDownloader(TransportClient client, String indexName) {
+    public ElasticSearchDownloader(Client client, String indexName) {
         this.client = client;
         this.indexName = indexName;
     }
