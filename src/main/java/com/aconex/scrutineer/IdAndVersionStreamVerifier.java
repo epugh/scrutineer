@@ -18,6 +18,10 @@ public class IdAndVersionStreamVerifier {
             while (primaryIterator.hasNext()) {
                 idAndVersionStreamVerifierListener.onMissingInSecondaryStream(primaryIterator.next());
             }
+
+            while (secondaryIterator.hasNext()) {
+                idAndVersionStreamVerifierListener.onMissingInPrimaryStream(secondaryIterator.next());
+            }
         }
         finally {
             primaryStream.close();
