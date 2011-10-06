@@ -1,22 +1,23 @@
 package com.aconex.scrutineer.elasticsearch;
 
+import static org.mockito.Mockito.verify;
+
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+
 import com.aconex.scrutineer.IdAndVersion;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-
-import static org.mockito.Mockito.verify;
-
 public class IdAndVersionDataWriterTest {
 
-    private static final String ID = "12";
-    private static final long VERSION = 77;
     @Mock
     private ObjectOutputStream objectOutputStream;
+
+    @Mock
+    private IdAndVersion idAndVersion;
 
     @Before
     public void setup() {
@@ -26,10 +27,9 @@ public class IdAndVersionDataWriterTest {
     @Test
     public void shouldWriteEntry() throws IOException {
         IdAndVersionDataWriter idAndVersionDataWriter = new IdAndVersionDataWriter(objectOutputStream);
-        idAndVersionDataWriter.writeEntry(new IdAndVersion(ID,VERSION));
+        idAndVersionDataWriter.writeEntry(idAndVersion);
 
-        verify(objectOutputStream).writeUTF(ID);
-        verify(objectOutputStream).writeLong(VERSION);
+        verify(idAndVersion).writeToStream(objectOutputStream);
     }
 
     @Test
