@@ -43,11 +43,13 @@ public class
     @Mock
     private InputStream unSortedInputStream;
 
-    @Before public void setup() {
+    @Before
+    public void setup() {
         initMocks(this);
     }
 
-    @Test public void shouldDownloadAndSortOnSetup() throws IOException {
+    @Test
+    public void shouldDownloadAndSortOnSetup() throws IOException {
         ElasticSearchIdAndVersionStream elasticSearchIdAndVersionStream = spy(new ElasticSearchIdAndVersionStream(elasticSearchDownloader, elasticSearchSorter, iteratorFactory, SystemUtils.getJavaIoTmpDir().getAbsolutePath()));
         doReturn(sortedOutputStream).when(elasticSearchIdAndVersionStream).createSortedOutputStream();
         doReturn(unSortedOutputStream).when(elasticSearchIdAndVersionStream).createUnsortedOutputStream();
@@ -57,7 +59,8 @@ public class
         verify(elasticSearchSorter).sort(unSortedInputStream,sortedOutputStream);
     }
 
-    @Test public void shouldReturnAFileIterator() throws IOException {
+    @Test
+    public void shouldReturnAFileIterator() throws IOException {
         ElasticSearchIdAndVersionStream elasticSearchIdAndVersionStream = new ElasticSearchIdAndVersionStream(elasticSearchDownloader, elasticSearchSorter, iteratorFactory, SystemUtils.getJavaIoTmpDir().getAbsolutePath());
         when(iteratorFactory.forFile(new File(SystemUtils.getJavaIoTmpDir(),SORTED_FILENAME))).thenReturn(iterator);
         assertThat(elasticSearchIdAndVersionStream.iterator(), is(iterator));

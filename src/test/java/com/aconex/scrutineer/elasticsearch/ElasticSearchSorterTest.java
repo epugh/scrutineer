@@ -22,11 +22,13 @@ public class ElasticSearchSorterTest {
     @Mock
     private OutputStream outputstream;
 
-    @Before public void setup() {
+    @Before
+    public void setup() {
         initMocks(this);
     }
 
-    @Test public void shouldSortInputStream() throws IOException {
+    @Test
+    public void shouldSortInputStream() throws IOException {
         ElasticSearchSorter elasticSearchSorter = new ElasticSearchSorter(sorter);
         elasticSearchSorter.sort(inputstream,outputstream);
         verify(sorter).sort(inputstream, outputstream);
