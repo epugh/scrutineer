@@ -19,6 +19,10 @@ public class IdAndVersionStreamVerifier {
                         idAndVersionStreamVerifierListener.onMissingInSecondaryStream(primaryItem);
                         primaryIterator.next();
                     }
+                    else {
+                        idAndVersionStreamVerifierListener.onMissingInPrimaryStream(secondaryItem);
+                        secondaryIterator.next();
+                    }
                 }
             }
 
