@@ -18,7 +18,7 @@ class IdAndVersionDataReader extends DataReader<IdAndVersion> {
     @Override
     public IdAndVersion readNext() throws IOException {
         try {
-            return new IdAndVersion(objectInputStream.readUTF(), objectInputStream.readLong());
+            return IdAndVersion.readFromStream(objectInputStream);
         } catch (EOFException e) {
             return null;
         }

@@ -4,8 +4,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.junit.Before;
@@ -18,6 +20,9 @@ public class IdAndVersionTest {
 
     @Mock
     ObjectOutputStream objectOutputStream;
+
+    @Mock
+    ObjectInputStream objectInputStream;
 
     @Before
     public void setup() {
@@ -101,6 +106,16 @@ public class IdAndVersionTest {
         idAndVersion.writeToStream(objectOutputStream);
         verify(objectOutputStream).writeUTF(idAndVersion.getId());
         verify(objectOutputStream).writeLong(idAndVersion.getVersion());
+    }
 
+    @Test
+    public void shouldReadFromInputStream() throws IOException {
+        when(objectInputStream.readUTF()).thenReturn("10");
+        when(objectInputStream.readLong()).thenReturn(10L);
+
+        IdAndVersion idAndVersion = IdAndVersion.readFromStream(objectInputStream);
+
+        assertThat(idAndVersion.getId(), is("10"));
+        assertThat(idAndVersion.getVersion(), is(10L));
     }
 }
