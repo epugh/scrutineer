@@ -31,7 +31,7 @@ public class IdAndVersionStreamVerifierTest {
     public void shouldCloseBothStreams() {
         IdAndVersionStreamVerifier idAndVersionStreamVerifier = new IdAndVersionStreamVerifier();
         idAndVersionStreamVerifier.verify(primaryStream, secondayStream);
-        verify(primaryStream).open();
-        verify(secondayStream).open();
+        verify(primaryStream).close();
+        verify(secondayStream).close();
     }
 }
