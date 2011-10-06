@@ -1,17 +1,17 @@
 package com.aconex.scrutineer.elasticsearch;
 
+import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
+
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.action.search.SearchRequestBuilder;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.search.SearchHit;
-
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-
-import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
 public class ElasticSearchDownloader {
 
@@ -46,7 +46,7 @@ public class ElasticSearchDownloader {
     boolean writeSearchResponseToOutputStream(ObjectOutputStream objectOutputStream, SearchResponse searchResponse) throws IOException {
         SearchHit[] hits = searchResponse.getHits().hits();
         for (SearchHit hit : hits) {
-            objectOutputStream.writeLong(Long.valueOf(hit.getId()));
+            objectOutputStream.writeUTF(hit.getId());
             objectOutputStream.writeLong(hit.getVersion());
         }
         return hits.length > 0;

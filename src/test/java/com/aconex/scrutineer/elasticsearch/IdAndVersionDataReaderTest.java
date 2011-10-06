@@ -1,14 +1,5 @@
 package com.aconex.scrutineer.elasticsearch;
 
-import com.aconex.scrutineer.IdAndVersion;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -16,9 +7,18 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+
+import com.aconex.scrutineer.IdAndVersion;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+
 public class IdAndVersionDataReaderTest {
 
-    private static final long ID = 77;
+    private static final String ID = "77";
     private static final long VERSION = 12;
     @Mock
     private ObjectInputStream objectInputStream;
@@ -32,11 +32,12 @@ public class IdAndVersionDataReaderTest {
     }
 
     @Test public void shouldGiveAndEstimateOfSize() {
-        assertThat(idAndVersionDataReader.estimateSizeInBytes(new IdAndVersion(ID,VERSION)),is(16));
+        assertThat(idAndVersionDataReader.estimateSizeInBytes(new IdAndVersion(ID,VERSION)),is(ID.length()*2+8));
     }
 
     @Test public void shouldReadNextIdAndVersionObjectFromStream() throws IOException {
-        when(objectInputStream.readLong()).thenReturn(ID).thenReturn(VERSION);
+        when(objectInputStream.readUTF()).thenReturn(ID);
+        when(objectInputStream.readLong()).thenReturn(VERSION);
         IdAndVersion idAndVersion = idAndVersionDataReader.readNext();
         assertThat(idAndVersion.getId(), is(ID));
         assertThat(idAndVersion.getVersion(), is(VERSION));

@@ -1,10 +1,10 @@
 package com.aconex.scrutineer.elasticsearch;
 
-import com.aconex.scrutineer.IdAndVersion;
-import com.fasterxml.sort.DataWriter;
-
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+
+import com.aconex.scrutineer.IdAndVersion;
+import com.fasterxml.sort.DataWriter;
 
 class IdAndVersionDataWriter extends DataWriter<IdAndVersion> {
     private final ObjectOutputStream objectOutputStream;
@@ -15,7 +15,7 @@ class IdAndVersionDataWriter extends DataWriter<IdAndVersion> {
 
     @Override
     public void writeEntry(IdAndVersion item) throws IOException {
-        objectOutputStream.writeLong(item.getId());
+        objectOutputStream.writeUTF(item.getId());
         objectOutputStream.writeLong(item.getVersion());
     }
 

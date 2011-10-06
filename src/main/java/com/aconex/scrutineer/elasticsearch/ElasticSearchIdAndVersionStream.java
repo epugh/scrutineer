@@ -1,8 +1,5 @@
 package com.aconex.scrutineer.elasticsearch;
 
-import com.aconex.scrutineer.IdAndVersion;
-import com.aconex.scrutineer.IdAndVersionStream;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -12,6 +9,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
+
+import com.aconex.scrutineer.IdAndVersion;
+import com.aconex.scrutineer.IdAndVersionStream;
 
 public class ElasticSearchIdAndVersionStream implements IdAndVersionStream {
 

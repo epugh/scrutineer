@@ -1,5 +1,19 @@
 package com.aconex.scrutineer.elasticsearch;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+
 import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -12,21 +26,6 @@ import org.elasticsearch.search.SearchHits;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 @SuppressWarnings("unchecked")
 public class ElasticSearchDownloaderTest {
@@ -95,7 +94,8 @@ public class ElasticSearchDownloaderTest {
         when(hit.getId()).thenReturn(ID);
         when(hit.getVersion()).thenReturn(VERSION);
         assertThat(elasticSearchDownloader.writeSearchResponseToOutputStream(objectOutputStream, searchResponse), is(true));
-        verify(objectOutputStream,times(2)).writeLong(anyLong());
+        verify(objectOutputStream).writeUTF(ID);
+        verify(objectOutputStream).writeLong(VERSION);
         verifyNoMoreInteractions(objectOutputStream);
     }
 

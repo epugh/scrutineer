@@ -1,11 +1,13 @@
 package com.aconex.scrutineer;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
+
 public class IdAndVersion implements Comparable<IdAndVersion> {
 
-    private final long id;
+    private final String id;
     private final long version;
 
-    public IdAndVersion(long id, long version) {
+    public IdAndVersion(String id, long version) {
         this.id = id;
         this.version = version;
     }
@@ -22,7 +24,7 @@ public class IdAndVersion implements Comparable<IdAndVersion> {
     @Override
     public int hashCode() {
         return 7 +
-           (int)(id ^ (id >>> 32)) +
+           id.hashCode() +
            (int)(version ^ (version >>> 32));
     }
 
@@ -32,22 +34,10 @@ public class IdAndVersion implements Comparable<IdAndVersion> {
     }
 
     public int compareTo(IdAndVersion other) {
-        if (id == other.id && version == other.version) {
-            return 0;
-        }
-        if (id < other.id) {
-            return -1;
-        }
-        if (id > other.id) {
-            return 1;
-        }
-        if (version < other.version){
-            return -1;
-        }
-        return 1;
+        return new CompareToBuilder().append(id, other.id).append(version, other.version).toComparison();
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 

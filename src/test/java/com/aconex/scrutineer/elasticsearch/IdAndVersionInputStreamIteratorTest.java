@@ -1,20 +1,20 @@
 package com.aconex.scrutineer.elasticsearch;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+
 import com.aconex.scrutineer.IdAndVersion;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.io.IOException;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.when;
-
 public class IdAndVersionInputStreamIteratorTest {
 
-    private static final long ID = 12L;
+    private static final String ID = "12";
     private static final long VERSION = 77L;
     @Mock
     private IdAndVersionDataReader idAndVersionDataReader;

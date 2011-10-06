@@ -1,5 +1,11 @@
 package com.aconex.scrutineer.elasticsearch;
 
+import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+import java.util.Iterator;
+
 import com.aconex.scrutineer.IdAndVersion;
 import com.fasterxml.sort.DataReaderFactory;
 import com.fasterxml.sort.DataWriterFactory;
@@ -13,12 +19,6 @@ import org.elasticsearch.node.Node;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Iterator;
-
-import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 
 public class ElasticSearchIdAndVersionStreamIntegrationTest {
 
@@ -37,12 +37,12 @@ public class ElasticSearchIdAndVersionStreamIntegrationTest {
         elasticSearchIdAndVersionStream.open();
         Iterator<IdAndVersion> iterator = elasticSearchIdAndVersionStream.iterator();
 
-        assertIdAndVerison(iterator.next(), 1,1);
-        assertIdAndVerison(iterator.next(), 2,2);
-        assertIdAndVerison(iterator.next(), 3,3);
+        assertIdAndVerison(iterator.next(), "1",1);
+        assertIdAndVerison(iterator.next(), "2",2);
+        assertIdAndVerison(iterator.next(), "3",3);
     }
 
-    public void assertIdAndVerison(IdAndVersion idAndVersion, long expectedId, long expectedVersion) {
+    public void assertIdAndVerison(IdAndVersion idAndVersion, String expectedId, long expectedVersion) {
         assertThat(idAndVersion.getId(), is(expectedId));
         assertThat(idAndVersion.getVersion(), is(expectedVersion));
     }
