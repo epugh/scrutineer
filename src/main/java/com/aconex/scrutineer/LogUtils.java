@@ -16,17 +16,6 @@ public final class LogUtils {
         log.debug(getFormattedMessage(message, args));
     }
 
-    public static void debug(Logger log, String message, Throwable throwable, Object... args) {
-        if (!log.isDebugEnabled()) {
-            return;
-        }
-        log.debug(getFormattedMessage(message, args), throwable);
-    }
-
-    public static void warn(Logger log, String message, Object... args) {
-        log.warn(getFormattedMessage(message, args));
-    }
-
     public static void warn(Logger log, String message, Throwable throwable, Object... args) {
         log.warn(getFormattedMessage(message, args), throwable);
     }
@@ -35,16 +24,8 @@ public final class LogUtils {
         log.error(getFormattedMessage(message, args));
     }
 
-    public static void error(Logger log, String message, Throwable throwable, Object... args) {
-        log.error(getFormattedMessage(message, args), throwable);
-    }
-
     public static void info(Logger log, String message, Object... args) {
         log.info(getFormattedMessage(message, args));
-    }
-
-    public static void info(Logger log, String message, Throwable throwable, Object... args) {
-        log.info(getFormattedMessage(message, args), throwable);
     }
 
     private static String getFormattedMessage(String message, Object... args) {
