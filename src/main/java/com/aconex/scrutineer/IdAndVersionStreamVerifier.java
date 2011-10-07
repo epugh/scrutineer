@@ -16,7 +16,10 @@ public class IdAndVersionStreamVerifier {
                 IdAndVersion secondaryItem = secondaryIterator.next();
 
                 if(!primaryItem.equals(secondaryItem)) {
-                    if(primaryItem.compareTo(secondaryItem) < 0) {
+                    if (primaryItem.getId().equals(secondaryItem.getId())) {
+                        idAndVersionStreamVerifierListener.onVersionMisMatch(primaryItem, secondaryItem);
+                    }
+                    else if (primaryItem.compareTo(secondaryItem) < 0) {
                         idAndVersionStreamVerifierListener.onMissingInSecondaryStream(primaryItem);
                         primaryIterator.next();
                     }

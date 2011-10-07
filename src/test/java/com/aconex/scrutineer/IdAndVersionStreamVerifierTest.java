@@ -119,6 +119,15 @@ public class IdAndVersionStreamVerifierTest {
         verify(idAndVersionStreamVerifierListener).onMissingInPrimaryStream(argThat(hasIdAndVersion("2",2)));
     }
 
+    @Test
+    public void shouldReportVersionMisMatches() {
+        idAndVersionStreamVerifier.verify(
+                streamOf(item(1), item("2",2), item(3), item(4)),
+                streamOf(item(1), item("2",5), item(3), item(4)),
+                idAndVersionStreamVerifierListener);
+        verify(idAndVersionStreamVerifierListener).onVersionMisMatch(argThat(hasIdAndVersion("2",2)), argThat(hasIdAndVersion("2",5)));
+    }
+
     private static JavaIteratorIdAndVersionStream streamOf(IdAndVersion ... items) {
         return new JavaIteratorIdAndVersionStream(Iterators.forArray(items));
     }
