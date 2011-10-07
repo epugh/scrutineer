@@ -1,44 +1,63 @@
 package com.aconex.scrutineer;
 
+import org.apache.log4j.Logger;
+
 import java.util.Iterator;
 
 public class IdAndVersionStreamVerifier {
 
+    private static final Logger LOG = LogUtils.loggerForThisClass();
+
     public void verify(IdAndVersionStream primaryStream, IdAndVersionStream secondayStream, IdAndVersionStreamVerifierListener idAndVersionStreamVerifierListener) {
-        primaryStream.open();
-        secondayStream.open();
         try {
+            primaryStream.open();
+            secondayStream.open();
+            
             Iterator<IdAndVersion> primaryIterator = primaryStream.iterator();
             Iterator<IdAndVersion> secondaryIterator = secondayStream.iterator();
             
             while (primaryIterator.hasNext() && secondaryIterator.hasNext()) {
-                IdAndVersion primaryItem = primaryIterator.next();
-                IdAndVersion secondaryItem = secondaryIterator.next();
-
-                if(!primaryItem.equals(secondaryItem)) {
-                    if (primaryItem.getId().equals(secondaryItem.getId())) {
-                        idAndVersionStreamVerifierListener.onVersionMisMatch(primaryItem, secondaryItem);
-                    }
-                    else if (primaryItem.compareTo(secondaryItem) < 0) {
-                        idAndVersionStreamVerifierListener.onMissingInSecondaryStream(primaryItem);
-                        primaryIterator.next();
-                    }
-                    else {
-                        idAndVersionStreamVerifierListener.onMissingInPrimaryStream(secondaryItem);
-                        secondaryIterator.next();
-                    }
-                }
+                compareStreams(idAndVersionStreamVerifierListener, primaryIterator, secondaryIterator);
             }
 
-            handleDifferencesAtEndOfStreams(idAndVersionStreamVerifierListener, primaryIterator, secondaryIterator);
+            logDifferencesAtEndOfStreams(idAndVersionStreamVerifierListener, primaryIterator, secondaryIterator);
         }
         finally {
-            primaryStream.close();
-            secondayStream.close();
+            closeWithoutThrowingException(primaryStream);
+            closeWithoutThrowingException(secondayStream);
         }
     }
 
-    private void handleDifferencesAtEndOfStreams(IdAndVersionStreamVerifierListener idAndVersionStreamVerifierListener, Iterator<IdAndVersion> primaryIterator, Iterator<IdAndVersion> secondaryIterator) {
+    private void closeWithoutThrowingException(IdAndVersionStream idAndVersionStream) {
+        try {
+            idAndVersionStream.close();
+        }
+        catch(Exception e) {
+            LogUtils.warn(LOG,"Unable to close IdAndVersionStream",e);
+        }
+    }
+
+    private void compareStreams(IdAndVersionStreamVerifierListener idAndVersionStreamVerifierListener, Iterator<IdAndVersion> primaryIterator, Iterator<IdAndVersion> secondaryIterator) {
+        
+        IdAndVersion primaryItem = primaryIterator.next();
+        IdAndVersion secondaryItem = secondaryIterator.next();
+
+        if(!primaryItem.equals(secondaryItem)) {
+            if (primaryItem.getId().equals(secondaryItem.getId())) {
+                idAndVersionStreamVerifierListener.onVersionMisMatch(primaryItem, secondaryItem);
+            }
+            else if (primaryItem.compareTo(secondaryItem) < 0) {
+                idAndVersionStreamVerifierListener.onMissingInSecondaryStream(primaryItem);
+                primaryIterator.next();
+            }
+            else {
+                idAndVersionStreamVerifierListener.onMissingInPrimaryStream(secondaryItem);
+                secondaryIterator.next();
+            }
+        }
+    }
+
+    private void logDifferencesAtEndOfStreams(IdAndVersionStreamVerifierListener idAndVersionStreamVerifierListener, Iterator<IdAndVersion> primaryIterator, Iterator<IdAndVersion> secondaryIterator) {
 
         while (primaryIterator.hasNext()) {
             idAndVersionStreamVerifierListener.onMissingInSecondaryStream(primaryIterator.next());
