@@ -1,11 +1,5 @@
 package com.aconex.scrutineer.elasticsearch;
 
-import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
-
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-
 import com.aconex.scrutineer.IdAndVersion;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -13,6 +7,12 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.action.search.SearchRequestBuilder;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.search.SearchHit;
+
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+
+import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
 public class ElasticSearchDownloader {
 
@@ -39,9 +39,10 @@ public class ElasticSearchDownloader {
 
     void consumeBatches(ObjectOutputStream objectOutputStream, SearchResponse searchResponse) throws IOException {
         String scrollId = searchResponse.getScrollId();
+        SearchResponse batchSearchResponse = null;
         do {
-            searchResponse = client.prepareSearchScroll(scrollId).setScroll(TimeValue.timeValueMinutes(SCROLL_TIME_IN_MINUTES)).execute().actionGet();
-        } while (writeSearchResponseToOutputStream(objectOutputStream, searchResponse));
+            batchSearchResponse = client.prepareSearchScroll(scrollId).setScroll(TimeValue.timeValueMinutes(SCROLL_TIME_IN_MINUTES)).execute().actionGet();
+        } while (writeSearchResponseToOutputStream(objectOutputStream, batchSearchResponse));
     }
 
     boolean writeSearchResponseToOutputStream(ObjectOutputStream objectOutputStream, SearchResponse searchResponse) throws IOException {
@@ -56,7 +57,7 @@ public class ElasticSearchDownloader {
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(indexName);
         searchRequestBuilder.setSearchType(SearchType.SCAN);
         searchRequestBuilder.setQuery(matchAllQuery());
-        searchRequestBuilder.setSize(3);
+        searchRequestBuilder.setSize(BATCH_SIZE);
         searchRequestBuilder.setExplain(false);
         searchRequestBuilder.setNoFields();
         searchRequestBuilder.setVersion(true);

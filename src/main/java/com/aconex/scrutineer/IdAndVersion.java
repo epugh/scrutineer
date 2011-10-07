@@ -27,9 +27,7 @@ public class IdAndVersion implements Comparable<IdAndVersion> {
 
     @Override
     public int hashCode() {
-        return 7 +
-           id.hashCode() +
-           (int)(version ^ (version >>> 32));
+        return toString().hashCode();
     }
 
     @Override

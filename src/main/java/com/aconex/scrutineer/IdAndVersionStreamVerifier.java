@@ -43,17 +43,21 @@ public class IdAndVersionStreamVerifier {
         IdAndVersion secondaryItem = secondaryIterator.next();
 
         if(!primaryItem.equals(secondaryItem)) {
-            if (primaryItem.getId().equals(secondaryItem.getId())) {
-                idAndVersionStreamVerifierListener.onVersionMisMatch(primaryItem, secondaryItem);
-            }
-            else if (primaryItem.compareTo(secondaryItem) < 0) {
-                idAndVersionStreamVerifierListener.onMissingInSecondaryStream(primaryItem);
-                primaryIterator.next();
-            }
-            else {
-                idAndVersionStreamVerifierListener.onMissingInPrimaryStream(secondaryItem);
-                secondaryIterator.next();
-            }
+            fireEventForMisMatchedItems(idAndVersionStreamVerifierListener, primaryIterator, secondaryIterator, primaryItem, secondaryItem);
+        }
+    }
+
+    private void fireEventForMisMatchedItems(IdAndVersionStreamVerifierListener idAndVersionStreamVerifierListener, Iterator<IdAndVersion> primaryIterator, Iterator<IdAndVersion> secondaryIterator, IdAndVersion primaryItem, IdAndVersion secondaryItem) {
+        if (primaryItem.getId().equals(secondaryItem.getId())) {
+            idAndVersionStreamVerifierListener.onVersionMisMatch(primaryItem, secondaryItem);
+        }
+        else if (primaryItem.compareTo(secondaryItem) < 0) {
+            idAndVersionStreamVerifierListener.onMissingInSecondaryStream(primaryItem);
+            primaryIterator.next();
+        }
+        else {
+            idAndVersionStreamVerifierListener.onMissingInPrimaryStream(secondaryItem);
+            secondaryIterator.next();
         }
     }
 
