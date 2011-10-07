@@ -1,22 +1,23 @@
 package com.aconex.scrutineer;
 
-import com.aconex.scrutineer.javautil.JavaIteratorIdAndVersionStream;
-import com.google.common.collect.Iterators;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-
-import java.util.Collections;
-import java.util.List;
-
 import static com.aconex.scrutineer.HasIdAndVersionMatcher.hasIdAndVersion;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+
+import java.util.Collections;
+import java.util.List;
+
+import com.aconex.scrutineer.javautil.JavaIteratorIdAndVersionStream;
+import com.google.common.collect.Iterators;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
 
 public class IdAndVersionStreamVerifierTest {
 
@@ -99,6 +100,7 @@ public class IdAndVersionStreamVerifierTest {
                 streamOf(item(1), item(2), item(3)),
                 idAndVersionStreamVerifierListener);
         verify(idAndVersionStreamVerifierListener).onMissingInSecondaryStream(argThat(hasIdAndVersion("4",4)));
+        verifyNoMoreInteractions(idAndVersionStreamVerifierListener);
     }
 
     @Test
@@ -108,6 +110,7 @@ public class IdAndVersionStreamVerifierTest {
                 streamOf(item(1), item(2), item(3), item(4)),
                 idAndVersionStreamVerifierListener);
         verify(idAndVersionStreamVerifierListener).onMissingInPrimaryStream(argThat(hasIdAndVersion("4", 4)));
+        verifyNoMoreInteractions(idAndVersionStreamVerifierListener);
     }
 
     @Test
@@ -117,6 +120,7 @@ public class IdAndVersionStreamVerifierTest {
                 streamOf(item(2), item(3), item(4)),
                 idAndVersionStreamVerifierListener);
         verify(idAndVersionStreamVerifierListener).onMissingInSecondaryStream(argThat(hasIdAndVersion("1", 1)));
+        verifyNoMoreInteractions(idAndVersionStreamVerifierListener);
     }
 
     @Test
@@ -126,7 +130,9 @@ public class IdAndVersionStreamVerifierTest {
                 streamOf(item(1), item(2), item(3), item(4)),
                 idAndVersionStreamVerifierListener);
         verify(idAndVersionStreamVerifierListener).onMissingInPrimaryStream(argThat(hasIdAndVersion("1", 1)));
+        verifyNoMoreInteractions(idAndVersionStreamVerifierListener);
     }
+
 
     @Test
     public void shouldReportMissingItemsInTheMiddleOfTheSecondaryStream() {
@@ -135,6 +141,7 @@ public class IdAndVersionStreamVerifierTest {
                 streamOf(item(1), item(2),          item(4)),
                 idAndVersionStreamVerifierListener);
         verify(idAndVersionStreamVerifierListener).onMissingInSecondaryStream(argThat(hasIdAndVersion("3",3)));
+        verifyNoMoreInteractions(idAndVersionStreamVerifierListener);
     }
 
     @Test
@@ -144,6 +151,7 @@ public class IdAndVersionStreamVerifierTest {
                 streamOf(item(1), item(2), item(3), item(4)),
                 idAndVersionStreamVerifierListener);
         verify(idAndVersionStreamVerifierListener).onMissingInPrimaryStream(argThat(hasIdAndVersion("2",2)));
+        verifyNoMoreInteractions(idAndVersionStreamVerifierListener);
     }
 
     @Test
@@ -153,6 +161,7 @@ public class IdAndVersionStreamVerifierTest {
                 streamOf(item(1), item("2",5), item(3), item(4)),
                 idAndVersionStreamVerifierListener);
         verify(idAndVersionStreamVerifierListener).onVersionMisMatch(argThat(hasIdAndVersion("2", 2)), argThat(hasIdAndVersion("2", 5)));
+        verifyNoMoreInteractions(idAndVersionStreamVerifierListener);
     }
 
     private static JavaIteratorIdAndVersionStream streamOf(IdAndVersion ... items) {
