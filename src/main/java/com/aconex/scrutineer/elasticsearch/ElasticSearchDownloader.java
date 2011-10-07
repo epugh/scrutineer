@@ -53,6 +53,7 @@ public class ElasticSearchDownloader {
         return hits.length > 0;
     }
 
+    @SuppressWarnings("PMD.NcssMethodCount")
     SearchResponse startScrollAndGetFirstBatch() {
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(indexName);
         searchRequestBuilder.setSearchType(SearchType.SCAN);

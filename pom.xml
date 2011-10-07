@@ -97,6 +97,26 @@
             </executions>
           </plugin>
 
+          <plugin>
+              <artifactId>maven-pmd-plugin</artifactId>
+              <configuration>
+                  <targetJdk>1.6</targetJdk>
+                  <minimumPriority>4</minimumPriority>
+                  <rulesets>
+                      <ruleset>${project.basedir}/src/test/resources/pmd.xml</ruleset>
+                  </rulesets>
+              </configuration>
+              <executions>
+                  <execution>
+                      <phase>verify</phase>
+                      <goals>
+                          <goal>check</goal>
+                          <goal>cpd-check</goal>
+                      </goals>
+                  </execution>
+              </executions>
+          </plugin>
+
       </plugins>
     </build>
     

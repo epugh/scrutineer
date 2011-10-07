@@ -8,6 +8,7 @@ public class IdAndVersionStreamVerifier {
 
     private static final Logger LOG = LogUtils.loggerForThisClass();
 
+    @SuppressWarnings("PMD.NcssMethodCount")
     public void verify(IdAndVersionStream primaryStream, IdAndVersionStream secondayStream, IdAndVersionStreamVerifierListener idAndVersionStreamVerifierListener) {
         try {
             primaryStream.open();
@@ -47,6 +48,7 @@ public class IdAndVersionStreamVerifier {
         }
     }
 
+    @SuppressWarnings("PMD.NcssMethodCount")
     private void fireEventForMisMatchedItems(IdAndVersionStreamVerifierListener idAndVersionStreamVerifierListener, Iterator<IdAndVersion> primaryIterator, Iterator<IdAndVersion> secondaryIterator, IdAndVersion primaryItem, IdAndVersion secondaryItem) {
         if (primaryItem.getId().equals(secondaryItem.getId())) {
             idAndVersionStreamVerifierListener.onVersionMisMatch(primaryItem, secondaryItem);

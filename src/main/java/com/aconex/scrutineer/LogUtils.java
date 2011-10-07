@@ -5,8 +5,6 @@ import org.apache.log4j.Logger;
 
 public final class LogUtils {
 
-    private static final int MILLIES_PER_SECOND = 1000;
-
     private LogUtils() {
         // For Checkstyle
     }
