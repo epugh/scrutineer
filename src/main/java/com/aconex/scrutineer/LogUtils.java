@@ -20,6 +20,10 @@ public final class LogUtils {
         log.warn(getFormattedMessage(message, args), throwable);
     }
 
+    public static void error(Logger log, String message, Throwable throwable, Object... args) {
+        log.error(getFormattedMessage(message, args), throwable);
+    }
+
     public static void error(Logger log, String message, Object... args) {
         log.error(getFormattedMessage(message, args));
     }
