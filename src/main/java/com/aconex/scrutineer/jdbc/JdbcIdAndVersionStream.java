@@ -55,7 +55,7 @@ public class JdbcIdAndVersionStream implements IdAndVersionStream {
     }
 
     private void throwExceptionIfAnyCloseFails(SQLException... sqlExceptions) {
-        if (!gIterables.all(Arrays.asList(sqlExceptions), Predicates.<Object>isNull())) {
+        if (!Iterables.all(Arrays.asList(sqlExceptions), Predicates.<Object>isNull())) {
             throw new RuntimeException("At least one error occured during close, see logs for more details, there may be multiple");
         }
     }
