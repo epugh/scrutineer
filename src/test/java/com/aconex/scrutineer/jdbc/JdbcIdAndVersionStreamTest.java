@@ -8,7 +8,9 @@ import org.mockito.MockitoAnnotations;
 import javax.sql.DataSource;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -16,10 +18,15 @@ import static org.mockito.Mockito.when;
 
 public class JdbcIdAndVersionStreamTest {
 
+    private static final String SQL = "select id, version from tablename order by id";
     @Mock
     private DataSource dataSource;
     @Mock
     private Connection connection;
+    @Mock
+    private Statement statement;
+    @Mock
+    private ResultSet resultSet;
 
     @Before
     public void setup() {
@@ -28,7 +35,7 @@ public class JdbcIdAndVersionStreamTest {
 
     @Test
     public void shouldOpenNewJdbcConnection() throws SQLException {
-        JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(dataSource);
+        JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(dataSource, SQL);
         jdbcIdAndVersionStream.open();
         verify(dataSource).getConnection();
     }
@@ -36,7 +43,7 @@ public class JdbcIdAndVersionStreamTest {
     @Test
     public void shouldCloseConnection() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
-        JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(dataSource);
+        JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(dataSource, SQL);
         jdbcIdAndVersionStream.open();
         jdbcIdAndVersionStream.close();
         verify(connection).close();
@@ -44,8 +51,21 @@ public class JdbcIdAndVersionStreamTest {
 
     @Test
     public void closeShouldDoNothingIfNotOpen() throws SQLException {
-        JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(dataSource);
+        JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(dataSource, SQL);
         jdbcIdAndVersionStream.close();
         verifyNoMoreInteractions(dataSource);
     }
+
+    @Test
+    public void shouldExecuteSQLQuery() throws SQLException {
+        when(dataSource.getConnection()).thenReturn(connection);
+        when(connection.createStatement()).thenReturn(statement);
+        //TODO: Handle scrolling properly
+        when(statement.executeQuery(SQL)).thenReturn(resultSet);
+        JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(dataSource, SQL);
+        jdbcIdAndVersionStream.open();
+        jdbcIdAndVersionStream.iterator();
+        verify(statement).executeQuery(SQL);
+    }
+    
 }
