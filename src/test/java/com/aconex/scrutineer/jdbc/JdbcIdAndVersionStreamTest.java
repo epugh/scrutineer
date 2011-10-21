@@ -6,12 +6,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import javax.sql.DataSource;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -64,7 +65,8 @@ public class JdbcIdAndVersionStreamTest {
         when(statement.executeQuery(SQL)).thenReturn(resultSet);
         JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(dataSource, SQL);
         jdbcIdAndVersionStream.open();
-        jdbcIdAndVersionStream.iterator();
+        IdAndVersionResultSetIterator iterator = (IdAndVersionResultSetIterator) jdbcIdAndVersionStream.iterator();
+        assertThat(iterator.getResultSet(), is(resultSet));
         verify(statement).executeQuery(SQL);
     }
     

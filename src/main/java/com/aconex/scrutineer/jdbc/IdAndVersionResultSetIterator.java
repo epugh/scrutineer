@@ -51,4 +51,8 @@ public class IdAndVersionResultSetIterator implements Iterator<IdAndVersion> {
         }
 
     }
+
+    ResultSet getResultSet() {
+        return resultSet;
+    }
 }

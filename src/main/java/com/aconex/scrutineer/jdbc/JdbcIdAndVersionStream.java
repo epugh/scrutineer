@@ -6,15 +6,19 @@ import com.aconex.scrutineer.IdAndVersionStream;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Iterator;
 
 public class JdbcIdAndVersionStream implements IdAndVersionStream {
 
     private final DataSource dataSource;
+    private final String sql;
     private Connection connection;
+    private Statement statement;
 
-    public JdbcIdAndVersionStream(DataSource dataSource) {
+    public JdbcIdAndVersionStream(DataSource dataSource, String sql) {
         this.dataSource = dataSource;
+        this.sql = sql;
     }
 
     @Override
@@ -28,7 +32,12 @@ public class JdbcIdAndVersionStream implements IdAndVersionStream {
 
     @Override
     public Iterator<IdAndVersion> iterator() {
-        return null;  
+        try {
+            statement = connection.createStatement();
+            return new IdAndVersionResultSetIterator(statement.executeQuery(sql));
+        } catch (SQLException e) {
+            throw new RuntimeException();
+        }
     }
 
     @Override
