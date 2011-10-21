@@ -48,93 +48,99 @@
             <scope>test</scope>
         </dependency>
 
-      <dependency>
-         <groupId>commons-lang</groupId>
-         <artifactId>commons-lang</artifactId>
-         <version>2.4</version>
-      </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.4</version>
+        </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>r06</version>
         </dependency>
 
-      <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava</artifactId>
-        <version>r06</version>
-      </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>r06</version>
+        </dependency>
 
-      <dependency>
-        <groupId>log4j</groupId>
-        <artifactId>log4j</artifactId>
-        <version>1.2.14</version>
-      </dependency>
+        <dependency>
+            <groupId>hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+            <version>1.8.0.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.14</version>
+        </dependency>
 
     </dependencies>
 
     <build>
-      <plugins>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <configuration>
-                <source>1.6</source>
-                <target>1.6</target>
-            </configuration>
-        </plugin>
-          <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-checkstyle-plugin</artifactId>
-              <configuration>
-                <failsOnError>true</failsOnError>
-                <violationSeverity>info</violationSeverity>
-                <configLocation>${project.basedir}/src/test/resources/checkstyle.xml</configLocation>
-              </configuration>
-              <executions>
-                <execution>
-                  <phase>verify</phase>
-                    <goals>
-                      <goal>checkstyle</goal>
-                    </goals>
-                  </execution>
-              </executions>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
             </plugin>
-          
-          <plugin>
-              <artifactId>maven-pmd-plugin</artifactId>
-              <configuration>
-                  <targetJdk>1.6</targetJdk>
-                  <minimumPriority>4</minimumPriority>
-                  <rulesets>
-                      <ruleset>${project.basedir}/src/test/resources/pmd.xml</ruleset>
-                  </rulesets>
-              </configuration>
-              <executions>
-                  <execution>
-                      <phase>verify</phase>
-                      <goals>
-                          <goal>check</goal>
-                          <goal>cpd-check</goal>
-                      </goals>
-                  </execution>
-              </executions>
-          </plugin>
-          
-          <plugin>
-              <groupId>org.codehaus.mojo</groupId>
-              <artifactId>cobertura-maven-plugin</artifactId>
-              <version>2.5.1</version>
-              <configuration>
-                  <formats>
-                      <format>XML</format>
-                      <format>HTML</format>
-                  </formats>
-                  <check/>
-              </configuration>
-          </plugin>
-          
-      </plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <configuration>
+                    <failsOnError>true</failsOnError>
+                    <violationSeverity>info</violationSeverity>
+                    <configLocation>${project.basedir}/src/test/resources/checkstyle.xml</configLocation>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>checkstyle</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <configuration>
+                    <targetJdk>1.6</targetJdk>
+                    <minimumPriority>4</minimumPriority>
+                    <rulesets>
+                        <ruleset>${project.basedir}/src/test/resources/pmd.xml</ruleset>
+                    </rulesets>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                            <goal>cpd-check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <formats>
+                        <format>XML</format>
+                        <format>HTML</format>
+                    </formats>
+                    <check/>
+                </configuration>
+            </plugin>
+
+        </plugins>
     </build>
 
    <repositories> 
