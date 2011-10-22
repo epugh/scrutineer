@@ -45,7 +45,7 @@ public class JdbcIdAndVersionStream implements IdAndVersionStream {
             resultSet = statement.executeQuery(sql);
             return new IdAndVersionResultSetIterator(resultSet);
         } catch (SQLException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
 
