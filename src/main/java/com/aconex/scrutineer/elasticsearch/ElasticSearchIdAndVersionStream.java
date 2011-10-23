@@ -25,6 +25,7 @@ public class ElasticSearchIdAndVersionStream implements IdAndVersionStream {
     private static final String ELASTIC_SEARCH_UNSORTED_FILE = "elastic-search-unsorted.dat";
 
     private static final String ELASTIC_SEARCH_SORTED_FILE = "elastic-search-sorted.dat";
+    private static final int DEFAULT_SORT_MEM = 256 * 1024 * 1024;
 
     private final ElasticSearchDownloader elasticSearchDownloader;
     private final ElasticSearchSorter elasticSearchSorter;
@@ -41,7 +42,7 @@ public class ElasticSearchIdAndVersionStream implements IdAndVersionStream {
     }
 
     public static ElasticSearchIdAndVersionStream withDefaults(ElasticSearchDownloader elasticSearchDownloader) {
-        SortConfig sortConfig = new SortConfig().withMaxMemoryUsage(256*1024*1024);
+        SortConfig sortConfig = new SortConfig().withMaxMemoryUsage(DEFAULT_SORT_MEM);
         DataReaderFactory<IdAndVersion> dataReaderFactory = new IdAndVersionDataReaderFactory();
         DataWriterFactory<IdAndVersion> dataWriterFactory = new IdAndVersionDataWriterFactory();
         Sorter<IdAndVersion> sorter = new Sorter<IdAndVersion>(sortConfig, dataReaderFactory, dataWriterFactory, new NaturalComparator<IdAndVersion>());

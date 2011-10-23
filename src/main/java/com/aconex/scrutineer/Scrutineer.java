@@ -83,53 +83,14 @@ public class Scrutineer {
     }
 
     private static DataSource createDataSource(final Connection connection) {
-        return new DataSource() {
-            @Override
-            public Connection getConnection() throws SQLException {
-                return connection;
-            }
-
-            @Override
-            public Connection getConnection(String username, String password) throws SQLException {
-                throw new UnsupportedOperationException("This method is not supported");
-            }
-
-            @Override
-            public PrintWriter getLogWriter() throws SQLException {
-                return null;
-            }
-
-            @Override
-            public void setLogWriter(PrintWriter out) throws SQLException {
-
-            }
-
-            @Override
-            public void setLoginTimeout(int seconds) throws SQLException {
-
-            }
-
-            @Override
-            public int getLoginTimeout() throws SQLException {
-                return 0;
-            }
-
-            @Override
-            public <T> T unwrap(Class<T> iface) throws SQLException {
-                return null;
-            }
-
-            @Override
-            public boolean isWrapperFor(Class<?> iface) throws SQLException {
-                return false;
-            }
-        };
+        return new SingleConnectionDataSource(connection);
     }
 
     private final ScrutineerCommandLineOptions options;
     private Node node;
     private Client client;
 
+    // CHECKSTYLE:OFF This is the standard JCommander pattern
     @Parameters(separators = "=")
     public static class ScrutineerCommandLineOptions {
         @Parameter(names = "--clusterName", description = "ElasticSearch cluster name identifier", required = true)
@@ -152,5 +113,53 @@ public class Scrutineer {
 
         @Parameter(names = "--sql", description = "SQL used to create Primary stream, which should return results in _lexicographical_ order", required = true)
         public String sql;
+    }
+
+    private static class SingleConnectionDataSource implements DataSource {
+        private final Connection connection;
+
+        public SingleConnectionDataSource(Connection connection) {
+            this.connection = connection;
+        }
+
+        @Override
+        public Connection getConnection() throws SQLException {
+            return connection;
+        }
+
+        @Override
+        public Connection getConnection(String username, String password) throws SQLException {
+            throw new UnsupportedOperationException("This method is not supported");
+        }
+
+        @Override
+        public PrintWriter getLogWriter() throws SQLException {
+            return null;
+        }
+
+        @Override
+        public void setLogWriter(PrintWriter out) throws SQLException {
+
+        }
+
+        @Override
+        public void setLoginTimeout(int seconds) throws SQLException {
+
+        }
+
+        @Override
+        public int getLoginTimeout() throws SQLException {
+            return 0;
+        }
+
+        @Override
+        public <T> T unwrap(Class<T> iface) throws SQLException {
+            return null;
+        }
+
+        @Override
+        public boolean isWrapperFor(Class<?> iface) throws SQLException {
+            return false;
+        }
     }
 }

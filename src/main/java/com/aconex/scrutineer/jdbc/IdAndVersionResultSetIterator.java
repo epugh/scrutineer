@@ -44,6 +44,8 @@ public class IdAndVersionResultSetIterator implements Iterator<IdAndVersion> {
         throw new NotImplementedException();
     }
 
+    // TODO talk to Leon about this Cyclomatic Complexity for checkstyle
+    //CHECKSTYLE:OFF
     private long getVersionValueAnLong() throws SQLException {
         switch (this.columnClass) {
             case Types.TIMESTAMP:
