@@ -2,18 +2,17 @@ package com.aconex.scrutineer;
 
 import java.io.PrintStream;
 
-public class StdOutIdAndVersionStreamVerifierListener implements IdAndVersionStreamVerifierListener {
+public class PrintStreamOutputVersionStreamVerifierListener implements IdAndVersionStreamVerifierListener {
 
 
-    private PrintStream printStream;
+    private final PrintStream printStream;
 
-    public StdOutIdAndVersionStreamVerifierListener() {
-        this(System.out);
-    }
-
-    public StdOutIdAndVersionStreamVerifierListener(PrintStream printStream) {
+    public PrintStreamOutputVersionStreamVerifierListener(PrintStream printStream) {
         this.printStream = printStream;
     }
+
+
+    // TODO This class needs to print out more context on the line, whether it's a DELETE needed on the index, and time difference information when mismatched (if it is indeed a timestamp though.. right..?)
 
     @Override
     public void onMissingInSecondaryStream(IdAndVersion idAndVersion) {

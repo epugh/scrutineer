@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-public class StdOutIdAndVersionStreamVerifierListenerTest {
+public class PrintStreamOutputVersionStreamVerifierListenerTest {
 
     private final IdAndVersion idAndVersion = new IdAndVersion("1", 10);
 
@@ -24,7 +24,7 @@ public class StdOutIdAndVersionStreamVerifierListenerTest {
 
     @Test
     public void testOnMissingInPrimaryStream() throws Exception {
-        StdOutIdAndVersionStreamVerifierListener streamVerifierListener = new StdOutIdAndVersionStreamVerifierListener(printStream);
+        PrintStreamOutputVersionStreamVerifierListener streamVerifierListener = new PrintStreamOutputVersionStreamVerifierListener(printStream);
         streamVerifierListener.onMissingInPrimaryStream(idAndVersion);
         verify(printStream).println("1");
         verifyNoMoreInteractions(printStream);
@@ -32,7 +32,7 @@ public class StdOutIdAndVersionStreamVerifierListenerTest {
 
     @Test
     public void testOnMissingInSecondaryStream() throws Exception {
-        StdOutIdAndVersionStreamVerifierListener streamVerifierListener = new StdOutIdAndVersionStreamVerifierListener(printStream);
+        PrintStreamOutputVersionStreamVerifierListener streamVerifierListener = new PrintStreamOutputVersionStreamVerifierListener(printStream);
         streamVerifierListener.onMissingInSecondaryStream(idAndVersion);
         verify(printStream).println("1");
         verifyNoMoreInteractions(printStream);
