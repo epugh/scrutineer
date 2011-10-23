@@ -8,6 +8,7 @@ import org.mockito.MockitoAnnotations;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -30,6 +31,8 @@ public class JdbcIdAndVersionStreamTest {
     private Statement statement;
     @Mock
     private ResultSet resultSet;
+    @Mock
+    private ResultSetMetaData metaData;
 
     @Before
     public void setup() {
@@ -65,6 +68,7 @@ public class JdbcIdAndVersionStreamTest {
         when(connection.createStatement()).thenReturn(statement);
         //TODO: Handle scrolling properly
         when(statement.executeQuery(SQL)).thenReturn(resultSet);
+        when(resultSet.getMetaData()).thenReturn(metaData);
         JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(dataSource, SQL);
         jdbcIdAndVersionStream.open();
         IdAndVersionResultSetIterator iterator = (IdAndVersionResultSetIterator) jdbcIdAndVersionStream.iterator();
@@ -77,6 +81,7 @@ public class JdbcIdAndVersionStreamTest {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.createStatement()).thenReturn(statement);
         when(statement.executeQuery(SQL)).thenReturn(resultSet);
+        when(resultSet.getMetaData()).thenReturn(metaData);
         JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(dataSource, SQL);
         jdbcIdAndVersionStream.open();
         jdbcIdAndVersionStream.iterator();
