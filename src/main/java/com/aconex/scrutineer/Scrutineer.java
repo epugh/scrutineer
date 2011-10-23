@@ -28,7 +28,7 @@ import org.elasticsearch.node.Node;
 
 public class Scrutineer {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         BasicConfigurator.configure();
         Scrutineer scrutineer = new Scrutineer(parseOptions(args));
         try {
