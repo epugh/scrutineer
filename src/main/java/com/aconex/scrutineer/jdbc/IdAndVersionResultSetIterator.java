@@ -46,6 +46,7 @@ public class IdAndVersionResultSetIterator implements Iterator<IdAndVersion> {
 
     // TODO talk to Leon about this Cyclomatic Complexity for checkstyle
     //CHECKSTYLE:OFF
+    @SuppressWarnings("PMD.NcssMethodCount")
     private long getVersionValueAnLong() throws SQLException {
         switch (this.columnClass) {
             case Types.TIMESTAMP:
@@ -58,7 +59,9 @@ public class IdAndVersionResultSetIterator implements Iterator<IdAndVersion> {
                 throw new UnsupportedOperationException(String.format("Do not know how to handle version column type (java.sql.Type value=%d", columnClass));
         }
     }
+    //CHECKSTYLE:ON
 
+    @SuppressWarnings("PMD.NcssMethodCount")
     private void nextRow() {
         try {
             if (resultSet.next()) {

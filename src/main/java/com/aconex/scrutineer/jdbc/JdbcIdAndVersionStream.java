@@ -53,6 +53,7 @@ public class JdbcIdAndVersionStream implements IdAndVersionStream {
         }
     }
 
+    @SuppressWarnings("PMD.NcssMethodCount")
     private SQLException closeStatement() {
         SQLException sqlException = null;
         if (statement != null) {
@@ -66,6 +67,7 @@ public class JdbcIdAndVersionStream implements IdAndVersionStream {
         return sqlException;
     }
 
+    @SuppressWarnings("PMD.NcssMethodCount")
     private SQLException closeResultSet() {
         SQLException sqlException = null;
         if (resultSet != null) {
