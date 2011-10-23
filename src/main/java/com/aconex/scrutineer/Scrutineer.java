@@ -2,8 +2,6 @@ package com.aconex.scrutineer;
 
 import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 
-import javax.sql.DataSource;
-import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -30,7 +28,6 @@ import org.elasticsearch.node.Node;
 
 public class Scrutineer {
 
-
     public static void main(String[] args) throws Exception {
         BasicConfigurator.configure();
         Scrutineer scrutineer = new Scrutineer(parseOptions(args));
@@ -55,11 +52,26 @@ public class Scrutineer {
     }
 
     private void close() {
+        closeJdbcConnection();
+        closeElasticSearchConnections();
+    }
+
+    private void closeElasticSearchConnections() {
         if (client != null) {
             client.close();
         }
         if (node != null) {
             node.close();
+        }
+    }
+
+    private void closeJdbcConnection() {
+        try {
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -72,19 +84,22 @@ public class Scrutineer {
         this.options = options;
     }
 
-
     private ElasticSearchIdAndVersionStream createElasticSearchIdAndVersionStream(ScrutineerCommandLineOptions options) {
         this.node = nodeBuilder().client(true).clusterName(options.clusterName).node();
         this.client = node.client();
+        return new ElasticSearchIdAndVersionStream(new ElasticSearchDownloader(client, options.indexName), new ElasticSearchSorter(createSorter()), new IteratorFactory(), SystemUtils.getJavaIoTmpDir().getAbsolutePath());
+    }
+
+    private Sorter<IdAndVersion> createSorter() {
         SortConfig sortConfig = new SortConfig().withMaxMemoryUsage(DEFAULT_SORT_MEM);
         DataReaderFactory<IdAndVersion> dataReaderFactory = new IdAndVersionDataReaderFactory();
         DataWriterFactory<IdAndVersion> dataWriterFactory = new IdAndVersionDataWriterFactory();
-        Sorter<IdAndVersion> sorter = new Sorter<IdAndVersion>(sortConfig, dataReaderFactory, dataWriterFactory, new NaturalComparator<IdAndVersion>());
-        return new ElasticSearchIdAndVersionStream(new ElasticSearchDownloader(client, options.indexName), new ElasticSearchSorter(sorter), new IteratorFactory(), SystemUtils.getJavaIoTmpDir().getAbsolutePath());
+        return new Sorter<IdAndVersion>(sortConfig, dataReaderFactory, dataWriterFactory, new NaturalComparator<IdAndVersion>());
     }
 
     private JdbcIdAndVersionStream createJdbcIdAndVersionStream(ScrutineerCommandLineOptions options) {
-        return new JdbcIdAndVersionStream(createDataSource(initializeJdbcDriverAndConnection(options)), options.sql);
+        this.connection = initializeJdbcDriverAndConnection(options);
+        return new JdbcIdAndVersionStream(connection, options.sql);
     }
 
     private Connection initializeJdbcDriverAndConnection(ScrutineerCommandLineOptions options) {
@@ -96,14 +111,12 @@ public class Scrutineer {
         }
     }
 
-    private DataSource createDataSource(final Connection connection) {
-        return new SingleConnectionDataSource(connection);
-    }
 
     private static final int DEFAULT_SORT_MEM = 256 * 1024 * 1024;
     private final ScrutineerCommandLineOptions options;
     private Node node;
     private Client client;
+    private Connection connection;
 
     // CHECKSTYLE:OFF This is the standard JCommander pattern
     @Parameters(separators = "=")
@@ -129,52 +142,6 @@ public class Scrutineer {
         @Parameter(names = "--sql", description = "SQL used to create Primary stream, which should return results in _lexicographical_ order", required = true)
         public String sql;
     }
+    // CHECKSTYLE:ON
 
-    private static class SingleConnectionDataSource implements DataSource {
-        private final Connection connection;
-
-        public SingleConnectionDataSource(Connection connection) {
-            this.connection = connection;
-        }
-
-        @Override
-        public Connection getConnection() throws SQLException {
-            return connection;
-        }
-
-        @Override
-        public Connection getConnection(String username, String password) throws SQLException {
-            throw new UnsupportedOperationException("This method is not supported");
-        }
-
-        @Override
-        public PrintWriter getLogWriter() throws SQLException {
-            return null;
-        }
-
-        @Override
-        public void setLogWriter(PrintWriter out) throws SQLException {
-
-        }
-
-        @Override
-        public void setLoginTimeout(int seconds) throws SQLException {
-
-        }
-
-        @Override
-        public int getLoginTimeout() throws SQLException {
-            return 0;
-        }
-
-        @Override
-        public <T> T unwrap(Class<T> iface) throws SQLException {
-            return null;
-        }
-
-        @Override
-        public boolean isWrapperFor(Class<?> iface) throws SQLException {
-            return false;
-        }
-    }
 }

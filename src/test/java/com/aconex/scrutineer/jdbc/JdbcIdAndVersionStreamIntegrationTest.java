@@ -28,7 +28,7 @@ public class JdbcIdAndVersionStreamIntegrationTest extends DataSourceBasedDBTest
 
     public void testShouldReturnTuplesInCorrectOrder() throws SQLException {
 
-        JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(getDataSource(), SQL);
+        JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(getDataSource().getConnection(), SQL);
 
         jdbcIdAndVersionStream.open();
 

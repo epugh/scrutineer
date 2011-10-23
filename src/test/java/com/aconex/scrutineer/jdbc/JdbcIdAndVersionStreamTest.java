@@ -1,30 +1,29 @@
 package com.aconex.scrutineer.jdbc;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 public class JdbcIdAndVersionStreamTest {
 
     private static final String SQL = "select id, version from tablename order by id";
-    @Mock
-    private DataSource dataSource;
+
     @Mock
     private Connection connection;
     @Mock
@@ -39,37 +38,29 @@ public class JdbcIdAndVersionStreamTest {
         MockitoAnnotations.initMocks(this);
     }
 
-    @Test
-    public void shouldOpenNewJdbcConnection() throws SQLException {
-        JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(dataSource, SQL);
-        jdbcIdAndVersionStream.open();
-        verify(dataSource).getConnection();
-    }
 
     @Test
-    public void shouldCloseConnection() throws SQLException {
-        when(dataSource.getConnection()).thenReturn(connection);
-        JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(dataSource, SQL);
+    public void shouldNotCloseConnection() throws SQLException {
+        JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(connection, SQL);
         jdbcIdAndVersionStream.open();
         jdbcIdAndVersionStream.close();
-        verify(connection).close();
+        verifyZeroInteractions(connection);
     }
 
     @Test
     public void closeShouldDoNothingIfNotOpen() throws SQLException {
-        JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(dataSource, SQL);
+        JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(connection, SQL);
         jdbcIdAndVersionStream.close();
-        verifyNoMoreInteractions(dataSource);
+        verifyNoMoreInteractions(connection);
     }
 
     @Test
     public void shouldExecuteSQLQuery() throws SQLException {
-        when(dataSource.getConnection()).thenReturn(connection);
         when(connection.createStatement()).thenReturn(statement);
         //TODO: Handle scrolling properly
         when(statement.executeQuery(SQL)).thenReturn(resultSet);
         when(resultSet.getMetaData()).thenReturn(metaData);
-        JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(dataSource, SQL);
+        JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(connection, SQL);
         jdbcIdAndVersionStream.open();
         IdAndVersionResultSetIterator iterator = (IdAndVersionResultSetIterator) jdbcIdAndVersionStream.iterator();
         assertThat(iterator.getResultSet(), is(resultSet));
@@ -78,11 +69,10 @@ public class JdbcIdAndVersionStreamTest {
 
     @Test
     public void shouldTearDownStatement() throws SQLException {
-        when(dataSource.getConnection()).thenReturn(connection);
         when(connection.createStatement()).thenReturn(statement);
         when(statement.executeQuery(SQL)).thenReturn(resultSet);
         when(resultSet.getMetaData()).thenReturn(metaData);
-        JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(dataSource, SQL);
+        JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(connection, SQL);
         jdbcIdAndVersionStream.open();
         jdbcIdAndVersionStream.iterator();
         jdbcIdAndVersionStream.close();
@@ -93,7 +83,6 @@ public class JdbcIdAndVersionStreamTest {
     @Test(expected = RuntimeException.class)
     public void shouldThrowExceptionIfResultSetFailsToClose() throws SQLException {
         try {
-            when(dataSource.getConnection()).thenReturn(connection);
             when(connection.createStatement()).thenReturn(statement);
             when(statement.executeQuery(SQL)).thenReturn(resultSet);
         } catch (SQLException e) {
@@ -101,7 +90,7 @@ public class JdbcIdAndVersionStreamTest {
             fail("Unexpected exception");
         }
         doThrow(new SQLException()).when(resultSet).close();
-        JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(dataSource, SQL);
+        JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(connection, SQL);
         jdbcIdAndVersionStream.open();
         jdbcIdAndVersionStream.iterator();
         jdbcIdAndVersionStream.close();
