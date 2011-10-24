@@ -31,6 +31,10 @@ public class Scrutineer {
     public static void main(String[] args) {
         BasicConfigurator.configure();
         Scrutineer scrutineer = new Scrutineer(parseOptions(args));
+        execute(scrutineer);
+    }
+
+    static void execute(Scrutineer scrutineer) {
         try {
             scrutineer.verify();
         } finally {
@@ -51,12 +55,12 @@ public class Scrutineer {
         verify(elasticSearchIdAndVersionStream, jdbcIdAndVersionStream, new IdAndVersionStreamVerifier());
     }
 
-    private void close() {
+    void close() {
         closeJdbcConnection();
         closeElasticSearchConnections();
     }
 
-    private void closeElasticSearchConnections() {
+    void closeElasticSearchConnections() {
         if (client != null) {
             client.close();
         }
@@ -65,7 +69,7 @@ public class Scrutineer {
         }
     }
 
-    private void closeJdbcConnection() {
+    void closeJdbcConnection() {
         try {
             if (connection != null) {
                 connection.close();
@@ -75,7 +79,7 @@ public class Scrutineer {
         }
     }
 
-    private void verify(ElasticSearchIdAndVersionStream elasticSearchIdAndVersionStream, JdbcIdAndVersionStream jdbcIdAndVersionStream, IdAndVersionStreamVerifier idAndVersionStreamVerifier) {
+    void verify(ElasticSearchIdAndVersionStream elasticSearchIdAndVersionStream, JdbcIdAndVersionStream jdbcIdAndVersionStream, IdAndVersionStreamVerifier idAndVersionStreamVerifier) {
         idAndVersionStreamVerifier.verify(jdbcIdAndVersionStream, elasticSearchIdAndVersionStream, new PrintStreamOutputVersionStreamVerifierListener(System.err));
     }
 
@@ -84,7 +88,7 @@ public class Scrutineer {
         this.options = options;
     }
 
-    private ElasticSearchIdAndVersionStream createElasticSearchIdAndVersionStream(ScrutineerCommandLineOptions options) {
+    ElasticSearchIdAndVersionStream createElasticSearchIdAndVersionStream(ScrutineerCommandLineOptions options) {
         this.node = nodeBuilder().client(true).clusterName(options.clusterName).node();
         this.client = node.client();
         return new ElasticSearchIdAndVersionStream(new ElasticSearchDownloader(client, options.indexName), new ElasticSearchSorter(createSorter()), new IteratorFactory(), SystemUtils.getJavaIoTmpDir().getAbsolutePath());
@@ -97,7 +101,7 @@ public class Scrutineer {
         return new Sorter<IdAndVersion>(sortConfig, dataReaderFactory, dataWriterFactory, new NaturalComparator<IdAndVersion>());
     }
 
-    private JdbcIdAndVersionStream createJdbcIdAndVersionStream(ScrutineerCommandLineOptions options) {
+    JdbcIdAndVersionStream createJdbcIdAndVersionStream(ScrutineerCommandLineOptions options) {
         this.connection = initializeJdbcDriverAndConnection(options);
         return new JdbcIdAndVersionStream(connection, options.sql);
     }
