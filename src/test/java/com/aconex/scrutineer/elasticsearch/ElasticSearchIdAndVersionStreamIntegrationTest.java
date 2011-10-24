@@ -1,5 +1,11 @@
 package com.aconex.scrutineer.elasticsearch;
 
+import static com.aconex.scrutineer.HasIdAndVersionMatcher.hasIdAndVersion;
+import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import java.util.Iterator;
+
 import com.aconex.scrutineer.IdAndVersion;
 import com.fasterxml.sort.DataReaderFactory;
 import com.fasterxml.sort.DataWriterFactory;
@@ -14,16 +20,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Iterator;
-
-import static com.aconex.scrutineer.HasIdAndVersionMatcher.hasIdAndVersion;
-import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 public class ElasticSearchIdAndVersionStreamIntegrationTest {
 
     private static final String INDEX_NAME = "local";
     private Client client;
+    private ElasticSearchTestHelper elasticSearchTestHelper;
 
     @Before
     public void setup() {
@@ -66,9 +67,8 @@ public class ElasticSearchIdAndVersionStreamIntegrationTest {
     }
 
     private void deleteIndexIfExists() {
-        if (client.admin().indices().prepareExists(INDEX_NAME).execute().actionGet().exists()) {
-            client.admin().indices().prepareDelete(INDEX_NAME).execute().actionGet();
-        }
+        elasticSearchTestHelper = new ElasticSearchTestHelper(client);
+        elasticSearchTestHelper.deleteIndexIfItExists(INDEX_NAME);
     }
 
     private void indexIdAndVersion(String id, long version) {

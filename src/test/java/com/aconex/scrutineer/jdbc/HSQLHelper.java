@@ -13,12 +13,15 @@ import org.dbunit.dataset.ITableMetaData;
 import org.hsqldb.jdbc.JDBCDataSource;
 
 public class HSQLHelper {
+
+    public static final String INMEM_TEST_DB = "mem:aname";
+
     public HSQLHelper() {
     }
 
     public DataSource setupHSQLDBDataSource() {
         JDBCDataSource dataSource = new JDBCDataSource();
-        dataSource.setDatabase("mem:aname");
+        dataSource.setDatabase(INMEM_TEST_DB);
         dataSource.setUser("sa");
         dataSource.setPassword("");
         return dataSource;

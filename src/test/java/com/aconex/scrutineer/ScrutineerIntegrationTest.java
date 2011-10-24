@@ -3,9 +3,11 @@ package com.aconex.scrutineer;
 import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import com.aconex.scrutineer.elasticsearch.ElasticSearchTestHelper;
 import com.aconex.scrutineer.jdbc.HSQLHelper;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.CountingOutputStream;
@@ -32,17 +34,31 @@ public class ScrutineerIntegrationTest extends DataSourceBasedDBTestCase {
 
 
     public void testShouldScrutinizeStreamsEffectively() {
+        String[] args = {"--jdbcURL", String.format("jdbc:hsqldb:%s", HSQLHelper.INMEM_TEST_DB),
+                "--jdbcDriverClass", org.hsqldb.jdbc.JDBCDriver.class.getName(),
+                "--jdbcUser", "sa",
+                //"--jdbcPassword", "",
+                "--clusterName", "paul",
+                "--sql", "select id,version from test order by id",
+                "--indexName", "test"
+        };
+
+        Scrutineer.main(args);
+
+
 
     }
 
     @Override
     protected void setUp() throws Exception {
-        BasicConfigurator.configure();
-        LogManager.getLoggerRepository().setThreshold(Level.INFO);
+        setupLogging();
+        setupHSQLDB();
+        setupElasticSearchConnection();
+        indexSetupStateForElasticSearch();
+        super.setUp();
+    }
 
-        hsqlHelper = new HSQLHelper();
-        hsqlHelper.createHsqldbTables(getDataSet(), getDataSource().getConnection());
-
+    private void setupElasticSearchConnection() {
         // TODO this network crap is annoying..
         Settings settings = ImmutableSettings.settingsBuilder()
                 .put("cluster.name", "paul").put("network.host", "_en0:ipv4_").build();
@@ -53,21 +69,33 @@ public class ScrutineerIntegrationTest extends DataSourceBasedDBTestCase {
 
         //this.client = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress("127.0.0.1", 9300));
         this.client = node.client();
+    }
 
-        // TODO clear out any existing indexes like the other test stuff
+    private void setupHSQLDB() throws Exception {
+        hsqlHelper = new HSQLHelper();
+        hsqlHelper.createHsqldbTables(getDataSet(), getDataSource().getConnection());
+    }
 
+    private void setupLogging() {
+        BasicConfigurator.configure();
+        LogManager.getLoggerRepository().setThreshold(Level.INFO);
+    }
+
+    private void indexSetupStateForElasticSearch() throws Exception {
+        new ElasticSearchTestHelper(client).deleteIndexIfItExists("test");
         BulkRequest bulkRequest = new BulkRequestBuilder(client).request();
         URL bulkIndexRequest = this.getClass().getResource("es-bulkindex.json");
-        CountingOutputStream countingOutputStream = new CountingOutputStream(new NullOutputStream());
-        ByteStreams.copy(bulkIndexRequest.openStream(), countingOutputStream);
-        long numBytes = countingOutputStream.getCount();
-        bulkRequest.add(ByteStreams.toByteArray(bulkIndexRequest.openStream()), 0, (int) numBytes, true);
+        bulkRequest.add(ByteStreams.toByteArray(bulkIndexRequest.openStream()), 0, (int) determineTestResourceLength(bulkIndexRequest), true);
         BulkResponse bulkResponse = client.bulk(bulkRequest).actionGet();
         if (bulkResponse.hasFailures()) {
-            throw new RuntimeException("Failed to index data needed for test. " + bulkResponse.toString());
+            throw new RuntimeException("Failed to index data needed for test. " + bulkResponse.buildFailureMessage());
         }
+    }
 
-        super.setUp();
+    private long determineTestResourceLength(URL bulkIndexRequest) throws IOException {
+        CountingOutputStream countingOutputStream = new CountingOutputStream(new NullOutputStream());
+        ByteStreams.copy(bulkIndexRequest.openStream(), countingOutputStream);
+        return countingOutputStream.getCount();
     }
 
     @Override

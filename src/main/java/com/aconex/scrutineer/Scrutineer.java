@@ -140,7 +140,7 @@ public class Scrutineer {
         @Parameter(names = "--jdbcUser", description = "JDBC Username", required = true)
         public String jdbcUser;
 
-        @Parameter(names = "--jdbcPassword", description = "JDBC Password", required = true)
+        @Parameter(names = "--jdbcPassword", description = "JDBC Password", required = false)
         public String jdbcPassword;
 
         @Parameter(names = "--sql", description = "SQL used to create Primary stream, which should return results in _lexicographical_ order", required = true)
