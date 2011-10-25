@@ -1,4 +1,5 @@
 <assembly>
+  <id>scrutineer</id>
   <formats>
     <format>tar.gz</format>
   </formats>

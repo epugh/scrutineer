@@ -1,8 +1,8 @@
 package com.aconex.scrutineer;
 
-import org.apache.log4j.Logger;
-
 import java.util.Iterator;
+
+import org.apache.log4j.Logger;
 
 public class IdAndVersionStreamVerifier {
 

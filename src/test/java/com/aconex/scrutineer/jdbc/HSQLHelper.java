@@ -14,7 +14,7 @@ import org.hsqldb.jdbc.JDBCDataSource;
 
 public class HSQLHelper {
 
-    public static final String INMEM_TEST_DB = "mem:aname";
+    public static final String INMEM_TEST_DB = "mem:scrutineer";
 
     public HSQLHelper() {
     }

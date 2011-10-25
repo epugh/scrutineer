@@ -1,17 +1,17 @@
-package com.aconex.scrutineer;
+package com.aconex.scrutineer.functional;
 
 import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
+import static org.mockito.Mockito.verify;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.net.URL;
 
+import com.aconex.scrutineer.Scrutineer;
 import com.aconex.scrutineer.elasticsearch.ElasticSearchTestHelper;
 import com.aconex.scrutineer.jdbc.HSQLHelper;
 import com.google.common.io.ByteStreams;
-import com.google.common.io.CountingOutputStream;
-import com.google.common.io.NullOutputStream;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -22,15 +22,19 @@ import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.action.bulk.BulkRequestBuilder;
-import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 public class ScrutineerIntegrationTest extends DataSourceBasedDBTestCase {
 
+    private static final String CLUSTER_NAME = "scrutineerintegrationtest";
     private HSQLHelper hsqlHelper = new HSQLHelper();
     private Node node;
     private Client client;
+
+    @Mock
+    PrintStream printStream;
 
 
     public void testShouldScrutinizeStreamsEffectively() {
@@ -38,19 +42,27 @@ public class ScrutineerIntegrationTest extends DataSourceBasedDBTestCase {
                 "--jdbcDriverClass", org.hsqldb.jdbc.JDBCDriver.class.getName(),
                 "--jdbcUser", "sa",
                 //"--jdbcPassword", "",
-                "--clusterName", "paul",
+                "--clusterName", CLUSTER_NAME,
                 "--sql", "select id,version from test order by id",
                 "--indexName", "test"
         };
 
+
+        System.setErr(printStream);
+
         Scrutineer.main(args);
 
+        verify(printStream).println("NOTINSECONDARY\t2\t20");
+        verify(printStream).println("MISMATCH\t3\t30\tsecondaryVersion=42");
+        verify(printStream).println("NOTINPRIMARY\t4\t40");
 
 
     }
 
     @Override
     protected void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+
         setupLogging();
         setupHSQLDB();
         setupElasticSearchConnection();
@@ -59,15 +71,7 @@ public class ScrutineerIntegrationTest extends DataSourceBasedDBTestCase {
     }
 
     private void setupElasticSearchConnection() {
-        // TODO this network crap is annoying..
-        Settings settings = ImmutableSettings.settingsBuilder()
-                .put("cluster.name", "paul").put("network.host", "_en0:ipv4_").build();
-
-        // TODO right now this is just connecting to my local box to see if this actually workes
-        //this.node = nodeBuilder().local(true).node();
-        this.node = nodeBuilder().settings(settings).client(true).node();
-
-        //this.client = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress("127.0.0.1", 9300));
+        this.node = nodeBuilder().clusterName(CLUSTER_NAME).node();
         this.client = node.client();
     }
 
@@ -85,17 +89,12 @@ public class ScrutineerIntegrationTest extends DataSourceBasedDBTestCase {
         new ElasticSearchTestHelper(client).deleteIndexIfItExists("test");
         BulkRequest bulkRequest = new BulkRequestBuilder(client).request();
         URL bulkIndexRequest = this.getClass().getResource("es-bulkindex.json");
-        bulkRequest.add(ByteStreams.toByteArray(bulkIndexRequest.openStream()), 0, (int) determineTestResourceLength(bulkIndexRequest), true);
+        byte[] data = ByteStreams.toByteArray(bulkIndexRequest.openStream());
+        bulkRequest.add(data, 0, data.length, true);
         BulkResponse bulkResponse = client.bulk(bulkRequest).actionGet();
         if (bulkResponse.hasFailures()) {
             throw new RuntimeException("Failed to index data needed for test. " + bulkResponse.buildFailureMessage());
         }
-    }
-
-    private long determineTestResourceLength(URL bulkIndexRequest) throws IOException {
-        CountingOutputStream countingOutputStream = new CountingOutputStream(new NullOutputStream());
-        ByteStreams.copy(bulkIndexRequest.openStream(), countingOutputStream);
-        return countingOutputStream.getCount();
     }
 
     @Override
