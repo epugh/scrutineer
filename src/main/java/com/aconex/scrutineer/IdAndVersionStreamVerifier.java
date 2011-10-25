@@ -8,6 +8,7 @@ public class IdAndVersionStreamVerifier {
 
     private static final Logger LOG = LogUtils.loggerForThisClass();
 
+    //CHECKSTYLE:OFF
     @SuppressWarnings("PMD.NcssMethodCount")
     public void verify(IdAndVersionStream primaryStream, IdAndVersionStream secondayStream, IdAndVersionStreamVerifierListener idAndVersionStreamVerifierListener) {
         try {
@@ -16,16 +17,53 @@ public class IdAndVersionStreamVerifier {
             
             Iterator<IdAndVersion> primaryIterator = primaryStream.iterator();
             Iterator<IdAndVersion> secondaryIterator = secondayStream.iterator();
-            
-            while (primaryIterator.hasNext() && secondaryIterator.hasNext()) {
-                compareStreams(idAndVersionStreamVerifierListener, primaryIterator, secondaryIterator);
+
+            IdAndVersion primaryItem =  next(primaryIterator);
+            IdAndVersion secondaryItem = next(secondaryIterator);
+
+            while (primaryItem != null && secondaryItem != null) {
+                if (primaryItem.equals(secondaryItem)) {
+                    primaryItem =  next(primaryIterator);
+                    secondaryItem = next(secondaryIterator);
+                }
+                else if (primaryItem.getId().equals(secondaryItem.getId())) {
+                    idAndVersionStreamVerifierListener.onVersionMisMatch(primaryItem, secondaryItem);
+                    primaryItem = next(primaryIterator);
+                    secondaryItem = next(secondaryIterator);
+                }
+                else if (primaryItem.compareTo(secondaryItem) < 0) {
+                    idAndVersionStreamVerifierListener.onMissingInSecondaryStream(primaryItem);
+                    primaryItem = next(primaryIterator);
+                }
+                else {
+                    idAndVersionStreamVerifierListener.onMissingInPrimaryStream(secondaryItem);
+                    secondaryItem = next(secondaryIterator);
+                }
             }
 
-            logDifferencesAtEndOfStreams(idAndVersionStreamVerifierListener, primaryIterator, secondaryIterator);
+            while (primaryItem != null) {
+                idAndVersionStreamVerifierListener.onMissingInSecondaryStream(primaryItem);
+                primaryItem = next(primaryIterator);
+            }
+
+            while (secondaryItem != null) {
+                idAndVersionStreamVerifierListener.onMissingInPrimaryStream(secondaryItem);
+                secondaryItem = next(secondaryIterator);
+            }
         }
         finally {
             closeWithoutThrowingException(primaryStream);
             closeWithoutThrowingException(secondayStream);
+        }
+    }
+    //CHECKSTYLE:ON
+
+    private IdAndVersion next(Iterator<IdAndVersion> iterator) {
+        if (iterator.hasNext()) {
+            return iterator.next();
+        }
+        else {
+            return null;
         }
     }
 
@@ -38,39 +76,4 @@ public class IdAndVersionStreamVerifier {
         }
     }
 
-    private void compareStreams(IdAndVersionStreamVerifierListener idAndVersionStreamVerifierListener, Iterator<IdAndVersion> primaryIterator, Iterator<IdAndVersion> secondaryIterator) {
-        
-        IdAndVersion primaryItem = primaryIterator.next();
-        IdAndVersion secondaryItem = secondaryIterator.next();
-
-        if(!primaryItem.equals(secondaryItem)) {
-            fireEventForMisMatchedItems(idAndVersionStreamVerifierListener, primaryIterator, secondaryIterator, primaryItem, secondaryItem);
-        }
-    }
-
-    @SuppressWarnings("PMD.NcssMethodCount")
-    private void fireEventForMisMatchedItems(IdAndVersionStreamVerifierListener idAndVersionStreamVerifierListener, Iterator<IdAndVersion> primaryIterator, Iterator<IdAndVersion> secondaryIterator, IdAndVersion primaryItem, IdAndVersion secondaryItem) {
-        if (primaryItem.getId().equals(secondaryItem.getId())) {
-            idAndVersionStreamVerifierListener.onVersionMisMatch(primaryItem, secondaryItem);
-        }
-        else if (primaryItem.compareTo(secondaryItem) < 0) {
-            idAndVersionStreamVerifierListener.onMissingInSecondaryStream(primaryItem);
-            primaryIterator.next();
-        }
-        else {
-            idAndVersionStreamVerifierListener.onMissingInPrimaryStream(secondaryItem);
-            secondaryIterator.next();
-        }
-    }
-
-    private void logDifferencesAtEndOfStreams(IdAndVersionStreamVerifierListener idAndVersionStreamVerifierListener, Iterator<IdAndVersion> primaryIterator, Iterator<IdAndVersion> secondaryIterator) {
-
-        while (primaryIterator.hasNext()) {
-            idAndVersionStreamVerifierListener.onMissingInSecondaryStream(primaryIterator.next());
-        }
-
-        while (secondaryIterator.hasNext()) {
-            idAndVersionStreamVerifierListener.onMissingInPrimaryStream(secondaryIterator.next());
-        }
-    }
 }
