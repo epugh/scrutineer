@@ -6,31 +6,33 @@ import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.action.search.SearchRequestBuilder;
 import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
-import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
-
 public class ElasticSearchDownloader {
 
-    private static final int BATCH_SIZE = 100000;
-    private static final int SCROLL_TIME_IN_MINUTES = 10;
+    static final int BATCH_SIZE = 100000;
+    static final int SCROLL_TIME_IN_MINUTES = 10;
 
     private final Client client;
     private final String indexName;
+    private final String query;
 
-    public ElasticSearchDownloader(Client client, String indexName) {
+    public ElasticSearchDownloader(Client client, String indexName, String query) {
         this.client = client;
         this.indexName = indexName;
+        this.query = query;
     }
 
     public void downloadTo(OutputStream outputStream) {
         try {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-            consumeBatches(objectOutputStream, startScrollAndGetFirstBatch());
+            consumeBatches(objectOutputStream, startScroll());
             objectOutputStream.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -53,11 +55,15 @@ public class ElasticSearchDownloader {
         return hits.length > 0;
     }
 
+    QueryStringQueryBuilder createQuery() {
+        return QueryBuilders.queryString(query).defaultOperator(QueryStringQueryBuilder.Operator.AND).defaultField("_all");
+    }
+    
     @SuppressWarnings("PMD.NcssMethodCount")
-    SearchResponse startScrollAndGetFirstBatch() {
+    SearchResponse startScroll() {
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(indexName);
         searchRequestBuilder.setSearchType(SearchType.SCAN);
-        searchRequestBuilder.setQuery(matchAllQuery());
+        searchRequestBuilder.setQuery(createQuery());
         searchRequestBuilder.setSize(BATCH_SIZE);
         searchRequestBuilder.setExplain(false);
         searchRequestBuilder.setNoFields();

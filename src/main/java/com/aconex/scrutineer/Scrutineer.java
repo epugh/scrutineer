@@ -1,11 +1,5 @@
 package com.aconex.scrutineer;
 
-import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-
 import com.aconex.scrutineer.elasticsearch.ElasticSearchDownloader;
 import com.aconex.scrutineer.elasticsearch.ElasticSearchIdAndVersionStream;
 import com.aconex.scrutineer.elasticsearch.ElasticSearchSorter;
@@ -25,6 +19,12 @@ import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.node.Node;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 
 public class Scrutineer {
 
@@ -91,7 +91,7 @@ public class Scrutineer {
     ElasticSearchIdAndVersionStream createElasticSearchIdAndVersionStream(ScrutineerCommandLineOptions options) {
         this.node = nodeBuilder().client(true).clusterName(options.clusterName).node();
         this.client = node.client();
-        return new ElasticSearchIdAndVersionStream(new ElasticSearchDownloader(client, options.indexName), new ElasticSearchSorter(createSorter()), new IteratorFactory(), SystemUtils.getJavaIoTmpDir().getAbsolutePath());
+        return new ElasticSearchIdAndVersionStream(new ElasticSearchDownloader(client, options.indexName, options.query), new ElasticSearchSorter(createSorter()), new IteratorFactory(), SystemUtils.getJavaIoTmpDir().getAbsolutePath());
     }
 
     private Sorter<IdAndVersion> createSorter() {
@@ -130,6 +130,9 @@ public class Scrutineer {
 
         @Parameter(names = "--indexName", description = "ElasticSearch index name to Verify", required = true)
         public String indexName;
+
+        @Parameter(names = "--query", description = "ElasticSearch query to create Secondary stream.  Not required to be ordered", required = false)
+        public String query = "*";
 
         @Parameter(names = "--jdbcDriverClass", description = "FQN of the JDBC Driver class", required = true)
         public String jdbcDriverClass;
