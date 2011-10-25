@@ -1,5 +1,11 @@
 package com.aconex.scrutineer;
 
+import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
 import com.aconex.scrutineer.elasticsearch.ElasticSearchDownloader;
 import com.aconex.scrutineer.elasticsearch.ElasticSearchIdAndVersionStream;
 import com.aconex.scrutineer.elasticsearch.ElasticSearchSorter;
@@ -17,19 +23,16 @@ import com.fasterxml.sort.Sorter;
 import com.fasterxml.sort.util.NaturalComparator;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.node.Node;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-
-import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 
 public class Scrutineer {
 
     public static void main(String[] args) {
         BasicConfigurator.configure();
+        LogManager.getLoggerRepository().setThreshold(Level.INFO);
         Scrutineer scrutineer = new Scrutineer(parseOptions(args));
         execute(scrutineer);
     }

@@ -1,5 +1,5 @@
 <assembly>
-  <id>scrutineer</id>
+  <id>bin</id>
   <formats>
     <format>tar.gz</format>
   </formats>
@@ -12,8 +12,8 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>target/appassembler/repo</directory>
-      <outputDirectory>repo</outputDirectory>
+      <directory>target/appassembler/lib</directory>
+      <outputDirectory>lib</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>target/appassembler/bin</directory>
