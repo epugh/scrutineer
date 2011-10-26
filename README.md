@@ -43,8 +43,8 @@ and one from ElasticSearch (the one you're checking):
 
 <table border="1">
   <tr><th>Database</th><th>ElasticSearch</th></tr>
-  <tr><td>1:12345</td><td>3:84757</td></tr>
-  <tr><td>2:23455</td><td>1:12345</td></tr>
+  <tr><td>1:12345</td><td>1:12345</td></tr>
+  <tr><td>2:23455</td><td>3:84757</td></tr>
   <tr><td>3:84757</td><td>4:98765</td></tr>
   <tr><td>4:98765</td><td>5:38475</td></tr>
   <tr><td>6:34556</td><td>6:34666</td></tr>
@@ -87,7 +87,7 @@ The general format is:
    **FailureType**\t**ID**\t**VERSION**\t**Optional:Additional Info**
 
 ### NOTINSECONDARY
-This means you are missing this item in your secondary and you should reindex/readd to your secondary stream
+This means you are missing this item in your secondary and you should reindex/re-add to your secondary stream
 
 ### MISMATCH
 This means the version of the object stored in the secondary is not the same information as the primary, and you should reindex
@@ -115,7 +115,7 @@ a Solr stream and wire something up. Happy to take Pull Requests!
 What are the 'best practices' for using Scrutineer?
 ===================================================
 
-The authors of Srutineer, Aconex, index content from a JDBC data source and index using ElasticSearch.  We do the following:
+The authors of Scrutineer, Aconex, index content from a JDBC data source and index using ElasticSearch.  We do the following:
 
 * In the database table of the object being indexed we add a Insert/Update trigger to populate a 'lastupdated' timestamp column as our Version property
 * When we index into ElasticSearch, we set the Version property of of the item using the VersionType.EXTERNAL setting.  
