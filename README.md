@@ -93,6 +93,7 @@ This means you are missing this item in your secondary and you should reindex/re
 This means the version of the object stored in the secondary is not the same information as the primary, and you should reindex
 
 ### NOTINPRIMARY
+The object was removed from the Primary store, but the secondary still has it.  You should remove this item from your secondary.
 
 Scrutineer does _not_ report when items match, we'll presume you're just fine with that...
 
@@ -125,7 +126,29 @@ Assumptions
 ===========
 
 * Your Version property is Long compatible.  Timestamps work fine though up to millisecond accuracy
-* 
+* Aconex is DB->ElasticSearch centric at the moment.  We've tried to keep things loosely coupled, so it should be 
+simple to add further integration points for other Primary & Secondary sources (HBase, MongoDB, Solr). 
+
+Building
+========
+Scrutineer is a Maven project, which really _should_ just build right out of the box if you have Maven installed.  Just type:
+
+    mvn package
+
+And you should have a Tarball in the 'target' sub-directory.
+
+Submitting Pull Requests
+========================
+
+First, Please add unit tests!
+
+Second, Please add integration tests!
+
+Third, We have tightened up the quality rule set for CheckStyle, PMD etc pretty hard.  Before you issue a pull request, please run:
+
+    mvn verify
+
+which will run all quality checks.  Sorry to super-anal, but we just like Clean Code.
 
 Roadmap
 =======
