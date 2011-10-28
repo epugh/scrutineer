@@ -13,14 +13,16 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Scrutineer (Stream Comparator)</name>
-    <description>Compares 2 streams of Ids and Versions to prove that a secondary source is in sync with a primary
-        source of truth. Designed to verify an ElasticSearch cluster contains correct information from a JDBC source
+    <description>
+Compares 2 streams of Ids and Versions to prove that a secondary source is
+in sync with a primary source of truth. Designed to verify an elasticsearch
+cluster contains correct information from a JDBC source.
     </description>
     <inceptionYear>2011</inceptionYear>
     <url>https://github.com/Aconex/scrutineer</url>
     <scm>
-        <connection>git://github.com/Aconex/scrutineer.git</connection>
-        <developerConnection>git@github.com:Aconex/scrutineer.git</developerConnection>
+        <connection>scm:git:git://github.com/Aconex/scrutineer.git</connection>
+        <developerConnection>scm:git:git@github.com:Aconex/scrutineer.git</developerConnection>
         <url>https://github.com/Aconex/scrutineer</url>
     </scm>
     <licenses>
@@ -232,6 +234,77 @@
     </reporting>
 
     <profiles>
+        <profile>
+            <id>rpm</id>
+            <activation>
+                <property>
+                    <name>generateRpm</name>
+                </property>
+            </activation>
+            <properties>
+                <rpm.prefix>/usr/scrutineer</rpm.prefix>
+                <maven.build.timestamp.format>yyyyMMdd.HHmm</maven.build.timestamp.format>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>rpm-maven-plugin</artifactId>
+                        <version>2.0.1</version>
+                        <extensions>true</extensions>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <!-- Don't use attached-rpm here because we don't want this to be considered a build artifact + go in the repo; we upload manually -->
+                                    <goal>rpm</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <copyright>Commercial</copyright>
+                            <group>Applications/Internet</group>
+                            <packager>${user.name}</packager>
+                            <prefix>${rpm.prefix}</prefix>
+                            <release>${maven.build.timestamp}</release>
+                            <defaultUsername>root</defaultUsername>
+                            <defaultGroupname>root</defaultGroupname>
+                            <defaultDirmode>555</defaultDirmode>
+                            <defaultFilemode>444</defaultFilemode>
+                            <projversion>${project.version}</projversion>
+                            <description>${project.description}</description>
+                            <summary>${project.name}</summary>
+                            <name>${artifactId}</name>
+                            <mappings>
+                                <mapping>
+                                    <directory>${rpm.prefix}/bin</directory>
+                                    <filemode>555</filemode>
+                                    <sources>
+                                        <source>
+                                            <location>target/appassembler/bin</location>
+                                            <excludes>
+                                                <exclude>*.bat</exclude>
+                                            </excludes>
+                                        </source>
+                                    </sources>
+                                </mapping>
+                                <mapping>
+                                    <directory>${rpm.prefix}/lib</directory>
+                                    <sources>
+                                        <source>
+                                            <location>target/appassembler/lib</location>
+                                        </source>
+                                    </sources>
+                                </mapping>
+                            </mappings>
+                            <requires>
+                                <require>jdk</require>
+                            </requires>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
         <profile>
             <id>no-functional-tests</id>
             <activation>
