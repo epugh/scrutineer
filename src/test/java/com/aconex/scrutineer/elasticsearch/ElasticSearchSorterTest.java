@@ -1,17 +1,20 @@
 package com.aconex.scrutineer.elasticsearch;
 
-import com.aconex.scrutineer.IdAndVersion;
-import com.fasterxml.sort.Sorter;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.MockitoAnnotations.initMocks;
+import com.aconex.scrutineer.IdAndVersion;
+import com.fasterxml.sort.Sorter;
+import org.elasticsearch.common.io.CountingInputStream;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
 
 public class ElasticSearchSorterTest {
 
@@ -31,6 +34,6 @@ public class ElasticSearchSorterTest {
     public void shouldSortInputStream() throws IOException {
         ElasticSearchSorter elasticSearchSorter = new ElasticSearchSorter(sorter);
         elasticSearchSorter.sort(inputstream,outputstream);
-        verify(sorter).sort(inputstream, outputstream);
+        verify(sorter).sort(any(CountingInputStream.class), eq(outputstream));
     }
 }

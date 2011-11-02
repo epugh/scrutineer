@@ -11,6 +11,9 @@ public class IdAndVersionStreamVerifier {
     //CHECKSTYLE:OFF
     @SuppressWarnings("PMD.NcssMethodCount")
     public void verify(IdAndVersionStream primaryStream, IdAndVersionStream secondayStream, IdAndVersionStreamVerifierListener idAndVersionStreamVerifierListener) {
+        long numItems = 0;
+        long begin = System.currentTimeMillis();
+
         try {
             primaryStream.open();
             secondayStream.open();
@@ -39,22 +42,26 @@ public class IdAndVersionStreamVerifier {
                     idAndVersionStreamVerifierListener.onMissingInPrimaryStream(secondaryItem);
                     secondaryItem = next(secondaryIterator);
                 }
+                numItems++;
             }
 
             while (primaryItem != null) {
                 idAndVersionStreamVerifierListener.onMissingInSecondaryStream(primaryItem);
                 primaryItem = next(primaryIterator);
+                numItems++;
             }
 
             while (secondaryItem != null) {
                 idAndVersionStreamVerifierListener.onMissingInPrimaryStream(secondaryItem);
                 secondaryItem = next(secondaryIterator);
+                numItems++;
             }
         }
         finally {
             closeWithoutThrowingException(primaryStream);
             closeWithoutThrowingException(secondayStream);
         }
+        LogUtils.infoTimeTaken(LOG, begin, numItems, "Completed verification");
     }
     //CHECKSTYLE:ON
 

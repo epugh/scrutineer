@@ -1,20 +1,22 @@
 package com.aconex.scrutineer;
 
-import org.apache.log4j.Logger;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Matchers.matches;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.apache.log4j.Logger;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
 public class LogUtilsTest {
 
     private static final String LOG_MESSAGE = "Log Message";
+    private static final int NUM_ITEMS = 10;
 
     @Mock
     private Logger logger;
@@ -63,6 +65,14 @@ public class LogUtilsTest {
     public void shouldLogErrorMessages() {
         LogUtils.error(logger, LOG_MESSAGE);
         verify(logger).error(LOG_MESSAGE);
+    }
+
+    public void shouldLogTimeTakenInfoMessages() {
+        long startTime = System.currentTimeMillis();
+
+        LogUtils.infoTimeTaken(logger, startTime, NUM_ITEMS, LOG_MESSAGE);
+        String pattern = String.format("%s - took (.*) seconds to do 10 items at (.*) per second.",LOG_MESSAGE);
+        verify(logger).info(matches(pattern));
     }
 
 

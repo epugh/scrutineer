@@ -31,6 +31,7 @@ import org.elasticsearch.node.Node;
 public class Scrutineer {
 
     public static void main(String[] args) {
+        BasicConfigurator.resetConfiguration();
         BasicConfigurator.configure();
         LogManager.getLoggerRepository().setThreshold(Level.INFO);
         Scrutineer scrutineer = new Scrutineer(parseOptions(args));

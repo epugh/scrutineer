@@ -33,6 +33,13 @@ public class JdbcIdAndVersionStream implements IdAndVersionStream {
 
     @Override
     public Iterator<IdAndVersion> iterator() {
+        long begin = System.currentTimeMillis();
+        Iterator<IdAndVersion> iterator = createIterator();
+        LogUtils.info(LOG, "Executed JDBC query in %dms", (System.currentTimeMillis()-begin));
+        return iterator;
+    }
+
+    private Iterator<IdAndVersion> createIterator() {
         try {
             statement = connection.createStatement();
             resultSet = statement.executeQuery(sql);

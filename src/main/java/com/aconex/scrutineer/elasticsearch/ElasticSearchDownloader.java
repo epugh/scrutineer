@@ -5,6 +5,8 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
 import com.aconex.scrutineer.IdAndVersion;
+import com.aconex.scrutineer.LogUtils;
+import org.apache.log4j.Logger;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
@@ -16,8 +18,11 @@ import org.elasticsearch.search.SearchHit;
 
 public class ElasticSearchDownloader {
 
+    private static final Logger LOG = LogUtils.loggerForThisClass();
+
     static final int BATCH_SIZE = 100000;
     static final int SCROLL_TIME_IN_MINUTES = 10;
+    private long numItems = 0;
 
     private final Client client;
     private final String indexName;
@@ -30,6 +35,12 @@ public class ElasticSearchDownloader {
     }
 
     public void downloadTo(OutputStream outputStream) {
+        long begin = System.currentTimeMillis();
+        doDownloadTo(outputStream);
+        LogUtils.infoTimeTaken(LOG, begin, numItems, "Scan & Download completed");
+    }
+
+    private void doDownloadTo(OutputStream outputStream) {
         try {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
             consumeBatches(objectOutputStream, startScroll().getScrollId());
@@ -53,6 +64,7 @@ public class ElasticSearchDownloader {
         SearchHit[] hits = searchResponse.getHits().hits();
         for (SearchHit hit : hits) {
             new IdAndVersion(hit.getId(), hit.getVersion()).writeToStream(objectOutputStream);
+            numItems++;
         }
         return hits.length > 0;
     }

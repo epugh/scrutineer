@@ -12,9 +12,6 @@ import com.aconex.scrutineer.Scrutineer;
 import com.aconex.scrutineer.elasticsearch.ElasticSearchTestHelper;
 import com.aconex.scrutineer.jdbc.HSQLHelper;
 import com.google.common.io.ByteStreams;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
 import org.dbunit.DataSourceBasedDBTestCase;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.XmlDataSet;
@@ -63,7 +60,6 @@ public class ScrutineerIntegrationTest extends DataSourceBasedDBTestCase {
     protected void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        setupLogging();
         setupHSQLDB();
         setupElasticSearchConnection();
         indexSetupStateForElasticSearch();
@@ -80,10 +76,6 @@ public class ScrutineerIntegrationTest extends DataSourceBasedDBTestCase {
         hsqlHelper.createHsqldbTables(getDataSet(), getDataSource().getConnection());
     }
 
-    private void setupLogging() {
-        BasicConfigurator.configure();
-        LogManager.getLoggerRepository().setThreshold(Level.INFO);
-    }
 
     private void indexSetupStateForElasticSearch() throws Exception {
         new ElasticSearchTestHelper(client).deleteIndexIfItExists("test");

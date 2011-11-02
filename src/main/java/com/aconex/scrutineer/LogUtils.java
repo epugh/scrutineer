@@ -5,6 +5,8 @@ import org.apache.log4j.Logger;
 
 public final class LogUtils {
 
+    private static final int MILLIES_PER_SECOND = 1000;
+
     private LogUtils() {
         // For Checkstyle
     }
@@ -38,6 +40,13 @@ public final class LogUtils {
             formattedMessage = String.format(message, args);
         }
         return formattedMessage;
+    }
+
+    public static void infoTimeTaken(Logger log, long startTime, long numItems, String message, Object... args) {  //NOPMD
+        double elapsedTimeInSeconds = (((double)System.currentTimeMillis()) - startTime)/ MILLIES_PER_SECOND;
+        double itemsPerSecond = numItems / elapsedTimeInSeconds;
+        String timeInformation = String.format(" - took %.2f seconds to do %d items at %.2f per second.",elapsedTimeInSeconds,numItems,itemsPerSecond);
+        info(log, message+timeInformation, args);
     }
 
     public static Logger loggerForThisClass() {
