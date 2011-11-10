@@ -23,7 +23,7 @@ public class ElasticSearchSorter {
     public void sort(InputStream inputStream, OutputStream outputStream) {
         long begin = System.currentTimeMillis();
         CountingInputStream countingInputStream = new CountingInputStream(inputStream);
-        doSort(inputStream, outputStream);
+        doSort(countingInputStream, outputStream);
         LogUtils.infoTimeTaken(LOG, begin, countingInputStream.getCount(), "Sorted stream of %d bytes", countingInputStream.getCount());
     }
 
