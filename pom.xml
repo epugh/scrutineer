@@ -139,12 +139,6 @@ cluster contains correct information from a JDBC source.
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.dbunit</groupId>
-            <artifactId>dbunit</artifactId>
-            <version>2.4.5</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
@@ -273,7 +267,7 @@ cluster contains correct information from a JDBC source.
                             <projversion>${project.version}</projversion>
                             <description>${project.description}</description>
                             <summary>${project.name}</summary>
-                            <name>${artifactId}</name>
+                            <name>${project.artifactId}</name>
                             <mappings>
                                 <mapping>
                                     <directory>${rpm.prefix}/bin</directory>
