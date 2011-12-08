@@ -67,7 +67,7 @@ package.  We already have a JTDS driver in there if you're using SQL Server (tha
                 --jdbcDriverClass=net.sourceforge.jtds.jdbc.Driver \
                 --jdbcUser=itasecret \
                 --jdbcPassword=itsasecret   \
-                ---sql="select id,version from myobjecttype order by cast(id as varchar(100))" \
+                --sql="select id,version from myobjecttype order by cast(id as varchar(100))" \
                 --clusterName=mycluster \
                 --indexName=myindex \
                 --query="_type:myobjecttype"
@@ -113,7 +113,7 @@ Scrutineer does _not_ report when items match, we'll presume you're just fine wi
 Sorting
 =======
 
-Scrutineer relies on both streams to be sorted using an identical mechanism. Additionally, right now in this early version, it
+__*VERY IMPORTANT*__: Scrutineer relies on both streams to be sorted using an identical mechanism. Additionally, right now in this early version, it
 requires the streams to be in lexicographical sort order (String sort, not numerical). This will not be difficult to overcome,
 but in this early version because ElasticSearch's API has IDs based on Strings and it is actually fairly trivial to get the DB
 to sort the stream lexicographically (all serious DB's should allow this, for MS SQL Server the above example does "... order
