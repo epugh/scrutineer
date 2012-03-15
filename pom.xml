@@ -75,7 +75,7 @@ cluster contains correct information from a JDBC source.
         <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
-            <version>0.17.9</version>
+            <version>0.19.0</version>
         </dependency>
         <dependency>
             <groupId>com.beust</groupId>

@@ -18,7 +18,7 @@ import org.dbunit.dataset.xml.XmlDataSet;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.node.Node;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
