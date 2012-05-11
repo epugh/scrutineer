@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.sonatype.oss</groupId>
@@ -13,9 +14,9 @@
     <packaging>jar</packaging>
     <name>Scrutineer (Stream Comparator)</name>
     <description>
-Compares 2 streams of Ids and Versions to prove that a secondary source is
-in sync with a primary source of truth. Designed to verify an elasticsearch
-cluster contains correct information from a JDBC source.
+        Compares 2 streams of Ids and Versions to prove that a secondary source is
+        in sync with a primary source of truth. Designed to verify an elasticsearch
+        cluster contains correct information from a JDBC source.
     </description>
     <inceptionYear>2011</inceptionYear>
     <url>https://github.com/Aconex/scrutineer</url>
@@ -37,7 +38,6 @@ cluster contains correct information from a JDBC source.
             <name>Paul Smith</name>
             <email>psmith@aconex.com</email>
             <id>psmith</id>
-
             <timezone>+10</timezone>
             <roles>
                 <role>developer</role>
@@ -47,6 +47,24 @@ cluster contains correct information from a JDBC source.
             <name>Leon Messerschmidt</name>
             <email>leonm@aconex.com</email>
             <id>leonm</id>
+            <timezone>+10</timezone>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Owen Butler</name>
+            <email>obutler@aconex.com</email>
+            <id>obutler</id>
+            <timezone>+10</timezone>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Nathan Scott</name>
+            <email>nscott@aconex.com</email>
+            <id>nscott</id>
             <timezone>+10</timezone>
             <roles>
                 <role>developer</role>
@@ -75,7 +93,7 @@ cluster contains correct information from a JDBC source.
         <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
-            <version>0.19.1</version>
+            <version>0.19.3</version>
         </dependency>
         <dependency>
             <groupId>com.beust</groupId>
@@ -364,7 +382,7 @@ cluster contains correct information from a JDBC source.
                                 <format>XML</format>
                                 <format>HTML</format>
                             </formats>
-                            <check />
+                            <check/>
                         </configuration>
                         <executions>
                             <execution>
