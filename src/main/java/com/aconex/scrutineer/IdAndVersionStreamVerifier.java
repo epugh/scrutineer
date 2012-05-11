@@ -66,20 +66,24 @@ public class IdAndVersionStreamVerifier {
         }
         LogUtils.infoTimeTaken(LOG, begin, numItems, "Completed verification");
     }
+    //CHECKSTYLE:ON
 
-    private void parallelOpenStreamsAndWait(IdAndVersionStream primaryStream, IdAndVersionStream secondayStream) {
+    private void parallelOpenStreamsAndWait(IdAndVersionStream primaryStream, IdAndVersionStream secondaryStream) {
         Future<?> primaryOpenCall = executorService.submit(new OpenStreamRunner(primaryStream));
-        Future<?> secondaryOpenCall = executorService.submit(new OpenStreamRunner(secondayStream));
+        Future<?> secondaryOpenCall = executorService.submit(new OpenStreamRunner(secondaryStream));
 
+        getAllFutures(primaryOpenCall, secondaryOpenCall);
+    }
+
+    private void getAllFutures(Future<?>... futures) {
         try {
-            primaryOpenCall.get();
-            secondaryOpenCall.get();
+            for (Future<?> future : futures) {
+                future.get();
+            }
         } catch (Exception e) {
             throw new IllegalStateException("Failed to open one or both of the streams in parallel", e);
         }
-
     }
-    //CHECKSTYLE:ON
 
     private IdAndVersion next(Iterator<IdAndVersion> iterator) {
         if (iterator.hasNext()) {
