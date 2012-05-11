@@ -4,9 +4,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.sql.Connection;
@@ -40,11 +40,18 @@ public class JdbcIdAndVersionStreamTest {
 
 
     @Test
-    public void shouldNotCloseConnection() throws SQLException {
+    public void shouldCloseDBResourcesEvenIfNoIteration() throws SQLException {
+        when(connection.createStatement()).thenReturn(statement);
+        when(statement.executeQuery(SQL)).thenReturn(resultSet);
+        when(resultSet.getMetaData()).thenReturn(metaData);
+
         JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(connection, SQL);
         jdbcIdAndVersionStream.open();
         jdbcIdAndVersionStream.close();
-        verifyZeroInteractions(connection);
+
+        verify(statement).close();
+        verify(resultSet).close();
+        verify(connection, never()).close();
     }
 
     @Test

@@ -21,6 +21,7 @@ public class JdbcIdAndVersionStream implements IdAndVersionStream {
     private Statement statement;
     private static final Logger LOG = LogUtils.loggerForThisClass();
     private ResultSet resultSet;
+    private Iterator<IdAndVersion> iterator;
 
     public JdbcIdAndVersionStream(Connection connection, String sql) {
         this.connection = connection;
@@ -29,13 +30,13 @@ public class JdbcIdAndVersionStream implements IdAndVersionStream {
 
     @Override
     public void open() {
+        long begin = System.currentTimeMillis();
+        this.iterator = createIterator();
+        LogUtils.info(LOG, "Executed JDBC query in %dms", (System.currentTimeMillis() - begin));
     }
 
     @Override
     public Iterator<IdAndVersion> iterator() {
-        long begin = System.currentTimeMillis();
-        Iterator<IdAndVersion> iterator = createIterator();
-        LogUtils.info(LOG, "Executed JDBC query in %dms", (System.currentTimeMillis()-begin));
         return iterator;
     }
 
@@ -51,6 +52,7 @@ public class JdbcIdAndVersionStream implements IdAndVersionStream {
 
     @Override
     public void close() {
+        this.iterator = null;
         throwExceptionIfAnyCloseFails(closeResultSet(), closeStatement());
     }
 
