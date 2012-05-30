@@ -2,7 +2,8 @@ package com.aconex.scrutineer;
 
 public class IdAndVersionConsistencyFailure {
 
-            
+
+    private static final int EXPECTED_NUM_FIELDS = 3;
     private final ConsistencyFailureMode failureMode;
     private final String primaryId;
     private final String primaryVersion;
@@ -16,7 +17,7 @@ public class IdAndVersionConsistencyFailure {
     public static IdAndVersionConsistencyFailure fromString(String s) {
 
         String[] fields = s.split("\t");
-        if (fields == null || fields.length < 3) {
+        if (fields == null || fields.length < EXPECTED_NUM_FIELDS) {
             throw new IllegalArgumentException(String.format("String '%s' does not look like a tab-separated String with enough fields (3)", s));
         }
         ConsistencyFailureMode failureMode = ConsistencyFailureMode.valueOf(fields[0]);
