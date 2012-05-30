@@ -1,20 +1,20 @@
 package com.aconex.scrutineer.elasticsearch;
 
-import com.aconex.scrutineer.IdAndVersion;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+
+import com.aconex.scrutineer.IdAndVersion;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
 
 public class IdAndVersionDataReaderTest {
 
@@ -33,7 +33,7 @@ public class IdAndVersionDataReaderTest {
 
     @Test
     public void shouldGiveAndEstimateOfSize() {
-        assertThat(idAndVersionDataReader.estimateSizeInBytes(new IdAndVersion(ID,VERSION)),is(ID.length()*2+8));
+        assertThat(idAndVersionDataReader.estimateSizeInBytes(new IdAndVersion(ID, VERSION)), is(ID.length() * 2 + 84));
     }
 
     @Test
