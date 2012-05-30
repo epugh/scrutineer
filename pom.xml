@@ -101,9 +101,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.fasterxml</groupId>
+            <groupId>com.fasterxml.util</groupId>
             <artifactId>java-merge-sort</artifactId>
-            <version>0.5.3</version>
+            <version>0.7.1</version>
         </dependency>
 
         <dependency>
