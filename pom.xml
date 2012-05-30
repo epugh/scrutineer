@@ -9,7 +9,7 @@
 
     <groupId>com.aconex.scrutineer</groupId>
     <artifactId>scrutineer</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.3</version>
     <packaging>jar</packaging>
     <name>Scrutineer (Stream Comparator)</name>
     <description>
