@@ -5,7 +5,6 @@ import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Comparator;
 
 import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.BasicConfigurator;
@@ -20,8 +19,6 @@ import com.aconex.scrutineer.elasticsearch.ElasticSearchSorter;
 import com.aconex.scrutineer.elasticsearch.IdAndVersionDataReaderFactory;
 import com.aconex.scrutineer.elasticsearch.IdAndVersionDataWriterFactory;
 import com.aconex.scrutineer.elasticsearch.IteratorFactory;
-import com.aconex.scrutineer.javautil.NumericIdAndVersionComparator;
-import com.aconex.scrutineer.javautil.StringIdAndVersionComparator;
 import com.aconex.scrutineer.jdbc.JdbcIdAndVersionStream;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -30,6 +27,7 @@ import com.fasterxml.sort.DataReaderFactory;
 import com.fasterxml.sort.DataWriterFactory;
 import com.fasterxml.sort.SortConfig;
 import com.fasterxml.sort.Sorter;
+import com.fasterxml.sort.util.NaturalComparator;
 
 public class Scrutineer {
 
@@ -56,18 +54,11 @@ public class Scrutineer {
     }
 
     public void verify() {
-    	if (options.numeric) {
-    		verify(new NumericIdAndVersionComparator());
-    	} else {
-    		verify(new StringIdAndVersionComparator());
-    	}
-    }
-
-    public void verify(Comparator<IdAndVersion> comparator) {
-        ElasticSearchIdAndVersionStream elasticSearchIdAndVersionStream = createElasticSearchIdAndVersionStream(options, comparator);
+   		idAndVersionFactory = createIdAndVersionFactory();
+        ElasticSearchIdAndVersionStream elasticSearchIdAndVersionStream = createElasticSearchIdAndVersionStream(options);
         JdbcIdAndVersionStream jdbcIdAndVersionStream = createJdbcIdAndVersionStream(options);
 
-        verify(elasticSearchIdAndVersionStream, jdbcIdAndVersionStream, new IdAndVersionStreamVerifier(comparator));
+        verify(elasticSearchIdAndVersionStream, jdbcIdAndVersionStream, new IdAndVersionStreamVerifier());
     }
 
     void close() {
@@ -103,22 +94,26 @@ public class Scrutineer {
         this.options = options;
     }
 
-    ElasticSearchIdAndVersionStream createElasticSearchIdAndVersionStream(ScrutineerCommandLineOptions options, Comparator<IdAndVersion> comparator) {
+	private IdAndVersionFactory createIdAndVersionFactory() {
+		return options.numeric ? LongIdAndVersion.FACTORY : StringIdAndVersion.FACTORY;
+	}
+
+    ElasticSearchIdAndVersionStream createElasticSearchIdAndVersionStream(ScrutineerCommandLineOptions options) {
         this.node = nodeBuilder().client(true).clusterName(options.clusterName).node();
         this.client = node.client();
-        return new ElasticSearchIdAndVersionStream(new ElasticSearchDownloader(client, options.indexName, options.query), new ElasticSearchSorter(createSorter(comparator)), new IteratorFactory(), SystemUtils.getJavaIoTmpDir().getAbsolutePath());
+        return new ElasticSearchIdAndVersionStream(new ElasticSearchDownloader(client, options.indexName, options.query, idAndVersionFactory), new ElasticSearchSorter(createSorter()), new IteratorFactory(idAndVersionFactory), SystemUtils.getJavaIoTmpDir().getAbsolutePath());
     }
 
-    private Sorter<IdAndVersion> createSorter(Comparator<IdAndVersion> comparator) {
+    private Sorter<IdAndVersion> createSorter() {
         SortConfig sortConfig = new SortConfig().withMaxMemoryUsage(DEFAULT_SORT_MEM);
-        DataReaderFactory<IdAndVersion> dataReaderFactory = new IdAndVersionDataReaderFactory();
+        DataReaderFactory<IdAndVersion> dataReaderFactory = new IdAndVersionDataReaderFactory(idAndVersionFactory);
         DataWriterFactory<IdAndVersion> dataWriterFactory = new IdAndVersionDataWriterFactory();
-        return new Sorter<IdAndVersion>(sortConfig, dataReaderFactory, dataWriterFactory, comparator);
+        return new Sorter<IdAndVersion>(sortConfig, dataReaderFactory, dataWriterFactory, new NaturalComparator<IdAndVersion>());
     }
 
     JdbcIdAndVersionStream createJdbcIdAndVersionStream(ScrutineerCommandLineOptions options) {
         this.connection = initializeJdbcDriverAndConnection(options);
-        return new JdbcIdAndVersionStream(connection, options.sql);
+        return new JdbcIdAndVersionStream(connection, options.sql, idAndVersionFactory);
     }
 
     private Connection initializeJdbcDriverAndConnection(ScrutineerCommandLineOptions options) {
@@ -133,6 +128,7 @@ public class Scrutineer {
 
     private static final int DEFAULT_SORT_MEM = 256 * 1024 * 1024;
     private final ScrutineerCommandLineOptions options;
+	private IdAndVersionFactory idAndVersionFactory;
     private Node node;
     private Client client;
     private Connection connection;

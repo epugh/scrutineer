@@ -1,6 +1,5 @@
 package com.aconex.scrutineer;
 
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -10,22 +9,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 
-import com.aconex.scrutineer.javautil.StringIdAndVersionComparator;
-
 public class IdAndVersionStreamVerifier {
 
     private static final Logger LOG = LogUtils.loggerForThisClass();
 
     private final ExecutorService executorService = Executors.newFixedThreadPool(2, new NamedDaemonThreadFactory("StreamOpener"));
-	private final Comparator<IdAndVersion> comparator;
-
-	public IdAndVersionStreamVerifier() {
-		this (new StringIdAndVersionComparator());
-	}
-
-	public IdAndVersionStreamVerifier(Comparator<IdAndVersion> comparator) {
-		this.comparator = comparator;
-	}
 
     //CHECKSTYLE:OFF
     @SuppressWarnings("PMD.NcssMethodCount")
@@ -51,7 +39,7 @@ public class IdAndVersionStreamVerifier {
                     idAndVersionStreamVerifierListener.onVersionMisMatch(primaryItem, secondaryItem);
                     primaryItem = next(primaryIterator);
                     secondaryItem = next(secondaryIterator);
-                } else if (comparator.compare(primaryItem, secondaryItem) < 0) {
+                } else if (primaryItem.compareTo(secondaryItem) < 0) {
                     idAndVersionStreamVerifierListener.onMissingInSecondaryStream(primaryItem);
                     primaryItem = next(primaryIterator);
                 } else {

@@ -27,7 +27,7 @@ import com.google.common.io.ByteStreams;
 
 public class ScrutineerNumericIntegrationTest extends DataSourceBasedDBTestCase {
 
-    private static final String CLUSTER_NAME = "scrutineerintegrationtest";
+    private static final String CLUSTER_NAME = "scrutineernumericintegrationtest";
     private HSQLHelper hsqlHelper = new HSQLHelper();
     private Node node;
     private Client client;
