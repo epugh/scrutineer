@@ -13,8 +13,6 @@ public class IdAndVersionStreamVerifier {
 
     private static final Logger LOG = LogUtils.loggerForThisClass();
 
-    private final ExecutorService executorService = Executors.newFixedThreadPool(2, new NamedDaemonThreadFactory("StreamOpener"));
-
     //CHECKSTYLE:OFF
     @SuppressWarnings("PMD.NcssMethodCount")
 	public void verify(IdAndVersionStream primaryStream, IdAndVersionStream secondayStream, IdAndVersionStreamVerifierListener idAndVersionStreamVerifierListener) {
@@ -68,22 +66,19 @@ public class IdAndVersionStreamVerifier {
     }
     //CHECKSTYLE:ON
 
-    private void parallelOpenStreamsAndWait(IdAndVersionStream primaryStream, IdAndVersionStream secondaryStream) {
-        Future<?> primaryOpenCall = executorService.submit(new OpenStreamRunner(primaryStream));
-        Future<?> secondaryOpenCall = executorService.submit(new OpenStreamRunner(secondaryStream));
+	private void parallelOpenStreamsAndWait(IdAndVersionStream primaryStream, IdAndVersionStream secondaryStream) {
+		try {
+			ExecutorService executorService = Executors.newFixedThreadPool(1, new NamedDaemonThreadFactory("StreamOpener"));
+			Future<?> secondaryStreamFuture = executorService.submit(new OpenStreamRunner(secondaryStream));
 
-        getAllFutures(primaryOpenCall, secondaryOpenCall);
-    }
+			primaryStream.open();
+			secondaryStreamFuture.get();
 
-    private void getAllFutures(Future<?>... futures) {
-        try {
-            for (Future<?> future : futures) {
-                future.get();
-            }
-        } catch (Exception e) {
-            throw new IllegalStateException("Failed to open one or both of the streams in parallel", e);
-        }
-    }
+			executorService.shutdown();
+		} catch (Exception e) {
+			throw new IllegalStateException("Failed to open one or both of the streams in parallel", e);
+		}
+	}
 
     private IdAndVersion next(Iterator<IdAndVersion> iterator) {
         if (iterator.hasNext()) {
