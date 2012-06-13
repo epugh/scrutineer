@@ -66,6 +66,7 @@ public class IdAndVersionStreamVerifier {
     }
     //CHECKSTYLE:ON
 
+    @SuppressWarnings("PMD.NcssMethodCount")
 	private void parallelOpenStreamsAndWait(IdAndVersionStream primaryStream, IdAndVersionStream secondaryStream) {
 		try {
 			ExecutorService executorService = Executors.newFixedThreadPool(1, new NamedDaemonThreadFactory("StreamOpener"));
@@ -80,21 +81,21 @@ public class IdAndVersionStreamVerifier {
 		}
 	}
 
-    private IdAndVersion next(Iterator<IdAndVersion> iterator) {
-        if (iterator.hasNext()) {
-            return iterator.next();
-        } else {
-            return null;
-        }
-    }
-
 	private IdAndVersion verifiedNext(Iterator<IdAndVersion> iterator, IdAndVersion previous) {
+		IdAndVersion next = next(iterator);
+		if (next != null && previous.compareTo(next) >= 0) {
+			throw new IllegalStateException("stream not ordered as expected");
+		} else {
+			return next;
+		}
+	}
+
+	@SuppressWarnings("PMD.NcssMethodCount")
+	private IdAndVersion next(Iterator<IdAndVersion> iterator) {
 		if (iterator.hasNext()) {
 			IdAndVersion next = iterator.next();
 			if (next == null) {
 				throw new IllegalStateException("stream must not return null");
-			} else if (previous.compareTo(next) > 0) {
-				throw new IllegalStateException("stream not ordered as expected");
 			} else {
 				return next;
 			}
@@ -112,15 +113,15 @@ public class IdAndVersionStreamVerifier {
     }
 
     private static class OpenStreamRunner implements Runnable {
-        private final IdAndVersionStream primaryStream;
+        private final IdAndVersionStream stream;
 
-        public OpenStreamRunner(IdAndVersionStream primaryStream) {
-            this.primaryStream = primaryStream;
+        public OpenStreamRunner(IdAndVersionStream stream) {
+            this.stream = stream;
         }
 
         @Override
         public void run() {
-            primaryStream.open();
+        	stream.open();
         }
     }
 
