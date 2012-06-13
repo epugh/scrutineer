@@ -33,15 +33,15 @@ public class IdAndVersionStreamVerifier {
 
             while (primaryItem != null && secondaryItem != null) {
                 if (primaryItem.equals(secondaryItem)) {
-                    primaryItem = next(primaryIterator);
+                    primaryItem = verifiedNext(primaryIterator, primaryItem);
                     secondaryItem = next(secondaryIterator);
                 } else if (primaryItem.getId().equals(secondaryItem.getId())) {
                     idAndVersionStreamVerifierListener.onVersionMisMatch(primaryItem, secondaryItem);
-                    primaryItem = next(primaryIterator);
+                    primaryItem = verifiedNext(primaryIterator, primaryItem);
                     secondaryItem = next(secondaryIterator);
                 } else if (primaryItem.compareTo(secondaryItem) < 0) {
                     idAndVersionStreamVerifierListener.onMissingInSecondaryStream(primaryItem);
-                    primaryItem = next(primaryIterator);
+                    primaryItem = verifiedNext(primaryIterator, primaryItem);
                 } else {
                     idAndVersionStreamVerifierListener.onMissingInPrimaryStream(secondaryItem);
                     secondaryItem = next(secondaryIterator);
@@ -51,7 +51,7 @@ public class IdAndVersionStreamVerifier {
 
             while (primaryItem != null) {
                 idAndVersionStreamVerifierListener.onMissingInSecondaryStream(primaryItem);
-                primaryItem = next(primaryIterator);
+                primaryItem = verifiedNext(primaryIterator, primaryItem);
                 numItems++;
             }
 
@@ -92,6 +92,21 @@ public class IdAndVersionStreamVerifier {
             return null;
         }
     }
+
+	private IdAndVersion verifiedNext(Iterator<IdAndVersion> iterator, IdAndVersion previous) {
+		if (iterator.hasNext()) {
+			IdAndVersion next = iterator.next();
+			if (next == null) {
+				throw new IllegalStateException("stream must not return null");
+			} else if (previous.compareTo(next) > 0) {
+				throw new IllegalStateException("stream not ordered as expected");
+			} else {
+				return next;
+			}
+		} else {
+			return null;
+		}
+	}
 
     private void closeWithoutThrowingException(IdAndVersionStream idAndVersionStream) {
         try {
