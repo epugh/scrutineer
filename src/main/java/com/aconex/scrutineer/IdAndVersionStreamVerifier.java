@@ -84,7 +84,8 @@ public class IdAndVersionStreamVerifier {
 	private IdAndVersion verifiedNext(Iterator<IdAndVersion> iterator, IdAndVersion previous) {
 		IdAndVersion next = next(iterator);
 		if (next != null && previous.compareTo(next) >= 0) {
-			throw new IllegalStateException("stream not ordered as expected");
+			throw new IllegalStateException("primary stream not ordered as expected: " + next + " followed "
+					+ previous);
 		} else {
 			return next;
 		}
