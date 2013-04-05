@@ -1,6 +1,11 @@
 package com.aconex.scrutineer;
 
-import com.aconex.scrutineer.elasticsearch.*;
+import com.aconex.scrutineer.elasticsearch.ElasticSearchDownloader;
+import com.aconex.scrutineer.elasticsearch.ElasticSearchIdAndVersionStream;
+import com.aconex.scrutineer.elasticsearch.ElasticSearchSorter;
+import com.aconex.scrutineer.elasticsearch.IdAndVersionDataReaderFactory;
+import com.aconex.scrutineer.elasticsearch.IdAndVersionDataWriterFactory;
+import com.aconex.scrutineer.elasticsearch.IteratorFactory;
 import com.aconex.scrutineer.jdbc.JdbcIdAndVersionStream;
 import com.beust.jcommander.JCommander;
 import com.fasterxml.sort.DataReaderFactory;
@@ -8,6 +13,7 @@ import com.fasterxml.sort.DataWriterFactory;
 import com.fasterxml.sort.SortConfig;
 import com.fasterxml.sort.Sorter;
 import com.fasterxml.sort.util.NaturalComparator;
+import com.google.common.base.Function;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.elasticsearch.client.Client;
@@ -78,7 +84,13 @@ public class Scrutineer {
     }
 
     void verify(ElasticSearchIdAndVersionStream elasticSearchIdAndVersionStream, JdbcIdAndVersionStream jdbcIdAndVersionStream, IdAndVersionStreamVerifier idAndVersionStreamVerifier) {
-        idAndVersionStreamVerifier.verify(jdbcIdAndVersionStream, elasticSearchIdAndVersionStream, new PrintStreamOutputVersionStreamVerifierListener(System.err));
+        Function<Long, Object> formatter = PrintStreamOutputVersionStreamVerifierListener.DEFAULT_FORMATTER;
+        if (options.versionsAsTimestamps) {
+            formatter = new TimestampFormatter();
+        }
+        PrintStreamOutputVersionStreamVerifierListener verifierListener = new PrintStreamOutputVersionStreamVerifierListener(System.err, formatter);
+
+        idAndVersionStreamVerifier.verify(jdbcIdAndVersionStream, elasticSearchIdAndVersionStream, verifierListener);
     }
 
 

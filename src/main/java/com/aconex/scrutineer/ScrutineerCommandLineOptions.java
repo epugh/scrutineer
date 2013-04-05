@@ -32,5 +32,8 @@ public class ScrutineerCommandLineOptions {
 
     @Parameter(names = "--numeric", description = "JDBC query is sorted numerically")
     public boolean numeric = false;
+
+    @Parameter(names = "--versions-as-timestamps", description = "Assumes Version values are timestamps and are printed out in ISO8601 date/time format for convenience")
+    public boolean versionsAsTimestamps = false;
 }
 // CHECKSTYLE:ON

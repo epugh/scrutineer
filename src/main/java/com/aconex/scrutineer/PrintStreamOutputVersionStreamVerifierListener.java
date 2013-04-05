@@ -6,11 +6,14 @@ import java.io.PrintStream;
 
 public class PrintStreamOutputVersionStreamVerifierListener implements IdAndVersionStreamVerifierListener {
 
+    public static final Function<Long, Object> DEFAULT_FORMATTER = new DefaultVersionFormatter();
+
     private final PrintStream printStream;
     private final Function<Long, Object> versionFormatter;
 
+
     public PrintStreamOutputVersionStreamVerifierListener(PrintStream printStream) {
-        this(printStream, new DefaultVersionFormatter());
+        this(printStream, DEFAULT_FORMATTER);
     }
 
     public PrintStreamOutputVersionStreamVerifierListener(PrintStream printStream, Function<Long, Object> versionFormatter) {

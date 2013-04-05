@@ -1,13 +1,5 @@
 package com.aconex.scrutineer.functional;
 
-import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
-import static org.mockito.Mockito.verify;
-
-import javax.sql.DataSource;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.net.URL;
-
 import com.aconex.scrutineer.Scrutineer;
 import com.aconex.scrutineer.elasticsearch.ElasticSearchTestHelper;
 import com.aconex.scrutineer.jdbc.HSQLHelper;
@@ -16,12 +8,22 @@ import org.dbunit.DataSourceBasedDBTestCase;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.XmlDataSet;
 import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.common.joda.time.DateTimeZone;
 import org.elasticsearch.node.Node;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import javax.sql.DataSource;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.net.URL;
+import java.util.TimeZone;
+
+import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
+import static org.mockito.Mockito.verify;
 
 public class ScrutineerIntegrationTest extends DataSourceBasedDBTestCase {
 
@@ -35,13 +37,18 @@ public class ScrutineerIntegrationTest extends DataSourceBasedDBTestCase {
 
 
     public void testShouldScrutinizeStreamsEffectively() {
+
+        TimeZone.setDefault(TimeZone.getTimeZone("GST"));
+        DateTimeZone.setDefault(DateTimeZone.forOffsetHours(4));
+
         String[] args = {"--jdbcURL", String.format("jdbc:hsqldb:%s", HSQLHelper.INMEM_TEST_DB),
                 "--jdbcDriverClass", org.hsqldb.jdbc.JDBCDriver.class.getName(),
                 "--jdbcUser", "sa",
                 //"--jdbcPassword", "",
                 "--clusterName", CLUSTER_NAME,
                 "--sql", "select id,version from test order by id",
-                "--indexName", "test"
+                "--indexName", "test",
+                "--versions-as-timestamps"
         };
 
 
@@ -49,9 +56,9 @@ public class ScrutineerIntegrationTest extends DataSourceBasedDBTestCase {
 
         Scrutineer.main(args);
 
-        verify(printStream).println("NOTINSECONDARY\t2\t20");
-        verify(printStream).println("MISMATCH\t3\t30\tsecondaryVersion=42");
-        verify(printStream).println("NOTINPRIMARY\t4\t40");
+        verify(printStream).println("NOTINSECONDARY\t2\t20(1970-01-01T04:00:00.020+04:00)");
+        verify(printStream).println("MISMATCH\t3\t30(1970-01-01T04:00:00.030+04:00)\tsecondaryVersion=42(1970-01-01T04:00:00.042+04:00)");
+        verify(printStream).println("NOTINPRIMARY\t4\t40(1970-01-01T04:00:00.040+04:00)");
 
 
     }
