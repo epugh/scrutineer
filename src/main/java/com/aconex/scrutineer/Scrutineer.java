@@ -9,11 +9,10 @@ import com.fasterxml.sort.SortConfig;
 import com.fasterxml.sort.Sorter;
 import com.fasterxml.sort.util.NaturalComparator;
 import org.apache.commons.lang.SystemUtils;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
+import org.apache.log4j.xml.DOMConfigurator;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.node.Node;
+import org.slf4j.Logger;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -21,10 +20,11 @@ import java.sql.SQLException;
 
 public class Scrutineer {
 
+    private static final Logger LOG = LogUtils.loggerForThisClass();
+
     public static void main(String[] args) {
-        BasicConfigurator.resetConfiguration();
-        BasicConfigurator.configure();
-        LogManager.getLoggerRepository().setThreshold(Level.INFO);
+        DOMConfigurator.configure(Scrutineer.class.getClassLoader().getResource("log4j.xml"));
+
         Scrutineer scrutineer = new Scrutineer(parseOptions(args));
         execute(scrutineer);
     }
@@ -32,6 +32,8 @@ public class Scrutineer {
     static void execute(Scrutineer scrutineer) {
         try {
             scrutineer.verify();
+        } catch (Exception e) {
+            LOG.error("Failure during Scrutineering", e);
         } finally {
             scrutineer.close();
         }
