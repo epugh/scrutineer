@@ -139,7 +139,13 @@ Assumptions
 
 * Your Version property is Long compatible.  You can use java.sqlTimestamps column types too as a Version (that's what we do)
 * Aconex is DB->ElasticSearch centric at the moment.  We've tried to keep things loosely coupled, so it should be 
-simple to add further integration points for other Primary & Secondary sources (HBase, MongoDB, Solr). 
+simple to add further integration points for other Primary & Secondary sources (HBase, MongoDB, Solr).
+
+JDBC Drivers
+============
+Scrutineer ships with the SQL Server JTDS driver by default (it's what we use).  All you _should_ need to do is drop your own JDBC driver in the 'repo'
+sub-directory of the Scrutineer distribution (where all the other jars are).  We use the Maven AppAssembler plugin which is configured
+to automatically load all JARs in this path onto the classpath.
 
 Building
 ========
