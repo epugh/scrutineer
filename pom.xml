@@ -409,6 +409,7 @@
                             </execution>
                         </executions>
                         <configuration>
+                            <extraJvmArguments>-Xmx1024m</extraJvmArguments>
                             <useWildcardClassPath>true</useWildcardClassPath>
                             <repositoryLayout>flat</repositoryLayout>
                             <repositoryName>lib</repositoryName>

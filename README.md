@@ -112,6 +112,17 @@ The object was removed from the Primary store, but the secondary still has it.  
 
 Scrutineer does _not_ report when items match, we'll presume you're just fine with that...
 
+
+Memory
+======
+
+By default, Scrutineer allocates 256m to the Java Heap, which is used for sort, and ElasticSearch result buffers.  This should be more than
+enough for the majority of cases but if you find you get an OutOfMemoryError, you can override the JAVA_OPTS environment variable
+to provide more heap.  e.g.
+
+    export JAVA_OPTS=-Xmx1048m
+
+
 Sorting
 =======
 
