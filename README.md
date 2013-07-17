@@ -112,6 +112,28 @@ The object was removed from the Primary store, but the secondary still has it.  
 
 Scrutineer does _not_ report when items match, we'll presume you're just fine with that...
 
+Versions as Timestamps
+======================
+If you use timestamps as your version property, it is sometimes useful to know the underlying time value of the timestamp
+to triage why the differences are occurcing.  For example, if a MISMATCH error occurs, you can look at the timestamp
+version of the Primary to work out when the last update was done to see why the Secondary never received it, perhaps
+by digging through your own application logs.
+
+By default, Scrutineer doesn't presume this, so you can use the
+
+    --versions-as-timestamps
+
+Command-line option to tell Scrutineer that your versions are timestamps, and a slightly different formatting of the result
+is chosen.  Each time the Version property is reported (in both Primary or Secondary values, if printed) also include
+a human-readable, ISO8601 timestamp using the servers local Timezone for convenience.
+
+For example, using the above output sample:
+
+    NOTINSECONDARY    2    23455(1970-1-1T16:30:55.000+10:00)
+    MISMATCH    6    34666(1970-1-1T19:37:46.000+10:00)    secondaryVersion=34556(1970-1-1T19:35:56.000+10:00)
+    NOTINPRIMARY    5    38475(1970-1-1T20:41:15.000+10:00)
+
+The TAB value is still the field delimiter here.
 
 Memory
 ======
