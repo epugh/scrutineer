@@ -2,6 +2,7 @@ package com.aconex.scrutineer;
 
 import com.aconex.scrutineer.elasticsearch.ElasticSearchIdAndVersionStream;
 import com.aconex.scrutineer.jdbc.JdbcIdAndVersionStream;
+import com.google.common.base.Function;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -9,7 +10,10 @@ import org.mockito.MockitoAnnotations;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 public class ScrutineerTest {
 
@@ -21,6 +25,13 @@ public class ScrutineerTest {
 
     @Mock
     private JdbcIdAndVersionStream jdbcIdAndVersionStream;
+
+
+    @Mock
+    private IdAndVersionStreamVerifier idAndVersionStreamVerifier;
+
+    @Mock
+    private IdAndVersionStreamVerifierListener standardListener, coincidentListener;
 
     @Before
     public void setup() {
@@ -47,6 +58,33 @@ public class ScrutineerTest {
 
         verify(scrutineer).verify(eq(elasticSearchIdAndVersionStream), eq(jdbcIdAndVersionStream), any(IdAndVersionStreamVerifier.class));
 
+    }
+
+    @Test
+    public void testShouldUseCoincidentFilteredStreamListenerIfOptionProvided() {
+        options.ignoreTimestampsDuringRun = true;
+        Scrutineer scrutineer = spy(new Scrutineer(options));
+
+        doReturn(coincidentListener).when(scrutineer).createCoincidentPrintStreamListener(any(Function.class));
+        doReturn(standardListener).when(scrutineer).createStandardPrintStreamListener(any(Function.class));
+
+        scrutineer.verify(elasticSearchIdAndVersionStream, jdbcIdAndVersionStream, idAndVersionStreamVerifier);
+
+        verify(scrutineer).verify(elasticSearchIdAndVersionStream, jdbcIdAndVersionStream, idAndVersionStreamVerifier);
+        verify(idAndVersionStreamVerifier).verify(any(IdAndVersionStream.class), any(IdAndVersionStream.class), eq(coincidentListener));
+    }
+
+    @Test
+    public void testShouldUseStandardPrintStreamListenerIfOptionProvided() {
+        Scrutineer scrutineer = spy(new Scrutineer(options));
+
+        doReturn(coincidentListener).when(scrutineer).createCoincidentPrintStreamListener(any(Function.class));
+        doReturn(standardListener).when(scrutineer).createStandardPrintStreamListener(any(Function.class));
+
+        scrutineer.verify(elasticSearchIdAndVersionStream, jdbcIdAndVersionStream, idAndVersionStreamVerifier);
+
+        verify(scrutineer).verify(elasticSearchIdAndVersionStream, jdbcIdAndVersionStream, idAndVersionStreamVerifier);
+        verify(idAndVersionStreamVerifier).verify(any(IdAndVersionStream.class), any(IdAndVersionStream.class), eq(standardListener));
     }
 
     @Test

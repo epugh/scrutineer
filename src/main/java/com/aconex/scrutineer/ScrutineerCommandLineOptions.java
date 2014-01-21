@@ -35,5 +35,8 @@ public class ScrutineerCommandLineOptions {
 
     @Parameter(names = "--versions-as-timestamps", description = "Assumes Version values are timestamps and are printed out in ISO8601 date/time format for convenience")
     public boolean versionsAsTimestamps = false;
+
+    @Parameter(names = "--ignore-timestamps-during-run", description = "Will suppress any Version Mismatch warnings whose timestamps are after the start of a Scrutineer run (implies use of --versionsAsTimestamps)")
+    public boolean ignoreTimestampsDuringRun = false;
 }
 // CHECKSTYLE:ON

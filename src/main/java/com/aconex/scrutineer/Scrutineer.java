@@ -84,13 +84,34 @@ public class Scrutineer {
     }
 
     void verify(ElasticSearchIdAndVersionStream elasticSearchIdAndVersionStream, JdbcIdAndVersionStream jdbcIdAndVersionStream, IdAndVersionStreamVerifier idAndVersionStreamVerifier) {
+        Function<Long, Object> formatter = createFormatter();
+        IdAndVersionStreamVerifierListener verifierListener = createVerifierListener(formatter);
+
+        idAndVersionStreamVerifier.verify(jdbcIdAndVersionStream, elasticSearchIdAndVersionStream, verifierListener);
+    }
+
+    private Function<Long, Object> createFormatter() {
         Function<Long, Object> formatter = PrintStreamOutputVersionStreamVerifierListener.DEFAULT_FORMATTER;
         if (options.versionsAsTimestamps) {
             formatter = new TimestampFormatter();
         }
-        PrintStreamOutputVersionStreamVerifierListener verifierListener = new PrintStreamOutputVersionStreamVerifierListener(System.err, formatter);
+        return formatter;
+    }
 
-        idAndVersionStreamVerifier.verify(jdbcIdAndVersionStream, elasticSearchIdAndVersionStream, verifierListener);
+    private IdAndVersionStreamVerifierListener createVerifierListener(Function<Long, Object> formatter) {
+        if (options.ignoreTimestampsDuringRun) {
+            return createCoincidentPrintStreamListener(formatter);
+        } else {
+            return createStandardPrintStreamListener(formatter);
+        }
+    }
+
+    IdAndVersionStreamVerifierListener createStandardPrintStreamListener(Function<Long, Object> formatter) {
+        return new PrintStreamOutputVersionStreamVerifierListener(System.err, formatter);
+    }
+
+    IdAndVersionStreamVerifierListener createCoincidentPrintStreamListener(Function<Long, Object> formatter) {
+        return new CoincidentFilteredStreamVerifierListener(new PrintStreamOutputVersionStreamVerifierListener(System.err, formatter));
     }
 
 
