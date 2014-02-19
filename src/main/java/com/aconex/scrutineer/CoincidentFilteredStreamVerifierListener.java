@@ -18,12 +18,18 @@ public class CoincidentFilteredStreamVerifierListener implements IdAndVersionStr
 
     @Override
     public void onMissingInSecondaryStream(IdAndVersion idAndVersion) {
-        otherListener.onMissingInSecondaryStream(idAndVersion);
+        long currentTime = timeSource.getCurrentTime();
+        if (idAndVersion.getVersion() < currentTime) {
+            otherListener.onMissingInSecondaryStream(idAndVersion);
+        }
     }
 
     @Override
     public void onMissingInPrimaryStream(IdAndVersion idAndVersion) {
-        otherListener.onMissingInPrimaryStream(idAndVersion);
+        long currentTime = timeSource.getCurrentTime();
+        if (idAndVersion.getVersion() < currentTime) {
+            otherListener.onMissingInPrimaryStream(idAndVersion);
+        }
     }
 
     @Override

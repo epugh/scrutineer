@@ -94,5 +94,29 @@ public class CoincidentFilteredStreamVerifierListenerTest {
 
     }
 
+    @Test
+    public void shouldNotDelegateOnMissingInSecondaryIfItemIsAfterRunStarted() {
+        CoincidentFilteredStreamVerifierListener coincidentFilteredStreamVerifierListener = new CoincidentFilteredStreamVerifierListener(new ControlledTimeSource(5), otherListener);
+
+        when(primaryIdAndVersion.getVersion()).thenReturn(10L);
+
+        coincidentFilteredStreamVerifierListener.onMissingInSecondaryStream(primaryIdAndVersion);
+
+        verify(otherListener, never()).onMissingInSecondaryStream(primaryIdAndVersion);
+
+    }
+
+    @Test
+    public void shouldNotDelegateOnMissingInPrimaryIfItemIsAfterRunStarted() {
+        CoincidentFilteredStreamVerifierListener coincidentFilteredStreamVerifierListener = new CoincidentFilteredStreamVerifierListener(new ControlledTimeSource(5), otherListener);
+
+        when(secondaryIdAndVersion.getVersion()).thenReturn(20L);
+
+        coincidentFilteredStreamVerifierListener.onMissingInPrimaryStream(secondaryIdAndVersion);
+
+        verify(otherListener, never()).onMissingInPrimaryStream(secondaryIdAndVersion);
+
+    }
+
 
 }
