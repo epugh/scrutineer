@@ -118,5 +118,21 @@ public class CoincidentFilteredStreamVerifierListenerTest {
 
     }
 
+    @Test
+    public void shouldNotDelegateWhenTimeMoves(){
+
+        ControlledTimeSource timeSource = new ControlledTimeSource(5);
+        CoincidentFilteredStreamVerifierListener coincidentFilteredStreamVerifierListener = new CoincidentFilteredStreamVerifierListener(timeSource, otherListener);
+
+        timeSource.setCurrentTime(25);
+
+        when(secondaryIdAndVersion.getVersion()).thenReturn(20L);
+
+        coincidentFilteredStreamVerifierListener.onMissingInPrimaryStream(secondaryIdAndVersion);
+
+        verify(otherListener, never()).onMissingInPrimaryStream(secondaryIdAndVersion);
+
+    }
+
 
 }

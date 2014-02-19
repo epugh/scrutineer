@@ -11,4 +11,8 @@ public class ControlledTimeSource implements TimeSource {
     public long getCurrentTime() {
         return expectedTime;
     }
+
+    public void setCurrentTime(long currentTime) {
+        this.expectedTime = currentTime;
+    }
 }
