@@ -18,15 +18,19 @@ public class DeletionVerifier {
 
         try {
             Iterator<IdAndVersion> iterator = primaryStream.iterator();
-            while (iterator.hasNext()) {
-                IdAndVersion idAndVersion = iterator.next();
-                if (existenceChecker.exists(idAndVersion)) {
-                    listener.onMissingInPrimaryStream(idAndVersion);
-                }
-            }
+            iterateAndCheck(iterator);
 
         } finally {
             primaryStream.close();
+        }
+    }
+
+    private void iterateAndCheck(Iterator<IdAndVersion> iterator) {
+        while (iterator.hasNext()) {
+            IdAndVersion idAndVersion = iterator.next();
+            if (existenceChecker.exists(idAndVersion)) {
+                listener.onMissingInPrimaryStream(idAndVersion);
+            }
         }
     }
 }
