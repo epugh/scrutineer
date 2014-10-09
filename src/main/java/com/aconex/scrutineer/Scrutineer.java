@@ -31,15 +31,18 @@ public class Scrutineer {
     public static void main(String[] args) {
         DOMConfigurator.configure(Scrutineer.class.getClassLoader().getResource("log4j.xml"));
 
-        Scrutineer scrutineer = new Scrutineer(parseOptions(args));
-        execute(scrutineer);
+        try {
+          execute(new Scrutineer(parseOptions(args)));
+        }
+        catch (Exception e) {
+          LOG.error("Failure during Scrutineering", e);
+          System.exit(1);
+        }
     }
 
     static void execute(Scrutineer scrutineer) {
         try {
             scrutineer.verify();
-        } catch (Exception e) {
-            LOG.error("Failure during Scrutineering", e);
         } finally {
             scrutineer.close();
         }

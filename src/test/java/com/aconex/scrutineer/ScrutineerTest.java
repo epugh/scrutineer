@@ -12,6 +12,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -46,6 +47,14 @@ public class ScrutineerTest {
         Scrutineer.execute(scrutineer);
         verify(scrutineer).verify();
         verify(scrutineer).close();
+    }
+
+    @Test(expected=RuntimeException.class)
+    public void shouldRethrowExceptionInExecute() {
+      Scrutineer scrutineer = spy(new Scrutineer(options));
+      doThrow(new Exception()).when(scrutineer).verify();
+
+      Scrutineer.execute(scrutineer);
     }
 
     @Test
