@@ -58,6 +58,7 @@ public class IdAndVersionResultSetIterator implements Iterator<IdAndVersion> {
         switch (this.idColumnType) {
         case Types.BIGINT:
         case Types.INTEGER:
+        case Types.NUMERIC:
             return resultSet.getLong(1);
         default:
             return resultSet.getString(1);
@@ -72,6 +73,7 @@ public class IdAndVersionResultSetIterator implements Iterator<IdAndVersion> {
 
             case Types.BIGINT:
             case Types.INTEGER:
+            case Types.NUMERIC:
                 return resultSet.getLong(2);
             default:
                 throw new UnsupportedOperationException(String.format("Do not know how to handle version column type (java.sql.Type value=%d", versionColumnType));
