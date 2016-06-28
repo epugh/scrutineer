@@ -18,6 +18,7 @@ public class NodeFactory {
                 .put("cluster.name", commandLineOptions.clusterName)
                 .put("node.client", true)
                 .put("node.name", "scrutineer")
+                .putProperties("es.",System.getProperties())
                 .build();
     }
 
