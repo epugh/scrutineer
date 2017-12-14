@@ -191,15 +191,7 @@ And you should have a Tarball in the 'target' sub-directory.
 Submitting Pull Requests
 ========================
 
-First, Please add unit tests!
-
-Second, Please add integration tests!
-
-Third, We have tightened up the quality rule set for CheckStyle, PMD etc pretty hard.  Before you issue a pull request, please run:
-
-    mvn verify
-
-which will run all quality checks.  Sorry to be super-anal, but we just like Clean Code.
+Please read through [contributing guidelines](./CONTRIBUTING.md).
 
 Roadmap
 =======
