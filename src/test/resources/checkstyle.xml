@@ -98,6 +98,5 @@
         </module>
         <module name="FileContentsHolder"/>
     </module>
-    <module name="StrictDuplicateCode"/>
     <module name="SuppressionCommentFilter"/>
 </module>

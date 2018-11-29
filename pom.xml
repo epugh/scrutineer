@@ -386,7 +386,7 @@
                         <artifactId>maven-pmd-plugin</artifactId>
                         <version>3.11.0</version>
                         <configuration>
-                            <targetJdk>1.6</targetJdk>
+                            <targetJdk>1.8</targetJdk>
                             <minimumPriority>4</minimumPriority>
                             <rulesets>
                                 <ruleset>${project.basedir}/src/test/resources/pmd.xml</ruleset>
