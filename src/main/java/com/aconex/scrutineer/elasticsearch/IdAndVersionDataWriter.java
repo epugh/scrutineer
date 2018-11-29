@@ -9,7 +9,7 @@ import com.fasterxml.sort.DataWriter;
 class IdAndVersionDataWriter extends DataWriter<IdAndVersion> {
     private final ObjectOutputStream objectOutputStream;
 
-    public IdAndVersionDataWriter(ObjectOutputStream objectOutputStream) {
+    IdAndVersionDataWriter(ObjectOutputStream objectOutputStream) {
         this.objectOutputStream = objectOutputStream;
     }
 

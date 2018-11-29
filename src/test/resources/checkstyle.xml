@@ -31,9 +31,6 @@
         <module name="InnerAssignment">
             <property name="severity" value="error"/>
         </module>
-        <module name="DoubleCheckedLocking">
-            <property name="severity" value="error"/>
-        </module>
         <module name="UnusedImports">
             <property name="severity" value="error"/>
         </module>
@@ -41,9 +38,6 @@
             <property name="severity" value="error"/>
         </module>
         <module name="RedundantModifier">
-            <property name="severity" value="error"/>
-        </module>
-        <module name="RedundantThrows">
             <property name="severity" value="error"/>
         </module>
         <module name="IllegalThrows">
@@ -104,6 +98,5 @@
         </module>
         <module name="FileContentsHolder"/>
     </module>
-    <module name="StrictDuplicateCode"/>
     <module name="SuppressionCommentFilter"/>
 </module>

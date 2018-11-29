@@ -1,283 +1,283 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ruleset>
   <description>Aconex way</description>
-  <rule ref="rulesets/basic.xml/UnusedNullCheckInEquals">
+  <rule ref="category/java/errorprone.xml/UnusedNullCheckInEquals">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/strings.xml/StringInstantiation">
+  <rule ref="category/java/performance.xml/StringInstantiation">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/design.xml/ConstructorCallsOverridableMethod">
+  <rule ref="category/java/errorprone.xml/ConstructorCallsOverridableMethod">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/strictexception.xml/AvoidCatchingNPE">
+  <rule ref="category/java/errorprone.xml/AvoidCatchingNPE">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/strictexception.xml/AvoidRethrowingException">
+  <rule ref="category/java/design.xml/AvoidRethrowingException">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/migrating.xml/ReplaceEnumerationWithIterator">
+  <rule ref="category/java/bestpractices.xml/ReplaceEnumerationWithIterator">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/optimizations.xml/AvoidArrayLoops">
+  <rule ref="category/java/performance.xml/AvoidArrayLoops">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/unusedcode.xml/UnusedFormalParameter">
+  <rule ref="category/java/bestpractices.xml/UnusedFormalParameter">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/EmptySwitchStatements">
+  <rule ref="category/java/errorprone.xml/EmptySwitchStatements">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/ClassCastExceptionWithToArray">
+  <rule ref="category/java/errorprone.xml/CloneMethodMustBePublic">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/unusedcode.xml/UnusedPrivateField">
+  <rule ref="category/java/bestpractices.xml/UnusedPrivateField">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/design.xml/CompareObjectsWithEquals">
+  <rule ref="category/java/errorprone.xml/ConstructorCallsOverridableMethod">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/strings.xml/UseIndexOfChar">
+  <rule ref="category/java/performance.xml/UseIndexOfChar">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/BigIntegerInstantiation">
+  <rule ref="category/java/performance.xml/BigIntegerInstantiation">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/design.xml/FinalFieldCouldBeStatic">
+  <rule ref="category/java/design.xml/FinalFieldCouldBeStatic">
     <priority>4</priority>
   </rule>
-  <rule ref="rulesets/braces.xml/IfStmtsMustUseBraces">
+  <rule ref="category/java/codestyle.xml/IfStmtsMustUseBraces">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/naming.xml/SuspiciousEqualsMethodName">
+  <rule ref="category/java/errorprone.xml/SuspiciousEqualsMethodName">
     <priority>2</priority>
   </rule>
-  <rule ref="rulesets/design.xml/InstantiationToGetClass">
+  <rule ref="category/java/errorprone.xml/InstantiationToGetClass">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/naming.xml/SuspiciousHashcodeMethodName">
+  <rule ref="category/java/errorprone.xml/SuspiciousOctalEscape">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/coupling.xml/LooseCoupling">
+  <rule ref="category/java/bestpractices.xml/LooseCoupling">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/unusedcode.xml/UnusedLocalVariable">
+  <rule ref="category/java/bestpractices.xml/UnusedLocalVariable">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/strings.xml/UnnecessaryCaseChange">
+  <rule ref="category/java/errorprone.xml/UnnecessaryConversionTemporary">
     <priority>4</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/EmptySynchronizedBlock">
+  <rule ref="category/java/errorprone.xml/EmptySynchronizedBlock">
     <priority>2</priority>
   </rule>
-  <rule ref="rulesets/design.xml/SingularField">
+  <rule ref="category/java/design.xml/SingularField">
     <priority>4</priority>
   </rule>
-  <rule ref="rulesets/unusedcode.xml/UnusedPrivateMethod">
+  <rule ref="category/java/bestpractices.xml/UnusedPrivateMethod">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/design.xml/CloseResource">
+  <rule ref="category/java/errorprone.xml/CloseResource">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/strictexception.xml/AvoidCatchingThrowable">
+  <rule ref="category/java/errorprone.xml/AvoidCatchingThrowable">
     <priority>2</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/EmptyWhileStmt">
+  <rule ref="category/java/errorprone.xml/EmptyWhileStmt">
     <priority>2</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/CollapsibleIfStatements">
+  <rule ref="category/java/design.xml/CollapsibleIfStatements">
     <priority>4</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/UselessOperationOnImmutable">
+  <rule ref="category/java/errorprone.xml/UselessOperationOnImmutable">
     <priority>2</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/UselessOverridingMethod">
+  <rule ref="category/java/design.xml/UselessOverridingMethod">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/controversial.xml/UnusedModifier">
+  <rule ref="category/java/codestyle.xml/UnnecessaryModifier">
     <priority>5</priority>
   </rule>
-  <rule ref="rulesets/design.xml/PreserveStackTrace">
+  <rule ref="category/java/bestpractices.xml/PreserveStackTrace">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/optimizations.xml/UseArraysAsList">
+  <rule ref="category/java/performance.xml/UseArraysAsList">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/EmptyIfStmt">
+  <rule ref="category/java/errorprone.xml/EmptyIfStmt">
     <priority>2</priority>
   </rule>
-  <rule ref="rulesets/design.xml/EqualsNull">
+  <rule ref="category/java/errorprone.xml/EqualsNull">
     <priority>2</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/BrokenNullCheck">
+  <rule ref="category/java/errorprone.xml/CallSuperFirst">
     <priority>2</priority>
   </rule>
-  <rule ref="rulesets/logging-jakarta-commons.xml/UseCorrectExceptionLogging">
+  <rule ref="category/java/errorprone.xml/UseCorrectExceptionLogging">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/strings.xml/InefficientStringBuffering">
+  <rule ref="category/java/performance.xml/InefficientStringBuffering">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/sunsecure.xml/ArrayIsStoredDirectly">
+  <rule ref="category/java/bestpractices.xml/ArrayIsStoredDirectly">
     <priority>2</priority>
   </rule>
-  <rule ref="rulesets/finalizers.xml/FinalizeOverloaded">
+  <rule ref="category/java/errorprone.xml/FinalizeOverloaded">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/naming.xml/ClassNamingConventions">
+  <rule ref="category/java/codestyle.xml/ClassNamingConventions">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/controversial.xml/DontImportSun">
+  <rule ref="category/java/errorprone.xml/DontImportSun">
     <priority>4</priority>
   </rule>
-  <rule ref="rulesets/imports.xml/DontImportJavaLang">
+  <rule ref="category/java/codestyle.xml/DontImportJavaLang">
     <priority>4</priority>
   </rule>
-  <rule ref="rulesets/design.xml/MissingStaticMethodInNonInstantiatableClass">
+  <rule ref="category/java/errorprone.xml/MissingStaticMethodInNonInstantiatableClass">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/strings.xml/StringBufferInstantiationWithChar">
+  <rule ref="category/java/errorprone.xml/StringBufferInstantiationWithChar">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/optimizations.xml/UseArrayListInsteadOfVector">
+  <rule ref="category/java/performance.xml/UseArrayListInsteadOfVector">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/braces.xml/WhileLoopsMustUseBraces">
+  <rule ref="category/java/codestyle.xml/WhileLoopsMustUseBraces">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/strings.xml/StringToString">
+  <rule ref="category/java/performance.xml/StringToString">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/design.xml/SimplifyConditional">
+  <rule ref="category/java/design.xml/SimplifyConditional">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/migrating.xml/ReplaceVectorWithList">
+  <rule ref="category/java/bestpractices.xml/ReplaceVectorWithList">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/logging-java.xml/AvoidPrintStackTrace">
+  <rule ref="category/java/bestpractices.xml/AvoidPrintStackTrace">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/naming.xml/MethodWithSameNameAsEnclosingClass">
+  <rule ref="category/java/errorprone.xml/MethodWithSameNameAsEnclosingClass">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/naming.xml/SuspiciousConstantFieldName">
+  <rule ref="category/java/codestyle.xml/SuspiciousConstantFieldName">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/codesize.xml/NcssTypeCount">
+  <rule ref="category/java/design.xml/NcssTypeCount">
     <priority>3</priority>
     <properties>
       <property name="minimum" value="500"/>
     </properties>
   </rule>
-  <rule ref="rulesets/design.xml/AvoidInstanceofChecksInCatchClause">
+  <rule ref="category/java/errorprone.xml/AvoidInstanceofChecksInCatchClause">
     <priority>4</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/EmptyFinallyBlock">
+  <rule ref="category/java/errorprone.xml/EmptyFinallyBlock">
     <priority>2</priority>
   </rule>
-  <rule ref="rulesets/migrating.xml/IntegerInstantiation">
+  <rule ref="category/java/performance.xml/IntegerInstantiation">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/naming.xml/AvoidDollarSigns">
+  <rule ref="category/java/codestyle.xml/AvoidDollarSigns">
     <priority>4</priority>
   </rule>
-  <rule ref="rulesets/migrating.xml/AvoidAssertAsIdentifier">
+  <rule ref="category/java/errorprone.xml/AvoidAssertAsIdentifier">
     <priority>2</priority>
   </rule>
-  <rule ref="rulesets/design.xml/UnnecessaryLocalBeforeReturn">
+  <rule ref="category/java/codestyle.xml/UnnecessaryLocalBeforeReturn">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/finalizers.xml/AvoidCallingFinalize">
+  <rule ref="category/java/errorprone.xml/AvoidCallingFinalize">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/BooleanInstantiation">
+  <rule ref="category/java/performance.xml/BooleanInstantiation">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/UnconditionalIfStatement">
+  <rule ref="category/java/errorprone.xml/UnconditionalIfStatement">
     <priority>2</priority>
   </rule>
-  <rule ref="rulesets/clone.xml/CloneThrowsCloneNotSupportedException">
+  <rule ref="category/java/errorprone.xml/CloneThrowsCloneNotSupportedException">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/migrating.xml/ReplaceHashtableWithMap">
+  <rule ref="category/java/bestpractices.xml/ReplaceHashtableWithMap">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/AvoidDecimalLiteralsInBigDecimalConstructor">
+  <rule ref="category/java/errorprone.xml/AvoidDecimalLiteralsInBigDecimalConstructor">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/braces.xml/ForLoopsMustUseBraces">
+  <rule ref="category/java/codestyle.xml/ForLoopsMustUseBraces">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/EmptyTryBlock">
+  <rule ref="category/java/errorprone.xml/EmptyTryBlock">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/strictexception.xml/SignatureDeclareThrowsException">
+  <rule ref="category/java/design.xml/SignatureDeclareThrowsException">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/finalizers.xml/EmptyFinalizer">
+  <rule ref="category/java/errorprone.xml/EmptyFinalizer">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/design.xml/IdempotentOperations">
+  <rule ref="category/java/errorprone.xml/IdempotentOperations">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/strictexception.xml/ExceptionAsFlowControl">
+  <rule ref="category/java/design.xml/ExceptionAsFlowControl">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/basic.xml/EmptyStaticInitializer">
+  <rule ref="category/java/errorprone.xml/EmptyInitializer">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/finalizers.xml/FinalizeDoesNotCallSuperFinalize">
+  <rule ref="category/java/errorprone.xml/FinalizeDoesNotCallSuperFinalize">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/strings.xml/UseStringBufferLength">
+  <rule ref="category/java/performance.xml/UseStringBufferLength">
     <priority>4</priority>
   </rule>
-  <rule ref="rulesets/migrating.xml/AvoidEnumAsIdentifier">
+  <rule ref="category/java/errorprone.xml/AvoidEnumAsIdentifier">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/braces.xml/IfElseStmtsMustUseBraces">
+  <rule ref="category/java/codestyle.xml/IfElseStmtsMustUseBraces">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/logging-java.xml/SystemPrintln">
+  <rule ref="category/java/bestpractices.xml/SystemPrintln">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/strings.xml/UselessStringValueOf">
+  <rule ref="category/java/performance.xml/UselessStringValueOf">
     <priority>4</priority>
   </rule>
-  <rule ref="rulesets/strings.xml/AvoidDuplicateLiterals">
+  <rule ref="category/java/errorprone.xml/AvoidDuplicateLiterals">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/design.xml/AvoidDeeplyNestedIfStmts">
+  <rule ref="category/java/design.xml/AvoidDeeplyNestedIfStmts">
     <priority>2</priority>
     <properties>
       <property name="problemDepth" value="2"/>
     </properties>
   </rule>
-  <rule ref="rulesets/design.xml/AvoidReassigningParameters">
+  <rule ref="category/java/bestpractices.xml/AvoidReassigningParameters">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/controversial.xml/DoNotCallGarbageCollectionExplicitly">
+  <rule ref="category/java/errorprone.xml/DoNotCallGarbageCollectionExplicitly">
     <priority>2</priority>
   </rule>
-  <rule ref="rulesets/imports.xml/DuplicateImports">
+  <rule ref="category/java/codestyle.xml/DuplicateImports">
     <priority>4</priority>
   </rule>
-  <rule ref="rulesets/codesize.xml/NcssMethodCount">
+  <rule ref="category/java/design.xml/NcssMethodCount">
     <priority>3</priority>
     <properties>
       <property name="minimum" value="7"/>
     </properties>
   </rule>
-  <rule ref="rulesets/codesize.xml/ExcessiveParameterList">
+  <rule ref="category/java/design.xml/ExcessiveParameterList">
     <priority>3</priority>
     <properties>
       <property name="minimum" value="6"/>
     </properties>
   </rule>
-  <rule ref="rulesets/codesize.xml/ExcessivePublicCount">
+  <rule ref="category/java/design.xml/ExcessivePublicCount">
     <priority>3</priority>
   </rule>
-  <rule ref="rulesets/codesize.xml/NPathComplexity">
+  <rule ref="category/java/design.xml/NPathComplexity">
     <priority>3</priority>
   </rule>
 </ruleset>
