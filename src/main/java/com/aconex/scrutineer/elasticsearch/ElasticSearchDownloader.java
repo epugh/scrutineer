@@ -65,11 +65,15 @@ public class ElasticSearchDownloader {
 
     boolean writeSearchResponseToOutputStream(ObjectOutputStream objectOutputStream, SearchResponse searchResponse) throws IOException {
         SearchHit[] hits = searchResponse.getHits().hits();
+        enumerateHits(objectOutputStream, hits);
+        return hits.length > 0;
+    }
+
+    private void enumerateHits(ObjectOutputStream objectOutputStream, SearchHit[] hits) throws IOException {
         for (SearchHit hit : hits) {
         	idAndVersionFactory.create(hit.getId(), hit.getVersion()).writeToStream(objectOutputStream);
             numItems++;
         }
-        return hits.length > 0;
     }
 
     QueryStringQueryBuilder createQuery() {
