@@ -37,9 +37,8 @@ class IdAndVersionDataReader extends DataReader<IdAndVersion> {
         int idAndVersionContainerSize = BYTES_PER_OBJECT_POINTER;
         int versionSize = BYTES_PER_LONG;
         int idSize = BYTES_PER_OBJECT_POINTER + BYTES_PER_ARRAY_POINTER + (item.getId().length() * BYTES_PER_CHAR);
-        int totalSize = idAndVersionContainerSize + versionSize + idSize;
 
-        return totalSize;
+        return idAndVersionContainerSize + versionSize + idSize;
     }
 
     @Override
