@@ -40,9 +40,6 @@
         <module name="RedundantModifier">
             <property name="severity" value="error"/>
         </module>
-        <module name="RedundantThrows">
-            <property name="severity" value="error"/>
-        </module>
         <module name="IllegalThrows">
             <property name="severity" value="error"/>
         </module>
