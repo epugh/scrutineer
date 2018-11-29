@@ -116,7 +116,7 @@ public class IdAndVersionStreamVerifier {
     private static class OpenStreamRunner implements Runnable {
         private final IdAndVersionStream stream;
 
-        public OpenStreamRunner(IdAndVersionStream stream) {
+        OpenStreamRunner(IdAndVersionStream stream) {
             this.stream = stream;
         }
 
@@ -130,7 +130,7 @@ public class IdAndVersionStreamVerifier {
         private final String namePrefix;
         private final AtomicInteger threadCount = new AtomicInteger();
 
-        public NamedDaemonThreadFactory(String namePrefix) {
+        NamedDaemonThreadFactory(String namePrefix) {
             this.namePrefix = namePrefix;
         }
 

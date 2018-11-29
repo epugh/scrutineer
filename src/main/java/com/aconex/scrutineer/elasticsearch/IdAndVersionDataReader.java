@@ -18,7 +18,7 @@ class IdAndVersionDataReader extends DataReader<IdAndVersion> {
 	private final IdAndVersionFactory factory;
     private final ObjectInputStream objectInputStream;
 
-    public IdAndVersionDataReader(IdAndVersionFactory factory, ObjectInputStream objectInputStream) {
+    IdAndVersionDataReader(IdAndVersionFactory factory, ObjectInputStream objectInputStream) {
     	this.factory = factory;
         this.objectInputStream = objectInputStream;
     }

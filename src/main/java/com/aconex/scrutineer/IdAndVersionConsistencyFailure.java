@@ -41,7 +41,7 @@ public class IdAndVersionConsistencyFailure {
         return failureMode == ConsistencyFailureMode.MISMATCH;
     }
 
-    public static enum ConsistencyFailureMode {
+    public enum ConsistencyFailureMode {
         NOTINSECONDARY, NOTINPRIMARY, MISMATCH,
     }
 
