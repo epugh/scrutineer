@@ -6,14 +6,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Iterator;
 
-import org.apache.commons.lang.SystemUtils;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.index.VersionType;
-import org.elasticsearch.node.Node;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.aconex.scrutineer.IdAndVersion;
 import com.aconex.scrutineer.IdAndVersionFactory;
 import com.aconex.scrutineer.StringIdAndVersion;
@@ -22,6 +14,13 @@ import com.fasterxml.sort.DataWriterFactory;
 import com.fasterxml.sort.SortConfig;
 import com.fasterxml.sort.Sorter;
 import com.fasterxml.sort.util.NaturalComparator;
+import org.apache.commons.lang3.SystemUtils;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.index.VersionType;
+import org.elasticsearch.node.Node;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class ElasticSearchIdAndVersionStreamIntegrationTest {
 

@@ -3,8 +3,8 @@ package com.aconex.scrutineer;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
-import org.apache.commons.lang.builder.CompareToBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class StringIdAndVersion extends AbstractIdAndVersion {
 
