@@ -1,5 +1,14 @@
 package com.aconex.scrutineer.functional;
 
+import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
+import static org.mockito.Mockito.verify;
+
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.net.URL;
+import java.util.TimeZone;
+import javax.sql.DataSource;
+
 import com.aconex.scrutineer.Scrutineer;
 import com.aconex.scrutineer.elasticsearch.ElasticSearchTestHelper;
 import com.aconex.scrutineer.jdbc.HSQLHelper;
@@ -15,15 +24,6 @@ import org.elasticsearch.common.joda.time.DateTimeZone;
 import org.elasticsearch.node.Node;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import javax.sql.DataSource;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.net.URL;
-import java.util.TimeZone;
-
-import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
-import static org.mockito.Mockito.verify;
 
 public class ScrutineerIntegrationTest extends DataSourceBasedDBTestCase {
 
@@ -89,7 +89,7 @@ public class ScrutineerIntegrationTest extends DataSourceBasedDBTestCase {
         BulkRequest bulkRequest = new BulkRequestBuilder(client).request();
         URL bulkIndexRequest = this.getClass().getResource("es-bulkindex.json");
         byte[] data = ByteStreams.toByteArray(bulkIndexRequest.openStream());
-        bulkRequest.add(data, 0, data.length, true);
+        bulkRequest.add(data, 0, data.length);
         BulkResponse bulkResponse = client.bulk(bulkRequest).actionGet();
         if (bulkResponse.hasFailures()) {
             throw new RuntimeException("Failed to index data needed for test. " + bulkResponse.buildFailureMessage());

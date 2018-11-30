@@ -87,7 +87,7 @@ public class ScrutineerNumericIntegrationTest extends DataSourceBasedDBTestCase 
         BulkRequest bulkRequest = new BulkRequestBuilder(client).request();
         URL bulkIndexRequest = this.getClass().getResource("es-numericbulkindex.json");
         byte[] data = ByteStreams.toByteArray(bulkIndexRequest.openStream());
-        bulkRequest.add(data, 0, data.length, true);
+        bulkRequest.add(data, 0, data.length);
         BulkResponse bulkResponse = client.bulk(bulkRequest).actionGet();
         if (bulkResponse.hasFailures()) {
             throw new RuntimeException("Failed to index data needed for test. " + bulkResponse.buildFailureMessage());
