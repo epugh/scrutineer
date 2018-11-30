@@ -1,5 +1,9 @@
 package com.aconex.scrutineer;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
 import com.aconex.scrutineer.elasticsearch.ElasticSearchDownloader;
 import com.aconex.scrutineer.elasticsearch.ElasticSearchIdAndVersionStream;
 import com.aconex.scrutineer.elasticsearch.ElasticSearchSorter;
@@ -14,15 +18,11 @@ import com.fasterxml.sort.SortConfig;
 import com.fasterxml.sort.Sorter;
 import com.fasterxml.sort.util.NaturalComparator;
 import com.google.common.base.Function;
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.node.Node;
 import org.slf4j.Logger;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 
 public class Scrutineer {
 

@@ -7,8 +7,7 @@ import java.util.Iterator;
 
 import com.aconex.scrutineer.IdAndVersion;
 import com.aconex.scrutineer.IdAndVersionFactory;
-
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 
 public class IdAndVersionResultSetIterator implements Iterator<IdAndVersion> {
 
@@ -48,7 +47,7 @@ public class IdAndVersionResultSetIterator implements Iterator<IdAndVersion> {
 
     @Override
     public void remove() {
-        throw new NotImplementedException();
+        throw new NotImplementedException("remove() is not implemented");
     }
 
     // TODO talk to Leon about this Cyclomatic Complexity for checkstyle
