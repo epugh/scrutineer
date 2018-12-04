@@ -6,15 +6,16 @@ import java.io.OutputStream;
 
 import com.aconex.scrutineer.IdAndVersionFactory;
 import com.aconex.scrutineer.LogUtils;
-
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 
 public class ElasticSearchDownloader {
@@ -54,7 +55,6 @@ public class ElasticSearchDownloader {
     }
 
     void consumeBatches(ObjectOutputStream objectOutputStream, String initialScrollId) throws IOException {
-
         String scrollId = initialScrollId;
         SearchResponse batchSearchResponse = null;
         do {
@@ -63,8 +63,8 @@ public class ElasticSearchDownloader {
         } while (writeSearchResponseToOutputStream(objectOutputStream, batchSearchResponse));
     }
 
-    boolean writeSearchResponseToOutputStream(ObjectOutputStream objectOutputStream, SearchResponse searchResponse) throws IOException {
-        SearchHit[] hits = searchResponse.getHits().hits();
+    protected boolean writeSearchResponseToOutputStream(ObjectOutputStream objectOutputStream, SearchResponse searchResponse) throws IOException {
+        SearchHit[] hits = searchResponse.getHits().getHits();
         enumerateHits(objectOutputStream, hits);
         return hits.length > 0;
     }
@@ -77,19 +77,22 @@ public class ElasticSearchDownloader {
     }
 
     QueryStringQueryBuilder createQuery() {
-        return QueryBuilders.queryString(query).defaultOperator(QueryStringQueryBuilder.Operator.AND).defaultField("_all");
+        return QueryBuilders.queryStringQuery(query).defaultOperator(Operator.AND).defaultField("_all");
     }
 
     @SuppressWarnings("PMD.NcssMethodCount")
     SearchResponse startScroll() {
+
+        //https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/java-search-scrolling.html
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(indexName);
-        searchRequestBuilder.setSearchType(SearchType.SCAN);
-        searchRequestBuilder.setQuery(createQuery());
-        searchRequestBuilder.setSize(BATCH_SIZE);
-        searchRequestBuilder.setExplain(false);
-        searchRequestBuilder.setNoFields();
-        searchRequestBuilder.setVersion(true);
-        searchRequestBuilder.setScroll(TimeValue.timeValueMinutes(SCROLL_TIME_IN_MINUTES));
+
+        searchRequestBuilder.addSort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC)
+        .setQuery(createQuery())
+        .setSize(BATCH_SIZE)
+        .setExplain(false)
+        .setFetchSource(false)
+        .setVersion(true)
+        .setScroll(TimeValue.timeValueMinutes(SCROLL_TIME_IN_MINUTES));
 
         return searchRequestBuilder.execute().actionGet();
     }
