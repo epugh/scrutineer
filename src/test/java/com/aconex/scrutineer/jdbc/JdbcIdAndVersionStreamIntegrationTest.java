@@ -1,12 +1,12 @@
 package com.aconex.scrutineer.jdbc;
 
-import static com.aconex.scrutineer.HasIdAndVersionMatcher.hasIdAndVersion;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import javax.sql.DataSource;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Iterator;
+import javax.sql.DataSource;
 
 import com.aconex.scrutineer.IdAndVersion;
 import com.aconex.scrutineer.IdAndVersionFactory;
@@ -31,9 +31,9 @@ public class JdbcIdAndVersionStreamIntegrationTest extends DataSourceBasedDBTest
 
         Iterator<IdAndVersion> iterator = jdbcIdAndVersionStream.iterator();
 
-        assertThat(iterator.next(), hasIdAndVersion("1", 10));
-        assertThat(iterator.next(), hasIdAndVersion("2", 20));
-        assertThat(iterator.next(), hasIdAndVersion("3", 30));
+        assertThat(iterator.next(), equalTo(new StringIdAndVersion("1",10)));
+        assertThat(iterator.next(), equalTo(new StringIdAndVersion("2",20)));
+        assertThat(iterator.next(), equalTo(new StringIdAndVersion("3",30)));
 
         jdbcIdAndVersionStream.close();
 

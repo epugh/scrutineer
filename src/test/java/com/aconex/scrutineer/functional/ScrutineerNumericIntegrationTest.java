@@ -1,22 +1,24 @@
 package com.aconex.scrutineer.functional;
 
-import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 import static org.mockito.Mockito.verify;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.URL;
 
 import javax.sql.DataSource;
 
+import com.aconex.scrutineer.elasticsearch.ESIntegrationTestNode;
 import org.dbunit.DataSourceBasedDBTestCase;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.XmlDataSet;
-import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.node.Node;
+import org.elasticsearch.node.NodeValidationException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -71,8 +73,8 @@ public class ScrutineerNumericIntegrationTest extends DataSourceBasedDBTestCase 
         super.setUp();
     }
 
-    private void setupElasticSearchConnection() {
-        this.node = nodeBuilder().clusterName(CLUSTER_NAME).node();
+    private void setupElasticSearchConnection() throws NodeValidationException {
+        this.node = ESIntegrationTestNode.elasticSearchTestNode();
         this.client = node.client();
     }
 
@@ -84,11 +86,11 @@ public class ScrutineerNumericIntegrationTest extends DataSourceBasedDBTestCase 
 
     private void indexSetupStateForElasticSearch() throws Exception {
         new ElasticSearchTestHelper(client).deleteIndexIfItExists("test");
-        BulkRequest bulkRequest = new BulkRequestBuilder(client).request();
+        BulkRequestBuilder bulkRequest = client.prepareBulk();
         URL bulkIndexRequest = this.getClass().getResource("es-numericbulkindex.json");
         byte[] data = ByteStreams.toByteArray(bulkIndexRequest.openStream());
-        bulkRequest.add(data, 0, data.length);
-        BulkResponse bulkResponse = client.bulk(bulkRequest).actionGet();
+        bulkRequest.add(data, 0, data.length, XContentType.JSON);
+        BulkResponse bulkResponse = bulkRequest.get();
         if (bulkResponse.hasFailures()) {
             throw new RuntimeException("Failed to index data needed for test. " + bulkResponse.buildFailureMessage());
         }
@@ -101,7 +103,7 @@ public class ScrutineerNumericIntegrationTest extends DataSourceBasedDBTestCase 
         closeElasticSearch();
     }
 
-    private void closeElasticSearch() {
+    private void closeElasticSearch() throws IOException {
         if (client != null) {
             client.close();
         }
