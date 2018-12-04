@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -80,8 +81,9 @@ public class ElasticSearchDownloaderTest {
         when(searchScrollRequestBuilder.execute()).thenReturn(listenableActionFuture);
         when(searchScrollRequestBuilder.setScroll(any(TimeValue.class))).thenReturn(searchScrollRequestBuilder);
         when(listenableActionFuture.actionGet()).thenReturn(searchResponse);
-        elasticSearchDownloader.consumeBatches(mock(ObjectOutputStream.class), DUMMY_SCROLL_ID);
-        verify(client).prepareSearchScroll(any(String.class));
+        elasticSearchDownloader.consumeBatches(mock(ObjectOutputStream.class), searchResponse);
+        verify(client, never()).prepareSearchScroll(any(String.class)); // one batch shouldn't bother calling for next scroll
+        verify(elasticSearchDownloader).writeSearchResponseToOutputStream(any(ObjectOutputStream.class), any(SearchResponse.class));
     }
 
     @Test
@@ -94,9 +96,13 @@ public class ElasticSearchDownloaderTest {
         when(searchScrollRequestBuilder.setScroll(any(TimeValue.class))).thenReturn(searchScrollRequestBuilder);
         when(listenableActionFuture.actionGet()).thenReturn(searchResponse);
         when(searchResponse.getScrollId()).thenReturn(DUMMY_SCROLL_ID);
-        elasticSearchDownloader.consumeBatches(mock(ObjectOutputStream.class), DUMMY_SCROLL_ID);
-        verify(client,times(2)).prepareSearchScroll(any(String.class));
-        verify(searchResponse, times(2)).getScrollId();
+        elasticSearchDownloader.consumeBatches(mock(ObjectOutputStream.class), searchResponse);
+        // even with multiple batches, the prepareSearchScroll is only called once after the initial request
+        verify(client,times(1)).prepareSearchScroll(any(String.class));
+        verify(searchResponse, times(1)).getScrollId();
+
+        //however we want multiple callso to the write method
+        verify(elasticSearchDownloader, times(2)).writeSearchResponseToOutputStream(any(ObjectOutputStream.class), any(SearchResponse.class));
     }
 
 

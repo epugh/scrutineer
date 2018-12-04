@@ -22,7 +22,7 @@ public class ElasticSearchDownloader {
 
     private static final Logger LOG = LogUtils.loggerForThisClass();
 
-    static final int BATCH_SIZE = 100000;
+    static final int BATCH_SIZE = 10000;
     static final int SCROLL_TIME_IN_MINUTES = 10;
     private long numItems = 0;
 
@@ -47,23 +47,22 @@ public class ElasticSearchDownloader {
     private void doDownloadTo(OutputStream outputStream) {
         try {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-            consumeBatches(objectOutputStream, startScroll().getScrollId());
+            consumeBatches(objectOutputStream, startScroll());
             objectOutputStream.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    void consumeBatches(ObjectOutputStream objectOutputStream, String initialScrollId) throws IOException {
-        String scrollId = initialScrollId;
-        SearchResponse batchSearchResponse = null;
-        do {
+    void consumeBatches(ObjectOutputStream objectOutputStream, SearchResponse initialSearchResponse) throws IOException {
+        SearchResponse batchSearchResponse = initialSearchResponse;
+        while (writeSearchResponseToOutputStream(objectOutputStream, batchSearchResponse)) {
+            String scrollId = batchSearchResponse.getScrollId();
             batchSearchResponse = client.prepareSearchScroll(scrollId).setScroll(TimeValue.timeValueMinutes(SCROLL_TIME_IN_MINUTES)).execute().actionGet();
-            scrollId = batchSearchResponse.getScrollId();
-        } while (writeSearchResponseToOutputStream(objectOutputStream, batchSearchResponse));
+        }
     }
 
-    protected boolean writeSearchResponseToOutputStream(ObjectOutputStream objectOutputStream, SearchResponse searchResponse) throws IOException {
+    boolean writeSearchResponseToOutputStream(ObjectOutputStream objectOutputStream, SearchResponse searchResponse) throws IOException {
         SearchHit[] hits = searchResponse.getHits().getHits();
         enumerateHits(objectOutputStream, hits);
         return hits.length > 0;

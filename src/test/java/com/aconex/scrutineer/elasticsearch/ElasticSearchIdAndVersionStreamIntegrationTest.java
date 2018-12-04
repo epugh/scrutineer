@@ -76,7 +76,7 @@ public class ElasticSearchIdAndVersionStreamIntegrationTest {
     }
 
     private void indexIdAndVersion(String id, long version) {
-        client.prepareIndex(INDEX_NAME,"idandversion").setId(id).setVersion(version).setVersionType(VersionType.EXTERNAL).setSource("{value:1}").execute().actionGet();
+        client.prepareIndex(INDEX_NAME,"idandversion").setId(id).setVersion(version).setVersionType(VersionType.EXTERNAL).setSource("value", 1).execute().actionGet();
     }
 
 }
