@@ -1,11 +1,8 @@
 package com.aconex.scrutineer;
 
-import org.hamcrest.Description;
-import org.hamcrest.Factory;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
+import org.mockito.ArgumentMatcher;
 
-public class HasIdAndVersionMatcher extends TypeSafeMatcher<IdAndVersion> {
+public class HasIdAndVersionMatcher implements ArgumentMatcher<IdAndVersion> {
 
     private final String id;
 
@@ -17,17 +14,7 @@ public class HasIdAndVersionMatcher extends TypeSafeMatcher<IdAndVersion> {
     }
 
     @Override
-    public boolean matchesSafely(IdAndVersion idAndVersion) {
-        return idAndVersion.getId().endsWith(id) && idAndVersion.getVersion() == version;
-    }
-
-    @Override
-    public void describeTo(Description description) {
-        description.appendText(" has id and version "+id+":"+version);
-    }
-
-    @Factory
-    public static <T>Matcher<IdAndVersion> hasIdAndVersion(String id, long version) {
-        return new HasIdAndVersionMatcher(id,version);
+    public boolean matches(IdAndVersion idAndVersion) {
+        return idAndVersion.getId().equals(id) && idAndVersion.getVersion() == version;
     }
 }
