@@ -1,6 +1,7 @@
 package com.aconex.scrutineer.functional;
 
 import static org.elasticsearch.common.xcontent.XContentType.JSON;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
@@ -20,11 +21,11 @@ import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.XmlDataSet;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeValidationException;
 import org.joda.time.DateTimeZone;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 public class ScrutineerIntegrationTest extends DataSourceBasedDBTestCase {
@@ -34,8 +35,8 @@ public class ScrutineerIntegrationTest extends DataSourceBasedDBTestCase {
     private Node node;
     private Client client;
 
-    @Mock
-    PrintStream printStream;
+
+    PrintStream printStream = spy(System.err);
 
 
     public void testShouldScrutinizeStreamsEffectively() {
@@ -88,7 +89,7 @@ public class ScrutineerIntegrationTest extends DataSourceBasedDBTestCase {
 
     private void indexSetupStateForElasticSearch() throws Exception {
         new ElasticSearchTestHelper(client).deleteIndexIfItExists("test");
-        BulkRequestBuilder bulkRequest = client.prepareBulk();
+        BulkRequestBuilder bulkRequest = client.prepareBulk().setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE);
         URL bulkIndexRequest = this.getClass().getResource("es-bulkindex.json");
         byte[] data = ByteStreams.toByteArray(bulkIndexRequest.openStream());
         bulkRequest.add(data, 0, data.length, JSON);
