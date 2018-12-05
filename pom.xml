@@ -387,6 +387,7 @@
                             <failsOnError>true</failsOnError>
                             <violationSeverity>info</violationSeverity>
                             <configLocation>${project.basedir}/src/test/resources/checkstyle.xml</configLocation>
+                            <consoleOutput>true</consoleOutput>
                         </configuration>
                         <executions>
                             <execution>
