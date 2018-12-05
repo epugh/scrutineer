@@ -29,16 +29,24 @@ public class TransportAddressParser implements IStringConverter<List<TransportAd
     public List<TransportAddress> convert(String sourceValue) {
         String[] values = sourceValue.split(",");
         List<TransportAddress> transportAddresses = new ArrayList<>();
+        parseHostPortPairs(values, transportAddresses);
+        return transportAddresses;
+    }
+
+    private void parseHostPortPairs(String[] values, List<TransportAddress> transportAddresses) {
         for (String value : values) {
             parseHostPortPair(transportAddresses, value);
         }
-        return transportAddresses;
     }
 
     private void parseHostPortPair(List<TransportAddress> transportAddresses, String value) {
         String[] hostPortPair = value.split(":");
         String host = hostPortPair[0];
         int port = hostPortPair.length < 2 ? DEFAULT_ELASTICSEARCH_PORT : Integer.valueOf(hostPortPair[1]);
+        resolveAddresses(transportAddresses, host, port);
+    }
+
+    private void resolveAddresses(List<TransportAddress> transportAddresses, String host, int port) {
         try {
             transportAddresses.add(new TransportAddress(inetAddressResolver.resolveInetAddress(host), port));
         } catch (UnknownHostException e) {
