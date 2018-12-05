@@ -42,6 +42,7 @@ public class ScrutineerNumericIntegrationTest extends DataSourceBasedDBTestCase 
                 "--jdbcUser", "sa",
                 //"--jdbcPassword", "",
                 "--clusterName", CLUSTER_NAME,
+                "--esHosts", "localhost:9300",
                 "--sql", "select id,version from test order by CAST(id AS INTEGER)",
                 "--indexName", "test",
                 "--numeric"
