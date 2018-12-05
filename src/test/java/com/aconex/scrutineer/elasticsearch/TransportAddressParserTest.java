@@ -78,10 +78,10 @@ public class TransportAddressParserTest {
         // this is not a bug, the actual Java network code translates localhost =>127.0.0.1
         // this might prove to be a flakey test..
         assertThat(scrutineerCommandLineOptions.elasticSearchHosts.get(0).getAddress(), is("127.0.0.1"));
-        assertThat(scrutineerCommandLineOptions.elasticSearchHosts.get(0).getPort(), is("9300"));
+        assertThat(scrutineerCommandLineOptions.elasticSearchHosts.get(0).getPort(), is(9300));
 
         assertThat(scrutineerCommandLineOptions.elasticSearchHosts.get(1).getAddress(), is("127.0.0.1"));
-        assertThat(scrutineerCommandLineOptions.elasticSearchHosts.get(1).getPort(), is("9301"));
+        assertThat(scrutineerCommandLineOptions.elasticSearchHosts.get(1).getPort(), is(9301));
     }
 
 
