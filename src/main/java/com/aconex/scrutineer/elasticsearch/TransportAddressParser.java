@@ -14,7 +14,12 @@ public class TransportAddressParser implements IStringConverter<List<TransportAd
     private final InetAddressResolver inetAddressResolver;
 
     public TransportAddressParser(){
-        this(hostByName -> InetAddress.getByName(hostByName));
+        this(new InetAddressResolver() {
+            @Override
+            public InetAddress resolveInetAddress(String hostByName) throws UnknownHostException {
+                return InetAddress.getByName(hostByName);
+            }
+        });
     }
     TransportAddressParser(InetAddressResolver resolver) {
         this.inetAddressResolver = resolver;
