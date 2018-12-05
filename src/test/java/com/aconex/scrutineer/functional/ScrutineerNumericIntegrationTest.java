@@ -1,31 +1,30 @@
 package com.aconex.scrutineer.functional;
 
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.URL;
-
 import javax.sql.DataSource;
 
+import com.aconex.scrutineer.Scrutineer;
 import com.aconex.scrutineer.elasticsearch.ESIntegrationTestNode;
+import com.aconex.scrutineer.elasticsearch.ElasticSearchTestHelper;
+import com.aconex.scrutineer.jdbc.HSQLHelper;
+import com.google.common.io.ByteStreams;
 import org.dbunit.DataSourceBasedDBTestCase;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.XmlDataSet;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeValidationException;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import com.aconex.scrutineer.Scrutineer;
-import com.aconex.scrutineer.elasticsearch.ElasticSearchTestHelper;
-import com.aconex.scrutineer.jdbc.HSQLHelper;
-import com.google.common.io.ByteStreams;
 
 public class ScrutineerNumericIntegrationTest extends DataSourceBasedDBTestCase {
 
@@ -34,8 +33,7 @@ public class ScrutineerNumericIntegrationTest extends DataSourceBasedDBTestCase 
     private Node node;
     private Client client;
 
-    @Mock
-    PrintStream printStream;
+    PrintStream printStream = spy(System.err);
 
 
     public void testShouldScrutinizeStreamsEffectively() {
@@ -74,7 +72,7 @@ public class ScrutineerNumericIntegrationTest extends DataSourceBasedDBTestCase 
     }
 
     private void setupElasticSearchConnection() throws NodeValidationException {
-        this.node = ESIntegrationTestNode.elasticSearchTestNode();
+        this.node = ESIntegrationTestNode.elasticSearchTestNode(CLUSTER_NAME);
         this.client = node.client();
     }
 
@@ -86,7 +84,7 @@ public class ScrutineerNumericIntegrationTest extends DataSourceBasedDBTestCase 
 
     private void indexSetupStateForElasticSearch() throws Exception {
         new ElasticSearchTestHelper(client).deleteIndexIfItExists("test");
-        BulkRequestBuilder bulkRequest = client.prepareBulk();
+        BulkRequestBuilder bulkRequest = client.prepareBulk().setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE);
         URL bulkIndexRequest = this.getClass().getResource("es-numericbulkindex.json");
         byte[] data = ByteStreams.toByteArray(bulkIndexRequest.openStream());
         bulkRequest.add(data, 0, data.length, XContentType.JSON);
