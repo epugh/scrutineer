@@ -24,9 +24,13 @@ public class ESIntegrationTestNode extends Node {
     }
 
     public static Node elasticSearchTestNode() throws NodeValidationException {
+        return elasticSearchTestNode(CLUSTER_NAME);
+    }
+
+    public static Node elasticSearchTestNode(String clusterName) throws NodeValidationException {
         Node node = new ESIntegrationTestNode(
                 Settings.builder()
-                        .put("cluster.name", CLUSTER_NAME)
+                        .put("cluster.name", clusterName)
                         .put("transport.type", "netty4")
                         .put("http.type", "netty4")
                         .put("http.enabled", "true")
