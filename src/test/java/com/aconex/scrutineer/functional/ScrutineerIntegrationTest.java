@@ -49,6 +49,7 @@ public class ScrutineerIntegrationTest extends DataSourceBasedDBTestCase {
                 "--jdbcUser", "sa",
                 //"--jdbcPassword", "",
                 "--clusterName", ESIntegrationTestNode.CLUSTER_NAME,
+                "--esHosts", "localhost:9300",
                 "--sql", "select id,version from test order by id",
                 "--indexName", "test",
                 "--versions-as-timestamps"
