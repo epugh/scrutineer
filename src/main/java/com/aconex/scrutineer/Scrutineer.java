@@ -53,7 +53,8 @@ public class Scrutineer {
 
     private static ScrutineerCommandLineOptions parseOptions(String[] args) {
         ScrutineerCommandLineOptions options = new ScrutineerCommandLineOptions();
-        new JCommander(options, args);
+        JCommander jCommander = new JCommander(options);
+        jCommander.parse(args);
         return options;
     }
 
