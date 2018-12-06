@@ -2,7 +2,7 @@ package com.aconex.scrutineer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Matchers.matches;
+import static org.mockito.ArgumentMatchers.matches;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;

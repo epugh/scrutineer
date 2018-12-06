@@ -1,6 +1,6 @@
 package com.aconex.scrutineer.jdbc;
 
-import static com.aconex.scrutineer.HasIdAndVersionMatcher.hasIdAndVersion;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
@@ -12,12 +12,11 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 
+import com.aconex.scrutineer.IdAndVersionFactory;
+import com.aconex.scrutineer.StringIdAndVersion;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-
-import com.aconex.scrutineer.IdAndVersionFactory;
-import com.aconex.scrutineer.StringIdAndVersion;
 
 public class IdAndVersionResultSetIteratorTest {
 
@@ -73,7 +72,7 @@ public class IdAndVersionResultSetIteratorTest {
         when(resultSet.getTimestamp(2)).thenReturn(new Timestamp(VERSION));
 
         IdAndVersionResultSetIterator idAndVersionResultSetIterator = new IdAndVersionResultSetIterator(resultSet, idAndVersionFactory);
-        assertThat(idAndVersionResultSetIterator.next(), hasIdAndVersion(ID,VERSION));
+        assertThat(idAndVersionResultSetIterator.next(), equalTo(new StringIdAndVersion(ID,VERSION)));
         assertThat(idAndVersionResultSetIterator.hasNext(), is(false));
     }
 
@@ -87,7 +86,7 @@ public class IdAndVersionResultSetIteratorTest {
         when(resultSet.getLong(2)).thenReturn(VERSION);
 
         IdAndVersionResultSetIterator idAndVersionResultSetIterator = new IdAndVersionResultSetIterator(resultSet, idAndVersionFactory);
-        assertThat(idAndVersionResultSetIterator.next(), hasIdAndVersion(ID,VERSION));
+        assertThat(idAndVersionResultSetIterator.next(), equalTo(new StringIdAndVersion(ID,VERSION)));
         assertThat(idAndVersionResultSetIterator.hasNext(), is(false));
     }
 }

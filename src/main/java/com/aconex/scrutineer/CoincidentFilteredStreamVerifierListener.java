@@ -2,7 +2,7 @@ package com.aconex.scrutineer;
 
 import com.aconex.scrutineer.javautil.SystemTimeSource;
 import com.aconex.scrutineer.javautil.TimeSource;
-import org.elasticsearch.common.joda.time.format.ISODateTimeFormat;
+import org.joda.time.format.ISODateTimeFormat;
 
 public class CoincidentFilteredStreamVerifierListener implements IdAndVersionStreamVerifierListener {
 

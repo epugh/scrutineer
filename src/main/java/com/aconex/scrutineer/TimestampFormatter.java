@@ -1,9 +1,9 @@
 package com.aconex.scrutineer;
 
 import com.google.common.base.Function;
-import org.elasticsearch.common.joda.time.DateTimeZone;
-import org.elasticsearch.common.joda.time.format.DateTimeFormatter;
-import org.elasticsearch.common.joda.time.format.ISODateTimeFormat;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
 public class TimestampFormatter implements Function<Long, Object> {
 

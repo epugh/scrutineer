@@ -1,8 +1,10 @@
 package com.aconex.scrutineer.functional;
 
-import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
+import static org.elasticsearch.common.xcontent.XContentType.JSON;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.URL;
@@ -10,30 +12,31 @@ import java.util.TimeZone;
 import javax.sql.DataSource;
 
 import com.aconex.scrutineer.Scrutineer;
+import com.aconex.scrutineer.elasticsearch.ESIntegrationTestNode;
 import com.aconex.scrutineer.elasticsearch.ElasticSearchTestHelper;
 import com.aconex.scrutineer.jdbc.HSQLHelper;
 import com.google.common.io.ByteStreams;
 import org.dbunit.DataSourceBasedDBTestCase;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.XmlDataSet;
-import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.common.joda.time.DateTimeZone;
 import org.elasticsearch.node.Node;
-import org.mockito.Mock;
+import org.elasticsearch.node.NodeValidationException;
+import org.joda.time.DateTimeZone;
 import org.mockito.MockitoAnnotations;
 
 public class ScrutineerIntegrationTest extends DataSourceBasedDBTestCase {
 
-    private static final String CLUSTER_NAME = "scrutineerintegrationtest";
+
     private HSQLHelper hsqlHelper = new HSQLHelper();
     private Node node;
     private Client client;
 
-    @Mock
-    PrintStream printStream;
+
+    PrintStream printStream = spy(System.err);
 
 
     public void testShouldScrutinizeStreamsEffectively() {
@@ -45,7 +48,8 @@ public class ScrutineerIntegrationTest extends DataSourceBasedDBTestCase {
                 "--jdbcDriverClass", org.hsqldb.jdbc.JDBCDriver.class.getName(),
                 "--jdbcUser", "sa",
                 //"--jdbcPassword", "",
-                "--clusterName", CLUSTER_NAME,
+                "--clusterName", ESIntegrationTestNode.CLUSTER_NAME,
+                "--esHosts", "localhost:9300",
                 "--sql", "select id,version from test order by id",
                 "--indexName", "test",
                 "--versions-as-timestamps"
@@ -73,8 +77,8 @@ public class ScrutineerIntegrationTest extends DataSourceBasedDBTestCase {
         super.setUp();
     }
 
-    private void setupElasticSearchConnection() {
-        this.node = nodeBuilder().clusterName(CLUSTER_NAME).node();
+    private void setupElasticSearchConnection() throws NodeValidationException {
+        this.node = ESIntegrationTestNode.elasticSearchTestNode();
         this.client = node.client();
     }
 
@@ -86,11 +90,11 @@ public class ScrutineerIntegrationTest extends DataSourceBasedDBTestCase {
 
     private void indexSetupStateForElasticSearch() throws Exception {
         new ElasticSearchTestHelper(client).deleteIndexIfItExists("test");
-        BulkRequest bulkRequest = new BulkRequestBuilder(client).request();
+        BulkRequestBuilder bulkRequest = client.prepareBulk().setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE);
         URL bulkIndexRequest = this.getClass().getResource("es-bulkindex.json");
         byte[] data = ByteStreams.toByteArray(bulkIndexRequest.openStream());
-        bulkRequest.add(data, 0, data.length);
-        BulkResponse bulkResponse = client.bulk(bulkRequest).actionGet();
+        bulkRequest.add(data, 0, data.length, JSON);
+        BulkResponse bulkResponse = bulkRequest.get();
         if (bulkResponse.hasFailures()) {
             throw new RuntimeException("Failed to index data needed for test. " + bulkResponse.buildFailureMessage());
         }
@@ -103,7 +107,7 @@ public class ScrutineerIntegrationTest extends DataSourceBasedDBTestCase {
         closeElasticSearch();
     }
 
-    private void closeElasticSearch() {
+    private void closeElasticSearch() throws IOException {
         if (client != null) {
             client.close();
         }
@@ -124,4 +128,6 @@ public class ScrutineerIntegrationTest extends DataSourceBasedDBTestCase {
         return new XmlDataSet(resourceAsStream);
 
     }
+
+
 }

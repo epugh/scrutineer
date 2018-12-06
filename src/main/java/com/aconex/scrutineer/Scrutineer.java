@@ -20,8 +20,9 @@ import com.fasterxml.sort.util.NaturalComparator;
 import com.google.common.base.Function;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.log4j.xml.DOMConfigurator;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.node.Node;
+import org.elasticsearch.common.transport.TransportAddress;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
 
 public class Scrutineer {
@@ -32,11 +33,10 @@ public class Scrutineer {
         DOMConfigurator.configure(Scrutineer.class.getClassLoader().getResource("log4j.xml"));
 
         try {
-          execute(new Scrutineer(parseOptions(args)));
-        }
-        catch (Exception e) {
-          LOG.error("Failure during Scrutineering", e);
-          System.exit(1);
+            execute(new Scrutineer(parseOptions(args)));
+        } catch (Exception e) {
+            LOG.error("Failure during Scrutineering", e);
+            System.exit(1);
         }
     }
 
@@ -50,7 +50,8 @@ public class Scrutineer {
 
     private static ScrutineerCommandLineOptions parseOptions(String[] args) {
         ScrutineerCommandLineOptions options = new ScrutineerCommandLineOptions();
-        new JCommander(options, args);
+        JCommander jCommander = new JCommander(options);
+        jCommander.parse(args);
         return options;
     }
 
@@ -70,9 +71,6 @@ public class Scrutineer {
     void closeElasticSearchConnections() {
         if (client != null) {
             client.close();
-        }
-        if (node != null) {
-            node.close();
         }
     }
 
@@ -127,9 +125,18 @@ public class Scrutineer {
     }
 
     ElasticSearchIdAndVersionStream createElasticSearchIdAndVersionStream(ScrutineerCommandLineOptions options) {
-        this.node = new NodeFactory().createNode(options);
-        this.client = node.client();
-        return new ElasticSearchIdAndVersionStream(new ElasticSearchDownloader(client, options.indexName, options.query, idAndVersionFactory), new ElasticSearchSorter(createSorter()), new IteratorFactory(idAndVersionFactory), SystemUtils.getJavaIoTmpDir().getAbsolutePath());
+        try {
+            this.client = new PreBuiltTransportClient(new NodeFactory().createSettings(options));
+            addTransportClients(options);
+            return new ElasticSearchIdAndVersionStream(new ElasticSearchDownloader(client, options.indexName, options.query, idAndVersionFactory), new ElasticSearchSorter(createSorter()), new IteratorFactory(idAndVersionFactory), SystemUtils.getJavaIoTmpDir().getAbsolutePath());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void addTransportClients(ScrutineerCommandLineOptions options) {
+        TransportAddress[] transportAddresses = options.elasticSearchHosts.toArray(new TransportAddress[0]);
+        client.addTransportAddresses(transportAddresses);
     }
 
     private Sorter<IdAndVersion> createSorter() {
@@ -157,8 +164,7 @@ public class Scrutineer {
     private static final int DEFAULT_SORT_MEM = 256 * 1024 * 1024;
     private final ScrutineerCommandLineOptions options;
     private IdAndVersionFactory idAndVersionFactory;
-    private Node node;
-    private Client client;
+    private TransportClient client;
     private Connection connection;
 
 }

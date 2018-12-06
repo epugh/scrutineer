@@ -1,7 +1,7 @@
 package com.aconex.scrutineer.elasticsearch;
 
-import static com.aconex.scrutineer.HasIdAndVersionMatcher.hasIdAndVersion;
-import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
+
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Iterator;
@@ -18,6 +18,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.VersionType;
 import org.elasticsearch.node.Node;
+import org.elasticsearch.node.NodeValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,8 +31,8 @@ public class ElasticSearchIdAndVersionStreamIntegrationTest {
     private ElasticSearchTestHelper elasticSearchTestHelper;
 
     @Before
-    public void setup() {
-        Node node = nodeBuilder().local(true).node();
+    public void setup() throws NodeValidationException {
+        Node node = ESIntegrationTestNode.elasticSearchTestNode();
         client = node.client();
         deleteIndexIfExists();
 
@@ -62,9 +63,9 @@ public class ElasticSearchIdAndVersionStreamIntegrationTest {
         elasticSearchIdAndVersionStream.open();
         Iterator<IdAndVersion> iterator = elasticSearchIdAndVersionStream.iterator();
 
-        assertThat(iterator.next(), hasIdAndVersion("1",1));
-        assertThat(iterator.next(), hasIdAndVersion("2",2));
-        assertThat(iterator.next(), hasIdAndVersion("3",3));
+        assertThat(iterator.next(), equalTo(new StringIdAndVersion("1",1)));
+        assertThat(iterator.next(), equalTo(new StringIdAndVersion("2",2)));
+        assertThat(iterator.next(), equalTo(new StringIdAndVersion("3",3)));
 
         elasticSearchIdAndVersionStream.close();
     }
@@ -75,7 +76,7 @@ public class ElasticSearchIdAndVersionStreamIntegrationTest {
     }
 
     private void indexIdAndVersion(String id, long version) {
-        client.prepareIndex(INDEX_NAME,"idandversion").setId(id).setOperationThreaded(false).setVersion(version).setVersionType(VersionType.EXTERNAL).setSource("{value:1}").execute().actionGet();
+        client.prepareIndex(INDEX_NAME,"idandversion").setId(id).setVersion(version).setVersionType(VersionType.EXTERNAL).setSource("value", 1).execute().actionGet();
     }
 
 }
