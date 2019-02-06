@@ -69,6 +69,7 @@ package.  We already have a JTDS driver in there if you're using SQL Server (tha
                 --jdbcPassword=itsasecret   \
                 --sql="select id,version from myobjecttype order by cast(id as varchar(100))" \
                 --clusterName=mycluster \
+                --esHosts=localhost:9300 \
                 --indexName=myindex \
                 --query="_type:myobjecttype" \
                 --numeric
@@ -81,6 +82,7 @@ package.  We already have a JTDS driver in there if you're using SQL Server (tha
 * **jdbcPassword** -- password required for the user credentials
 * **sql** - The SQL used to generate a lexicographical stream of ID & Version values (in that column order)
 * **clusterName** - this is your ElasticSearch cluster name used to autodetect and connect to a node in your cluster
+* **esHosts** - csv set of seed ElasticSearch host:port pairs to use as part of discovery
 * **indexName** - the name of the index on your ElasticSearch cluster
 * **query** - A query_parser compatible search query that returns all documents in your ElasticSearch index relating to the SQL query you're using
   Since it is common for an index to contain a type-per-db-table you can use the "_type:<type>" search query to filter for all values for that type.
