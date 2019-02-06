@@ -19,9 +19,8 @@ import com.fasterxml.sort.Sorter;
 import com.fasterxml.sort.util.NaturalComparator;
 import com.google.common.base.Function;
 import org.apache.commons.lang3.SystemUtils;
-import org.apache.log4j.xml.DOMConfigurator;
-import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
 
@@ -30,8 +29,6 @@ public class Scrutineer {
     private static final Logger LOG = LogUtils.loggerForThisClass();
 
     public static void main(String[] args) {
-        DOMConfigurator.configure(Scrutineer.class.getClassLoader().getResource("log4j.xml"));
-
         try {
             execute(new Scrutineer(parseOptions(args)));
         } catch (Exception e) {
