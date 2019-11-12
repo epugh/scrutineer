@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.aconex.scrutineer</groupId>
     <artifactId>scrutineer</artifactId>
-    <version>6.8.4-SNAPSHOT</version>
+    <version>6.8.4</version>
     <packaging>jar</packaging>
     <name>Scrutineer (Stream Comparator)</name>
     <description>
@@ -17,7 +17,7 @@
         <connection>scm:git:git://github.com/Aconex/scrutineer.git</connection>
         <developerConnection>scm:git:git@github.com:Aconex/scrutineer.git</developerConnection>
         <url>https://github.com/Aconex/scrutineer</url>
-      <tag>HEAD</tag>
+      <tag>scrutineer-6.8.4</tag>
   </scm>
     <licenses>
         <license>
