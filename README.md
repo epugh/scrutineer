@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Aconex/scrutineer.svg?branch=master)](https://travis-ci.org/Aconex/scrutineer.svg?branch=master)
+
 Analyses a secondary stream of information against a known point-of-truth and reports inconsistencies.
 
 The Why
