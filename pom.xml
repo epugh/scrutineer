@@ -226,7 +226,7 @@
         <repository>
             <id>sonatype-snapshots</id>
             <name>Sonatype Snapshots Repository</name>
-            <url>http://oss.sonatype.org/content/repositories/snapshots/</url>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
@@ -234,12 +234,12 @@
         <repository>
             <id>sonatype-releases</id>
             <name>Sonatype Releases Repository</name>
-            <url>http://oss.sonatype.org/content/repositories/releases/</url>
+            <url>https://oss.sonatype.org/content/repositories/releases/</url>
         </repository>
         <repository>
             <id>codehaus</id>
             <name>Сodehaus</name>
-            <url>http://repository.codehaus.org</url>
+            <url>https://repository.codehaus.org</url>
         </repository>
     </repositories>
     <distributionManagement>
