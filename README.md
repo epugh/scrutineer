@@ -178,6 +178,17 @@ Assumptions
 * Aconex is DB->ElasticSearch centric at the moment.  We've tried to keep things loosely coupled, so it should be 
 simple to add further integration points for other Primary & Secondary sources (HBase, MongoDB, Solr).
 
+Version Numbering/Compatibility
+===============================
+The `scrutineer` version number (of the artifact/jar) is numbered to align with the underlying Elasticsearch version
+it is built against.    For example, `scrutineer-6.8.13` was build & linked against `elasticsearch-6.8.13`.  Generally
+this means the compatibility of scrutineer matches Elasticsearch's major version. ie. `scrutineer-6.8.13` really
+should work with any Elasticsearch version `6.x`.
+
+If there are patches/bug fixes/changes that are _independent_ of the Elasticsearch version, then Scrutineer version
+numbers will include a "patch number".  For example, `scrutineer-6.8.13-4` is the 4th patch release of Scrutineer
+since aligning with Elasticsearch v6.8.13.
+
 JDBC Drivers
 ============
 Scrutineer does not ship with any JDBC driver by default .  All you _should_ need to do is drop your own JDBC driver in the 'repo'
