@@ -180,7 +180,7 @@ simple to add further integration points for other Primary & Secondary sources (
 
 JDBC Drivers
 ============
-Scrutineer ships with the SQL Server JTDS driver by default (it's what we use).  All you _should_ need to do is drop your own JDBC driver in the 'repo'
+Scrutineer does not ship with any JDBC driver by default .  All you _should_ need to do is drop your own JDBC driver in the 'repo'
 sub-directory of the Scrutineer distribution (where all the other jars are).  We use the Maven AppAssembler plugin which is configured
 to automatically load all JARs in this path onto the classpath.
 
@@ -209,4 +209,3 @@ it couldn't only check objects that were changed after the last known full verif
 deletes on the primary stream (perhaps an OnDelete Trigger in your SQL database) so that IDs that were deleted in the primary
 stream after the last full check could be detected correctly.
 
-* Obviously we'd love to have a Solr implementation here, we hope the community can help here.
