@@ -3,6 +3,7 @@ package com.aconex.scrutineer.elasticsearch;
 import static java.util.Arrays.asList;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.InternalSettingsPreparer;
@@ -13,14 +14,10 @@ import org.elasticsearch.transport.Netty4Plugin;
 
 public class ESIntegrationTestNode extends Node {
     public static final String CLUSTER_NAME = "scrutineerintegrationtest";
+    public static final String TEST_NODE_NAME = "Test Node";
 
     private ESIntegrationTestNode(Settings preparedSettings, Collection<Class<? extends Plugin>> classpathPlugins) {
-        super(InternalSettingsPreparer.prepareEnvironment(preparedSettings, null), classpathPlugins, true);
-    }
-
-    @Override
-    protected void registerDerivedNodeNameWithLogger(String s) {
-
+        super(InternalSettingsPreparer.prepareEnvironment(preparedSettings, Collections.emptyMap(), null, () -> TEST_NODE_NAME), classpathPlugins, true);
     }
 
     public static Node elasticSearchTestNode() throws NodeValidationException {
@@ -33,8 +30,8 @@ public class ESIntegrationTestNode extends Node {
                         .put("cluster.name", clusterName)
                         .put("transport.type", "netty4")
                         .put("http.type", "netty4")
-                        .put("http.enabled", "true")
                         .put("path.home", "data")
+                        .put("node.name", TEST_NODE_NAME)
                         .build(),
                 asList(Netty4Plugin.class));
         node.start();
