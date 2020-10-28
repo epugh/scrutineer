@@ -40,7 +40,8 @@ public class ElasticSearchIdAndVersionStreamIntegrationTest {
         indexIdAndVersion("3", 3);
         indexIdAndVersion("2", 2);
 
-        client.admin().indices().prepareFlush(INDEX_NAME).execute().actionGet();
+        // make explicit _refresh call to make documents visible
+        client.admin().indices().prepareRefresh(INDEX_NAME).execute().actionGet();
     }
 
     @After
@@ -56,7 +57,7 @@ public class ElasticSearchIdAndVersionStreamIntegrationTest {
         DataReaderFactory<IdAndVersion> dataReaderFactory = new IdAndVersionDataReaderFactory(idAndVersionFactory);
         DataWriterFactory<IdAndVersion> dataWriterFactory = new IdAndVersionDataWriterFactory();
         Sorter sorter = new Sorter(sortConfig, dataReaderFactory, dataWriterFactory, new NaturalComparator<IdAndVersion>());
-        ElasticSearchDownloader elasticSearchDownloader = new ElasticSearchDownloader(client, INDEX_NAME, "_type:idandversion", idAndVersionFactory);
+        ElasticSearchDownloader elasticSearchDownloader = new ElasticSearchDownloader(client, INDEX_NAME, "*", idAndVersionFactory);
         ElasticSearchIdAndVersionStream elasticSearchIdAndVersionStream =
                 new ElasticSearchIdAndVersionStream(elasticSearchDownloader, new ElasticSearchSorter(sorter), new IteratorFactory(idAndVersionFactory), SystemUtils.getJavaIoTmpDir().getAbsolutePath());
 
@@ -76,7 +77,7 @@ public class ElasticSearchIdAndVersionStreamIntegrationTest {
     }
 
     private void indexIdAndVersion(String id, long version) {
-        client.prepareIndex(INDEX_NAME,"idandversion").setId(id).setVersion(version).setVersionType(VersionType.EXTERNAL).setSource("value", 1).execute().actionGet();
+        client.prepareIndex().setIndex(INDEX_NAME).setId(id).setVersion(version).setVersionType(VersionType.EXTERNAL).setSource("value", 1).execute().actionGet();
     }
 
 }
