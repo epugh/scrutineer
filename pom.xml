@@ -518,7 +518,7 @@
                             <programs>
                                 <program>
                                     <mainClass>com.aconex.scrutineer.Scrutineer</mainClass>
-                                    <name>scrutineer</name>
+                                    <id>scrutineer</id>
                                 </program>
                             </programs>
                         </configuration>
