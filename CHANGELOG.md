@@ -3,6 +3,7 @@ Scrutineer Changelog
 
 Outlines key changes across versions (not exhaustive)
 
+
 Scrutineer 6.8.x
 -----------------
 *BREAKING* 
@@ -13,6 +14,7 @@ Scrutineer 6.8.x
 *Other*
 
 * explicitly uses upgraded transitive dependencies from Elasticsearch to remove CVSS score issue (see OWASP plugin results)   
+
 
 Scrutineer 6.5.x
 ----------------
