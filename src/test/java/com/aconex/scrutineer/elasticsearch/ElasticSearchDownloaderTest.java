@@ -151,7 +151,7 @@ public class ElasticSearchDownloaderTest {
     @Test
     public void shouldCreateQueryBuilderWithDefaultAllField() {
         ElasticSearchDownloader elasticSearchDownloader = spy(new ElasticSearchDownloader(client, INDEX_NAME, QUERY, idAndVersionFactory));
-        assertThat(elasticSearchDownloader.createQuery().toString(), containsString("_all"));
+        assertThat(elasticSearchDownloader.createQuery().toString(), containsString("*"));
     }
 
     @Test
