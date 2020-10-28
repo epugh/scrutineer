@@ -76,7 +76,7 @@ public class ElasticSearchDownloader {
     }
 
     QueryStringQueryBuilder createQuery() {
-        return QueryBuilders.queryStringQuery(query).defaultOperator(Operator.AND).defaultField("_all");
+        return QueryBuilders.queryStringQuery(query).defaultOperator(Operator.AND).defaultField("*");
     }
 
     @SuppressWarnings("PMD.NcssMethodCount")
