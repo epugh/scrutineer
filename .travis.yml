@@ -1,5 +1,5 @@
 language: java
 jdk:
  - oraclejdk8
-dist: bionic
+dist: xenial
 script: mvn -B -V clean install
