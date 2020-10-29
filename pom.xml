@@ -218,6 +218,11 @@
                     <artifactId>dependency-check-maven</artifactId>
                     <version>6.0.2</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.9.1</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -249,7 +254,7 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>3.5.2</version>
+                                    <version>3.5.4</version>
                                 </requireMavenVersion>
                                 <requireJavaVersion>
                                     <version>[1.8.0,)</version>
@@ -303,14 +308,14 @@
                     <reportSet>
                         <reports>
                             <report>summary</report>
-                            <report>issue-tracking</report>
+                            <report>issue-management</report>
                             <report>dependencies</report>
                             <report>dependency-convergence</report>
                             <report>dependency-management</report>
                             <report>distribution-management</report>
-                            <report>license</report>
+                            <report>licenses</report>
                             <report>plugins</report>
-                            <report>project-team</report>
+                            <report>team</report>
                             <report>scm</report>
                         </reports>
                     </reportSet>
@@ -556,7 +561,27 @@
                             </execution>
                         </executions>
                     </plugin>
-
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>license-maven-plugin</artifactId>
+                        <version>2.0.0</version>
+                        <configuration>
+                            <useMissingFile>true</useMissingFile>
+                            <useRepositoryMissingFiles>false</useRepositoryMissingFiles>
+                            <licenseMerges>
+                                <licenseMerge>The Apache Software License, Version 2.0|Apache License, Version 2.0|Apache Public License 2.0|Apache 2.0|ASF 2.0|Apache License 2.0|Apache License, version 2.0|Apache 2</licenseMerge>
+                                <licenseMerge>MIT License|The MIT License</licenseMerge>
+                            </licenseMerges>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>add-third-party</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
