@@ -1,5 +1,5 @@
 language: java
 jdk:
  - oraclejdk8
-dist: trusty
+dist: bionic
 script: mvn -B -V clean install
