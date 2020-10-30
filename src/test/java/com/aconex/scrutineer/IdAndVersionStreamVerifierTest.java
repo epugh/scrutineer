@@ -2,6 +2,7 @@ package com.aconex.scrutineer;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -222,8 +223,9 @@ public class IdAndVersionStreamVerifierTest {
                 streamOf(item(1), item(2), item(3)),
                 idAndVersionStreamVerifierListener);
 
-        verify(idAndVersionStreamVerifierListener).onPrimaryStreamProcessed(item(1));
-        verify(idAndVersionStreamVerifierListener).onPrimaryStreamProcessed(item(2));
+        verify(idAndVersionStreamVerifierListener).onStreamComparison(item(1), item(1));
+        verify(idAndVersionStreamVerifierListener).onStreamComparison(item(2), item(2));
+        verify(idAndVersionStreamVerifierListener).onStreamComparison(null, item(3));
     }
 
     private void verifyOnCompletion(IdAndVersionStreamVerifierListener idAndVersionStreamVerifierListener) {

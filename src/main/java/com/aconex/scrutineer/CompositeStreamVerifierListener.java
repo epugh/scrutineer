@@ -11,8 +11,8 @@ public class CompositeStreamVerifierListener implements IdAndVersionStreamVerifi
     }
 
     @Override
-    public void onPrimaryStreamProcessed(IdAndVersion idAndVersion) {
-        this.notifyListener(listener -> listener.onPrimaryStreamProcessed(idAndVersion));
+    public void onStreamComparison(IdAndVersion primaryItem, IdAndVersion secondaryItem) {
+        this.notifyListener(listener -> listener.onStreamComparison(primaryItem, secondaryItem));
     }
 
     @Override

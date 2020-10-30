@@ -22,10 +22,8 @@ public class CoincidentFilteredStreamVerifierListener implements IdAndVersionStr
     }
 
     @Override
-    public void onPrimaryStreamProcessed(IdAndVersion idAndVersion) {
-        if (idAndVersion.getVersion() < runStartTime) {
-            otherListener.onPrimaryStreamProcessed(idAndVersion);
-        }
+    public void onStreamComparison(IdAndVersion primaryItem, IdAndVersion secondaryItem) {
+        otherListener.onStreamComparison(primaryItem, secondaryItem);
     }
 
     @Override

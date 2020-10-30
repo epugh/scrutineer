@@ -30,10 +30,10 @@ public class CompositeStreamVerifierListenerTest {
     @Test
     public void testShouldDelegateToAllListenersOnPrimaryStreamProcessed() {
 
-        testInstance.onPrimaryStreamProcessed(idAndVersion);
+        testInstance.onStreamComparison(primaryIdAndVersion, secondaryIdAndVersion);
 
-        verify(otherListener1).onPrimaryStreamProcessed(idAndVersion);
-        verify(otherListener2).onPrimaryStreamProcessed(idAndVersion);
+        verify(otherListener1).onStreamComparison(primaryIdAndVersion, secondaryIdAndVersion);
+        verify(otherListener2).onStreamComparison(primaryIdAndVersion, secondaryIdAndVersion);
     }
 
     @Test

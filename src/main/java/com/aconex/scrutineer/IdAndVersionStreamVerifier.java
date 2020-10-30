@@ -32,7 +32,7 @@ public class IdAndVersionStreamVerifier {
             IdAndVersion secondaryItem = next(secondaryIterator);
 
             while (primaryItem != null && secondaryItem != null) {
-                idAndVersionStreamVerifierListener.onPrimaryStreamProcessed(primaryItem);
+                idAndVersionStreamVerifierListener.onStreamComparison(primaryItem, secondaryItem);
 
                 if (primaryItem.equals(secondaryItem)) {
                     primaryItem = verifiedNext(primaryIterator, primaryItem);
@@ -53,7 +53,7 @@ public class IdAndVersionStreamVerifier {
 
             while (primaryItem != null) {
                 idAndVersionStreamVerifierListener.onMissingInSecondaryStream(primaryItem);
-                idAndVersionStreamVerifierListener.onPrimaryStreamProcessed(primaryItem);
+                idAndVersionStreamVerifierListener.onStreamComparison(primaryItem, secondaryItem);
 
                 primaryItem = verifiedNext(primaryIterator, primaryItem);
                 numItems++;
@@ -61,6 +61,7 @@ public class IdAndVersionStreamVerifier {
 
             while (secondaryItem != null) {
                 idAndVersionStreamVerifierListener.onMissingInPrimaryStream(secondaryItem);
+                idAndVersionStreamVerifierListener.onStreamComparison(primaryItem, secondaryItem);
                 secondaryItem = next(secondaryIterator);
                 numItems++;
             }
