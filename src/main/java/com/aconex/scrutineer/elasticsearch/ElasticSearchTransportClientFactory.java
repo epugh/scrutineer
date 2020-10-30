@@ -79,7 +79,7 @@ public class ElasticSearchTransportClientFactory {
     }
 
     private void addTransportHosts(TransportClient transportClient, List<TransportAddress> elasticSearchHosts) {
-        LogUtils.debug(LOG, "Starting elastic search on hosts: %s ", elasticSearchHosts.toString());
+        LogUtils.debug(LOG, "Connecting to elastic search on hosts: %s ", elasticSearchHosts.toString());
 
         for (TransportAddress host : elasticSearchHosts) {
             transportClient.addTransportAddress(host);
