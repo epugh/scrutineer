@@ -16,6 +16,19 @@ public class ScrutineerCommandLineOptions {
     @Parameter(names= "--esHosts", description = "CSV set of seed ElasticSearch host:port pairs to use as part of discovery", required = true, listConverter= TransportAddressParser.class)
     public List<TransportAddress> elasticSearchHosts;
 
+    @Parameter(names = "--esUsername", description = "Elasticsearch Username")
+    public String esUsername;
+
+    @Parameter(names = "--esPassword", description = "Elasticsearch Password", password = true)
+    public String esPassword;
+
+    @Parameter(names = "--esSSLVerificationMode",
+            description = "Transport client SSL verification mode, accepted values: [none, certificate, full]", validateValueWith = CmdLineOptionsSSLVerificationModeValidator.class)
+    public String esSSLVerificationMode = "certificate";
+
+    @Parameter(names = "--esSSLEnabled", description = "Enable SSL encryption for transport client")
+    public boolean esSSLEnabled = false;
+
     @Parameter(names = "--indexName", description = "ElasticSearch index name to Verify", required = true)
     public String indexName;
 

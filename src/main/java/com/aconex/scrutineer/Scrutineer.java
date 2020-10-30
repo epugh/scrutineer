@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import com.aconex.scrutineer.elasticsearch.ElasticSearchDownloader;
 import com.aconex.scrutineer.elasticsearch.ElasticSearchIdAndVersionStream;
 import com.aconex.scrutineer.elasticsearch.ElasticSearchSorter;
+import com.aconex.scrutineer.elasticsearch.ElasticSearchTransportClientFactory;
 import com.aconex.scrutineer.elasticsearch.IdAndVersionDataReaderFactory;
 import com.aconex.scrutineer.elasticsearch.IdAndVersionDataWriterFactory;
 import com.aconex.scrutineer.elasticsearch.IteratorFactory;
@@ -20,8 +21,6 @@ import com.fasterxml.sort.util.NaturalComparator;
 import com.google.common.base.Function;
 import org.apache.commons.lang3.SystemUtils;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.transport.TransportAddress;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
 
 public class Scrutineer {
@@ -53,14 +52,21 @@ public class Scrutineer {
     }
 
     public void verify() {
+        Function<Long, Object> formatter = createFormatter();
+        IdAndVersionStreamVerifierListener verifierListener = createVerifierListener(formatter);
+
+        this.verify(verifierListener);
+    }
+
+    public void verify(IdAndVersionStreamVerifierListener verifierListener) {
         idAndVersionFactory = createIdAndVersionFactory();
         ElasticSearchIdAndVersionStream elasticSearchIdAndVersionStream = createElasticSearchIdAndVersionStream(options);
         JdbcIdAndVersionStream jdbcIdAndVersionStream = createJdbcIdAndVersionStream(options);
 
-        verify(elasticSearchIdAndVersionStream, jdbcIdAndVersionStream, new IdAndVersionStreamVerifier());
+        verify(elasticSearchIdAndVersionStream, jdbcIdAndVersionStream, new IdAndVersionStreamVerifier(), verifierListener);
     }
 
-    void close() {
+    public void close() {
         closeJdbcConnection();
         closeElasticSearchConnections();
     }
@@ -81,10 +87,7 @@ public class Scrutineer {
         }
     }
 
-    void verify(ElasticSearchIdAndVersionStream elasticSearchIdAndVersionStream, JdbcIdAndVersionStream jdbcIdAndVersionStream, IdAndVersionStreamVerifier idAndVersionStreamVerifier) {
-        Function<Long, Object> formatter = createFormatter();
-        IdAndVersionStreamVerifierListener verifierListener = createVerifierListener(formatter);
-
+    void verify(ElasticSearchIdAndVersionStream elasticSearchIdAndVersionStream, JdbcIdAndVersionStream jdbcIdAndVersionStream, IdAndVersionStreamVerifier idAndVersionStreamVerifier, IdAndVersionStreamVerifierListener verifierListener) {
         idAndVersionStreamVerifier.verify(jdbcIdAndVersionStream, elasticSearchIdAndVersionStream, verifierListener);
     }
 
@@ -123,18 +126,13 @@ public class Scrutineer {
 
     ElasticSearchIdAndVersionStream createElasticSearchIdAndVersionStream(ScrutineerCommandLineOptions options) {
         try {
-            this.client = new PreBuiltTransportClient(new NodeFactory().createSettings(options));
-            addTransportClients(options);
+            this.client = new ElasticSearchTransportClientFactory().getTransportClient(options);
             return new ElasticSearchIdAndVersionStream(new ElasticSearchDownloader(client, options.indexName, options.query, idAndVersionFactory), new ElasticSearchSorter(createSorter()), new IteratorFactory(idAndVersionFactory), SystemUtils.getJavaIoTmpDir().getAbsolutePath());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void addTransportClients(ScrutineerCommandLineOptions options) {
-        TransportAddress[] transportAddresses = options.elasticSearchHosts.toArray(new TransportAddress[0]);
-        client.addTransportAddresses(transportAddresses);
-    }
 
     private Sorter<IdAndVersion> createSorter() {
         SortConfig sortConfig = new SortConfig().withMaxMemoryUsage(DEFAULT_SORT_MEM);
