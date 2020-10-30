@@ -10,6 +10,9 @@ import org.elasticsearch.common.transport.TransportAddress;
 // CHECKSTYLE:OFF This is the standard JCommander pattern
 @Parameters(separators = "=")
 public class ScrutineerCommandLineOptions {
+    @Parameter(names = {"--help", "-h"}, description = "Print a usage (help) message", help = true)
+    public boolean help = false;
+
     @Parameter(names = "--clusterName", description = "ElasticSearch cluster name identifier", required = true)
     public String clusterName;
 

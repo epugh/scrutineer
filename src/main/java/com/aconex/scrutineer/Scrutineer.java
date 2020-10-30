@@ -27,9 +27,19 @@ public class Scrutineer {
 
     private static final Logger LOG = LogUtils.loggerForThisClass();
 
+    @SuppressWarnings("PMD.NcssMethodCount")
     public static void main(String[] args) {
         try {
-            execute(new Scrutineer(parseOptions(args)));
+            ScrutineerCommandLineOptions options = new ScrutineerCommandLineOptions();
+            JCommander jCommander = new JCommander(options);
+            jCommander.parse(args);
+
+            if (options.help) {
+                jCommander.usage();
+                return;
+            }
+
+            execute(new Scrutineer(options));
         } catch (Exception e) {
             LOG.error("Failure during Scrutineering", e);
             System.exit(1);
@@ -42,13 +52,6 @@ public class Scrutineer {
         } finally {
             scrutineer.close();
         }
-    }
-
-    private static ScrutineerCommandLineOptions parseOptions(String[] args) {
-        ScrutineerCommandLineOptions options = new ScrutineerCommandLineOptions();
-        JCommander jCommander = new JCommander(options);
-        jCommander.parse(args);
-        return options;
     }
 
     public void verify() {
