@@ -28,7 +28,7 @@ public class CompositeStreamVerifierListenerTest {
     }
 
     @Test
-    public void testShouldDelegateToAllListenersOnPrimaryStreamProcessed() {
+    public void shouldDelegateToAllListenersOnPrimaryStreamProcessed() {
 
         testInstance.onStreamComparison(primaryIdAndVersion, secondaryIdAndVersion);
 
@@ -37,7 +37,7 @@ public class CompositeStreamVerifierListenerTest {
     }
 
     @Test
-    public void testShouldDelegateToAllListenersOnMissingInPrimaryStream() {
+    public void shouldDelegateToAllListenersOnMissingInPrimaryStream() {
         testInstance.onMissingInPrimaryStream(idAndVersion);
 
         verify(otherListener1).onMissingInPrimaryStream(idAndVersion);
@@ -45,7 +45,7 @@ public class CompositeStreamVerifierListenerTest {
     }
 
     @Test
-    public void testShouldDelegateToAllListenersOnVersionMisMatch() {
+    public void shouldDelegateToAllListenersOnVersionMisMatch() {
         testInstance.onVersionMisMatch(primaryIdAndVersion, secondaryIdAndVersion);
 
         verify(otherListener1).onVersionMisMatch(primaryIdAndVersion, secondaryIdAndVersion);
@@ -53,7 +53,7 @@ public class CompositeStreamVerifierListenerTest {
     }
 
     @Test
-    public void testShouldDelegateToAllListenersOnVerificationStarted() {
+    public void shouldDelegateToAllListenersOnVerificationStarted() {
         testInstance.onVerificationStarted();
 
         verify(otherListener1).onVerificationStarted();
@@ -61,7 +61,7 @@ public class CompositeStreamVerifierListenerTest {
     }
 
     @Test
-    public void testShouldDelegateToAllListenersOnVerificationCompleted() {
+    public void shouldDelegateToAllListenersOnVerificationCompleted() {
         testInstance.onVerificationCompleted();
 
         verify(otherListener1).onVerificationCompleted();
