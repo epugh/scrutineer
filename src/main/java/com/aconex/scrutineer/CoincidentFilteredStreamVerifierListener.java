@@ -19,7 +19,13 @@ public class CoincidentFilteredStreamVerifierListener implements IdAndVersionStr
         this.otherListener = otherListener;
         this.runStartTime = timeSource.getCurrentTime();
         LogUtils.info(LOGGER, "Will suppress any inconsistency detected on or after %s", ISODateTimeFormat.dateTime().print(runStartTime));
+    }
 
+    @Override
+    public void onPrimaryStreamProcessed(IdAndVersion idAndVersion) {
+        if (idAndVersion.getVersion() < runStartTime) {
+            otherListener.onPrimaryStreamProcessed(idAndVersion);
+        }
     }
 
     @Override
@@ -41,5 +47,14 @@ public class CoincidentFilteredStreamVerifierListener implements IdAndVersionStr
         if (primaryItem.getVersion() < runStartTime && secondaryItem.getVersion() < runStartTime) {
             otherListener.onVersionMisMatch(primaryItem, secondaryItem);
         }
+    }
+
+    @Override
+    public void onVerificationStarted() {
+        otherListener.onVerificationStarted();
+    }
+    @Override
+    public void onVerificationCompleted() {
+        otherListener.onVerificationCompleted();
     }
 }

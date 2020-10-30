@@ -4,8 +4,6 @@ import static com.google.common.collect.Lists.newArrayList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -88,7 +86,7 @@ public class IdAndVersionStreamVerifierTest {
                 streamOf(item(1), item(2), item(3)),
                 streamOf(item(1), item(2), item(3)),
                 idAndVersionStreamVerifierListener);
-        verifyZeroInteractions(idAndVersionStreamVerifierListener);
+        verifyOnCompletion(idAndVersionStreamVerifierListener);
     }
 
     @Test
@@ -97,7 +95,7 @@ public class IdAndVersionStreamVerifierTest {
                 streamOf(),
                 streamOf(),
                 idAndVersionStreamVerifierListener);
-        verifyZeroInteractions(idAndVersionStreamVerifierListener);
+        verifyOnCompletion(idAndVersionStreamVerifierListener);
     }
 
     @Test
@@ -108,7 +106,7 @@ public class IdAndVersionStreamVerifierTest {
                 idAndVersionStreamVerifierListener);
         verify(idAndVersionStreamVerifierListener).onMissingInPrimaryStream(eq(new StringIdAndVersion("1", 1)));
         verify(idAndVersionStreamVerifierListener).onMissingInPrimaryStream(eq(new StringIdAndVersion("2", 2)));
-        verifyNoMoreInteractions(idAndVersionStreamVerifierListener);
+        verifyOnCompletion(idAndVersionStreamVerifierListener);
     }
 
     @Test
@@ -119,7 +117,7 @@ public class IdAndVersionStreamVerifierTest {
                 idAndVersionStreamVerifierListener);
         verify(idAndVersionStreamVerifierListener).onMissingInSecondaryStream(eq(new StringIdAndVersion("1", 1)));
         verify(idAndVersionStreamVerifierListener).onMissingInSecondaryStream(eq(new StringIdAndVersion("2", 2)));
-        verifyNoMoreInteractions(idAndVersionStreamVerifierListener);
+        verifyOnCompletion(idAndVersionStreamVerifierListener);
     }
 
     @Test
@@ -129,7 +127,7 @@ public class IdAndVersionStreamVerifierTest {
                 streamOf(item(1), item(2), item(3)),
                 idAndVersionStreamVerifierListener);
         verify(idAndVersionStreamVerifierListener).onMissingInSecondaryStream(eq(new StringIdAndVersion("4", 4)));
-        verifyNoMoreInteractions(idAndVersionStreamVerifierListener);
+        verifyOnCompletion(idAndVersionStreamVerifierListener);
     }
 
     @Test
@@ -139,7 +137,7 @@ public class IdAndVersionStreamVerifierTest {
                 streamOf(item(1), item(2), item(3), item(4)),
                 idAndVersionStreamVerifierListener);
         verify(idAndVersionStreamVerifierListener).onMissingInPrimaryStream(eq(new StringIdAndVersion("4", 4)));
-        verifyNoMoreInteractions(idAndVersionStreamVerifierListener);
+        verifyOnCompletion(idAndVersionStreamVerifierListener);
     }
 
     @Test
@@ -149,7 +147,7 @@ public class IdAndVersionStreamVerifierTest {
                 streamOf(item(2), item(3), item(4)),
                 idAndVersionStreamVerifierListener);
         verify(idAndVersionStreamVerifierListener).onMissingInSecondaryStream(eq(new StringIdAndVersion("1", 1)));
-        verifyNoMoreInteractions(idAndVersionStreamVerifierListener);
+        verifyOnCompletion(idAndVersionStreamVerifierListener);
     }
 
     @Test
@@ -159,7 +157,7 @@ public class IdAndVersionStreamVerifierTest {
                 streamOf(item(1), item(2), item(3), item(4)),
                 idAndVersionStreamVerifierListener);
         verify(idAndVersionStreamVerifierListener).onMissingInPrimaryStream(eq(new StringIdAndVersion("1", 1)));
-        verifyNoMoreInteractions(idAndVersionStreamVerifierListener);
+        verifyOnCompletion(idAndVersionStreamVerifierListener);
     }
 
 
@@ -170,7 +168,7 @@ public class IdAndVersionStreamVerifierTest {
                 streamOf(item(1), item(2), item(4)),
                 idAndVersionStreamVerifierListener);
         verify(idAndVersionStreamVerifierListener).onMissingInSecondaryStream(eq(new StringIdAndVersion("3", 3)));
-        verifyNoMoreInteractions(idAndVersionStreamVerifierListener);
+        verifyOnCompletion(idAndVersionStreamVerifierListener);
     }
 
     @Test
@@ -180,7 +178,7 @@ public class IdAndVersionStreamVerifierTest {
                 streamOf(item(1), item(2), item(3), item(4)),
                 idAndVersionStreamVerifierListener);
         verify(idAndVersionStreamVerifierListener).onMissingInPrimaryStream(eq(new StringIdAndVersion("2", 2)));
-        verifyNoMoreInteractions(idAndVersionStreamVerifierListener);
+        verifyOnCompletion(idAndVersionStreamVerifierListener);
     }
 
     @Test
@@ -190,7 +188,7 @@ public class IdAndVersionStreamVerifierTest {
                 streamOf(item(1), item("2", 5), item(3), item(4)),
                 idAndVersionStreamVerifierListener);
         verify(idAndVersionStreamVerifierListener).onVersionMisMatch(eq(new StringIdAndVersion("2", 2)), eq(new StringIdAndVersion("2", 5)));
-        verifyNoMoreInteractions(idAndVersionStreamVerifierListener);
+        verifyOnCompletion(idAndVersionStreamVerifierListener);
     }
 
     @Test
@@ -200,7 +198,7 @@ public class IdAndVersionStreamVerifierTest {
                 streamOf(item(1), item(2), item("3", 33)),
                 idAndVersionStreamVerifierListener);
         verify(idAndVersionStreamVerifierListener).onVersionMisMatch(eq(new StringIdAndVersion("3", 55)), eq(new StringIdAndVersion("3", 33)));
-        verifyNoMoreInteractions(idAndVersionStreamVerifierListener);
+        verifyOnCompletion(idAndVersionStreamVerifierListener);
 
     }
 
@@ -210,10 +208,26 @@ public class IdAndVersionStreamVerifierTest {
                 streamOf(item(1), item("2", 2), item(3), item(4)),
                 streamOf(item(1), item("3", 42), item(4)),
                 idAndVersionStreamVerifierListener);
+
         verify(idAndVersionStreamVerifierListener).onMissingInSecondaryStream(eq(new StringIdAndVersion("2", 2)));
         verify(idAndVersionStreamVerifierListener).onVersionMisMatch(eq(new StringIdAndVersion("3", 3)), eq(new StringIdAndVersion("3", 42)));
-        verifyNoMoreInteractions(idAndVersionStreamVerifierListener);
+        verifyOnCompletion(idAndVersionStreamVerifierListener);
 
+    }
+
+    @Test
+    public void shouldNotifyOnPrimaryStreamProcessed() {
+        idAndVersionStreamVerifier.verify(
+                streamOf(item(1), item(2)),
+                streamOf(item(1), item(2), item(3)),
+                idAndVersionStreamVerifierListener);
+
+        verify(idAndVersionStreamVerifierListener).onPrimaryStreamProcessed(item(1));
+        verify(idAndVersionStreamVerifierListener).onPrimaryStreamProcessed(item(2));
+    }
+
+    private void verifyOnCompletion(IdAndVersionStreamVerifierListener idAndVersionStreamVerifierListener) {
+        verify(idAndVersionStreamVerifierListener).onVerificationCompleted();
     }
 
     private static JavaIteratorIdAndVersionStream streamOf(IdAndVersion... items) {

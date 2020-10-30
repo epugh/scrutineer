@@ -16,6 +16,8 @@ public class IdAndVersionStreamVerifier {
     //CHECKSTYLE:OFF
     @SuppressWarnings("PMD.NcssMethodCount")
 	public void verify(IdAndVersionStream primaryStream, IdAndVersionStream secondayStream, IdAndVersionStreamVerifierListener idAndVersionStreamVerifierListener) {
+        idAndVersionStreamVerifierListener.onVerificationStarted();
+
         long numItems = 0;
         long begin = System.currentTimeMillis();
 
@@ -30,6 +32,8 @@ public class IdAndVersionStreamVerifier {
             IdAndVersion secondaryItem = next(secondaryIterator);
 
             while (primaryItem != null && secondaryItem != null) {
+                idAndVersionStreamVerifierListener.onPrimaryStreamProcessed(primaryItem);
+
                 if (primaryItem.equals(secondaryItem)) {
                     primaryItem = verifiedNext(primaryIterator, primaryItem);
                     secondaryItem = next(secondaryIterator);
@@ -49,6 +53,8 @@ public class IdAndVersionStreamVerifier {
 
             while (primaryItem != null) {
                 idAndVersionStreamVerifierListener.onMissingInSecondaryStream(primaryItem);
+                idAndVersionStreamVerifierListener.onPrimaryStreamProcessed(primaryItem);
+
                 primaryItem = verifiedNext(primaryIterator, primaryItem);
                 numItems++;
             }
@@ -58,6 +64,8 @@ public class IdAndVersionStreamVerifier {
                 secondaryItem = next(secondaryIterator);
                 numItems++;
             }
+
+            idAndVersionStreamVerifierListener.onVerificationCompleted();
         } finally {
             closeWithoutThrowingException(primaryStream);
             closeWithoutThrowingException(secondayStream);
