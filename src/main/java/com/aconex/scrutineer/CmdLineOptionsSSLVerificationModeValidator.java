@@ -11,7 +11,7 @@ public class CmdLineOptionsSSLVerificationModeValidator implements IValueValidat
     @Override
     public void validate(String name, Object value) throws ParameterException {
         if (!Arrays.asList(sslVerificationModes).contains(value)) {
-            throw new ParameterException("SSL verification mode can be one of: " + Arrays.toString(sslVerificationModes));
+            throw new ParameterException(String.format("Invalid SSL Verification mode '%s' - can be one of: %s", value, Arrays.toString(sslVerificationModes)));
         }
     }
 }
