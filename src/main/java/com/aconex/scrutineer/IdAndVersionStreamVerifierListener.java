@@ -7,4 +7,7 @@ public interface IdAndVersionStreamVerifierListener {
     void onMissingInPrimaryStream(IdAndVersion idAndVersion);
 
     void onVersionMisMatch(IdAndVersion primaryItem, IdAndVersion secondaryItem);
+    default void onStreamComparison(IdAndVersion primaryItem, IdAndVersion secondaryItem) {}
+    default void onVerificationStarted() {}
+    default void onVerificationCompleted() {}
 }
