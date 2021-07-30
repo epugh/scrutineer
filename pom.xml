@@ -8,6 +8,7 @@
 
     <modules>
         <module>core</module>
+        <module>jdbc</module>
     </modules>
 
     <name>Scrutineer (Stream Comparator)</name>
