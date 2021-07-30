@@ -4,12 +4,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.slf4j.Logger;
-
 import com.aconex.scrutineer.IdAndVersion;
 import com.aconex.scrutineer.LogUtils;
 import com.fasterxml.sort.Sorter;
 import com.google.common.io.CountingInputStream;
+import org.slf4j.Logger;
 
 public class ElasticSearchSorter {
 

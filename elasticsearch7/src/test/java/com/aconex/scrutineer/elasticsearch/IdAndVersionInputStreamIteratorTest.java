@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import com.aconex.scrutineer.IdAndVersion;
 import com.aconex.scrutineer.StringIdAndVersion;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -50,7 +51,7 @@ public class IdAndVersionInputStreamIteratorTest {
         IdAndVersion idAndVersion = new StringIdAndVersion(ID, VERSION);
         when(idAndVersionDataReader.readNext()).thenReturn(idAndVersion);
         IdAndVersionInputStreamIterator idAndVersionInputStreamIterator = new IdAndVersionInputStreamIterator(idAndVersionDataReader);
-        assertThat(idAndVersionInputStreamIterator.next(), is(idAndVersion));
+        assertThat(idAndVersionInputStreamIterator.next(), CoreMatchers.is(idAndVersion));
     }
 
     @Test
@@ -58,7 +59,7 @@ public class IdAndVersionInputStreamIteratorTest {
     	IdAndVersion idAndVersion = new StringIdAndVersion(ID, VERSION);
         when(idAndVersionDataReader.readNext()).thenReturn(idAndVersion).thenReturn(null);
         IdAndVersionInputStreamIterator idAndVersionInputStreamIterator = new IdAndVersionInputStreamIterator(idAndVersionDataReader);
-        assertThat(idAndVersionInputStreamIterator.next(), is(idAndVersion));
+        assertThat(idAndVersionInputStreamIterator.next(), CoreMatchers.is(idAndVersion));
         assertThat(idAndVersionInputStreamIterator.hasNext(), is(false));
     }
 

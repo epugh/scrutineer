@@ -14,6 +14,7 @@ import java.io.ObjectInputStream;
 import com.aconex.scrutineer.IdAndVersion;
 import com.aconex.scrutineer.IdAndVersionFactory;
 import com.aconex.scrutineer.StringIdAndVersion;
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -44,8 +45,8 @@ public class IdAndVersionDataReaderTest {
         when(objectInputStream.readUTF()).thenReturn(ID);
         when(objectInputStream.readLong()).thenReturn(VERSION);
         IdAndVersion idAndVersion = idAndVersionDataReader.readNext();
-        assertThat(idAndVersion.getId(), is(ID));
-        assertThat(idAndVersion.getVersion(), is(VERSION));
+        MatcherAssert.assertThat(idAndVersion.getId(), is(ID));
+        MatcherAssert.assertThat(idAndVersion.getVersion(), is(VERSION));
     }
 
     @Test

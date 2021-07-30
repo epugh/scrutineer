@@ -1,9 +1,9 @@
 package com.aconex.scrutineer.elasticsearch;
 
-import com.aconex.scrutineer.IdAndVersion;
-
 import java.io.IOException;
 import java.util.Iterator;
+
+import com.aconex.scrutineer.IdAndVersion;
 
 public class IdAndVersionInputStreamIterator implements Iterator<IdAndVersion> {
 

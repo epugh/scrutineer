@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 
-import com.aconex.scrutineer.ScrutineerCommandLineOptions;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
@@ -22,7 +21,7 @@ import org.junit.Test;
 public class ElasticSearchTransportClientFactoryTest {
 
     private TransportAddress address;
-    private ScrutineerCommandLineOptions options = new ScrutineerCommandLineOptions();
+    private ElasticSearchConnectionConfig options = new ElasticSearchConnectionConfig();
 
     private ElasticSearchTransportClientFactory testInstance;
 
@@ -31,12 +30,12 @@ public class ElasticSearchTransportClientFactoryTest {
         TransportAddressParser transportAddressParser = new TransportAddressParser();
         this.address = transportAddressParser.convert("127.0.0.1:9300").get(0);
 
-        this.options.clusterName = "mycluster";
-        this.options.esUsername = "user";
-        this.options.esPassword = "secret";
-        this.options.esSSLVerificationMode = "certificate";
-        this.options.esSSLEnabled = true;
-        this.options.elasticSearchHosts = Arrays.asList(this.address);
+        this.options.setClusterName("mycluster");
+        this.options.setEsUsername("user");
+        this.options.setEsPassword("secret");
+        this.options.setEsSSLVerificationMode("certificate");
+        this.options.setEsSSLEnabled(true);
+        this.options.setElasticSearchHosts(Arrays.asList(this.address));
 
 
         this.testInstance = new ElasticSearchTransportClientFactory();
@@ -61,9 +60,9 @@ public class ElasticSearchTransportClientFactoryTest {
 
     @Test
     public void shouldCreatePreBuiltTransportClientWhenAuthenticationNotRequired() {
-        this.options.esSSLEnabled = false;
-        this.options.esUsername = null;
-        this.options.esPassword = null;
+        this.options.setEsSSLEnabled(false);
+        this.options.setEsUsername(null);
+        this.options.setEsPassword(null);
 
         TransportClient transportClient = testInstance.getTransportClient(options);
 

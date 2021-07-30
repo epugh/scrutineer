@@ -1,14 +1,14 @@
 package com.aconex.scrutineer.elasticsearch;
 
-import com.aconex.scrutineer.IdAndVersion;
-import com.aconex.scrutineer.IdAndVersionFactory;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.Iterator;
+
+import com.aconex.scrutineer.IdAndVersion;
+import com.aconex.scrutineer.IdAndVersionFactory;
 
 public class IteratorFactory {
 

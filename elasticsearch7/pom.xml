@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>scrutineer</artifactId>
+        <groupId>com.aconex.scrutineer</groupId>
+        <version>7.9.4-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>elasticsearch7</artifactId>
+
+    <properties>
+        <httpclient.version>4.5.13</httpclient.version>
+        <elasticsearch.version>7.9.3</elasticsearch.version>
+        <!-- Common CVSS vulnerabilities mean we often have to declare specific dependencies on ES's netty  -->
+        <netty.version>4.1.59.Final</netty.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>com.aconex.scrutineer</groupId>
+            <artifactId>scrutineer-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <version>${elasticsearch.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>x-pack-transport</artifactId>
+            <version>${elasticsearch.version}</version>
+        </dependency>
+
+        <!--
+       These dependencies are explicitly brought in upgraded from those declared by ES, due to CVSS scores
+       -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-transport</artifactId>
+            <version>${netty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec</artifactId>
+            <version>${netty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http</artifactId>
+            <version>${netty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-handler</artifactId>
+            <version>${netty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.27</version>
+        </dependency>
+        <!-- END CVSS overrides -->
+
+        <!-- this is referenced by Elasticsearch X-Pack plugin and needs to be updated due to CVS score -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpclient.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.util</groupId>
+            <artifactId>java-merge-sort</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+    </dependencies>
+</project>

@@ -5,10 +5,9 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.beust.jcommander.IStringConverter;
 import org.elasticsearch.common.transport.TransportAddress;
 
-public class TransportAddressParser implements IStringConverter<List<TransportAddress>> {
+public class TransportAddressParser {
 
     private static final int DEFAULT_ELASTICSEARCH_PORT = 9300;
     private final InetAddressResolver inetAddressResolver;
@@ -25,7 +24,6 @@ public class TransportAddressParser implements IStringConverter<List<TransportAd
         this.inetAddressResolver = resolver;
     }
 
-    @Override
     public List<TransportAddress> convert(String sourceValue) {
         String[] values = sourceValue.split(",");
         List<TransportAddress> transportAddresses = new ArrayList<>();
