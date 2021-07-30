@@ -9,26 +9,28 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>jdbc</artifactId>
-    <name>Jdbc Stream</name>
+    <artifactId>verifier</artifactId>
+    <name>Scrutineer Verifier</name>
+    <description>
+        Verification logic to compares 2 streams of Ids and Versions
+    </description>
 
     <dependencies>
         <dependency>
-            <groupId>com.aconex.scrutineer</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>scrutineer-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.dbunit</groupId>
-            <artifactId>dbunit</artifactId>
-            <version>2.7.0</version>
-            <scope>test</scope>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.hsqldb</groupId>
-            <artifactId>hsqldb</artifactId>
-            <version>2.5.1</version>
-            <scope>test</scope>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.10.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>30.0-jre</version>
         </dependency>
     </dependencies>
+
 </project>
