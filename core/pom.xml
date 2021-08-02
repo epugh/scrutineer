@@ -11,6 +11,11 @@
 
     <artifactId>scrutineer-core</artifactId>
     <name>Scrutineer Core</name>
+
+    <properties>
+        <main.basedir>${project.basedir}/..</main.basedir>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.commons</groupId>

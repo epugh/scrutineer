@@ -13,6 +13,10 @@
 
     <name>Scrutineer (Stream Comparator) Commandline Runner</name>
 
+    <properties>
+        <main.basedir>${project.basedir}/..</main.basedir>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>

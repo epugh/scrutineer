@@ -83,6 +83,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <main.basedir>${project.basedir}</main.basedir>
+
         <!-- default bytecode version for src/test -->
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
@@ -321,7 +323,7 @@
                         <configuration>
                             <failsOnError>true</failsOnError>
                             <violationSeverity>info</violationSeverity>
-                            <configLocation>${project.basedir}/src/test/resources/checkstyle.xml</configLocation>
+                            <configLocation>${main.basedir}/codequality/checkstyle.xml</configLocation>
                             <consoleOutput>true</consoleOutput>
                         </configuration>
                         <executions>
@@ -341,7 +343,7 @@
                             <targetJdk>1.8</targetJdk>
                             <minimumPriority>4</minimumPriority>
                             <rulesets>
-                                <ruleset>${project.basedir}/src/test/resources/pmd.xml</ruleset>
+                                <ruleset>${main.basedir}/codequality/pmd.xml</ruleset>
                             </rulesets>
                         </configuration>
                         <executions>

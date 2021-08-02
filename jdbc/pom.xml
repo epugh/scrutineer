@@ -12,6 +12,10 @@
     <artifactId>jdbc</artifactId>
     <name>Jdbc Stream</name>
 
+    <properties>
+        <main.basedir>${project.basedir}/..</main.basedir>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.aconex.scrutineer</groupId>
