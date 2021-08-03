@@ -1,6 +1,11 @@
 package com.aconex.scrutineer.jdbc;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -41,62 +46,62 @@ public class JdbcIdAndVersionStreamTest {
 
     @Test
     public void shouldCloseDBResourcesEvenIfNoIteration() throws SQLException {
-        Mockito.when(connection.createStatement()).thenReturn(statement);
-        Mockito.when(statement.executeQuery(SQL)).thenReturn(resultSet);
-        Mockito.when(resultSet.getMetaData()).thenReturn(metaData);
+        when(connection.createStatement()).thenReturn(statement);
+        when(statement.executeQuery(SQL)).thenReturn(resultSet);
+        when(resultSet.getMetaData()).thenReturn(metaData);
 
         JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(connection, SQL, idAndVersionFactory);
         jdbcIdAndVersionStream.open();
         jdbcIdAndVersionStream.close();
 
-        Mockito.verify(statement).close();
-        Mockito.verify(resultSet).close();
-        Mockito.verify(connection, Mockito.never()).close();
+        verify(statement).close();
+        verify(resultSet).close();
+        verify(connection, never()).close();
     }
 
     @Test
-    public void closeShouldDoNothingIfNotOpen() throws SQLException {
+    public void closeShouldDoNothingIfNotOpen() {
         JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(connection, SQL, idAndVersionFactory);
         jdbcIdAndVersionStream.close();
-        Mockito.verifyNoMoreInteractions(connection);
+        verifyNoMoreInteractions(connection);
     }
 
     @Test
     public void shouldExecuteSQLQuery() throws SQLException {
-        Mockito.when(connection.createStatement()).thenReturn(statement);
+        when(connection.createStatement()).thenReturn(statement);
         //TODO: Handle scrolling properly
-        Mockito.when(statement.executeQuery(SQL)).thenReturn(resultSet);
-        Mockito.when(resultSet.getMetaData()).thenReturn(metaData);
+        when(statement.executeQuery(SQL)).thenReturn(resultSet);
+        when(resultSet.getMetaData()).thenReturn(metaData);
         JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(connection, SQL, idAndVersionFactory);
         jdbcIdAndVersionStream.open();
         IdAndVersionResultSetIterator iterator = (IdAndVersionResultSetIterator) jdbcIdAndVersionStream.iterator();
         assertThat(iterator.getResultSet(), Is.is(resultSet));
-        Mockito.verify(statement).executeQuery(SQL);
+        verify(statement).executeQuery(SQL);
     }
 
     @Test
     public void shouldTearDownStatement() throws SQLException {
-        Mockito.when(connection.createStatement()).thenReturn(statement);
-        Mockito.when(statement.executeQuery(SQL)).thenReturn(resultSet);
-        Mockito.when(resultSet.getMetaData()).thenReturn(metaData);
+        when(connection.createStatement()).thenReturn(statement);
+        when(statement.executeQuery(SQL)).thenReturn(resultSet);
+        when(resultSet.getMetaData()).thenReturn(metaData);
         JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(connection, SQL, idAndVersionFactory);
         jdbcIdAndVersionStream.open();
         jdbcIdAndVersionStream.iterator();
         jdbcIdAndVersionStream.close();
-        Mockito.verify(resultSet).close();
-        Mockito.verify(statement).close();
+        verify(resultSet).close();
+        verify(statement).close();
     }
 
     @Test(expected = RuntimeException.class)
     public void shouldThrowExceptionIfResultSetFailsToClose() throws SQLException {
         try {
-            Mockito.when(connection.createStatement()).thenReturn(statement);
-            Mockito.when(statement.executeQuery(SQL)).thenReturn(resultSet);
+            when(connection.createStatement()).thenReturn(statement);
+            when(statement.executeQuery(SQL)).thenReturn(resultSet);
         } catch (SQLException e) {
             e.printStackTrace();
             Assert.fail("Unexpected exception");
         }
-        Mockito.doThrow(new SQLException()).when(resultSet).close();
+        doThrow(new SQLException()).when(resultSet).close();
         JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(connection, SQL, idAndVersionFactory);
         jdbcIdAndVersionStream.open();
         jdbcIdAndVersionStream.iterator();
