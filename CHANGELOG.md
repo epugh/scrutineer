@@ -3,6 +3,11 @@ Scrutineer Changelog
 
 Outlines key changes across versions (not exhaustive)
 
+Scrutineer 7.9.4
+-----------------
+* the single scrutineer jar was broken into different modules, `core`/`verifier` contain the foundational code and verification
+  logic, `jdbc`/`elasticsearch7` contain implementations of IdAndVersionStream based on the system they're connecting to, `scrutineer
+  (Commandline Runner)` has the same scope as the previous version.
 
 Scrutineer 6.8.x
 -----------------
