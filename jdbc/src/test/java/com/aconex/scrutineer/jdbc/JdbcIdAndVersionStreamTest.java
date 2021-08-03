@@ -1,6 +1,7 @@
 package com.aconex.scrutineer.jdbc;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -98,7 +99,7 @@ public class JdbcIdAndVersionStreamTest {
             when(statement.executeQuery(SQL)).thenReturn(resultSet);
         } catch (SQLException e) {
             e.printStackTrace();
-            Assert.fail("Unexpected exception");
+            fail("Unexpected exception");
         }
         doThrow(new SQLException()).when(resultSet).close();
         JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(connection, SQL, idAndVersionFactory);

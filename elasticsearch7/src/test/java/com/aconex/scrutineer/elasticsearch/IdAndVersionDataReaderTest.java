@@ -14,7 +14,6 @@ import java.io.ObjectInputStream;
 import com.aconex.scrutineer.IdAndVersion;
 import com.aconex.scrutineer.IdAndVersionFactory;
 import com.aconex.scrutineer.StringIdAndVersion;
-import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
