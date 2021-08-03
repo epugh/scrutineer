@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/Aconex/scrutineer.svg?branch=master)](https://travis-ci.org/Aconex/scrutineer.svg?branch=master)
+[![Build Status](https://github.com/Aconex/scrutineer/actions/workflows/maven.yml/badge.svg?branch=master)
 
 Analyses a secondary stream of information against a known point-of-truth and reports inconsistencies.
 
