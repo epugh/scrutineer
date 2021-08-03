@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import com.aconex.scrutineer.elasticsearch.ElasticSearchIdAndVersionStream;
@@ -41,7 +42,7 @@ public class ScrutineerTest {
 
     @Test
     public void testExecute() {
-        Scrutineer scrutineer = Mockito.spy(new Scrutineer(options));
+        Scrutineer scrutineer = spy(new Scrutineer(options));
         doNothing().when(scrutineer).verify();
 
         Scrutineer.execute(scrutineer);
@@ -51,7 +52,7 @@ public class ScrutineerTest {
 
     @Test(expected=RuntimeException.class)
     public void shouldRethrowExceptionInExecute() {
-      Scrutineer scrutineer = Mockito.spy(new Scrutineer(options));
+      Scrutineer scrutineer = spy(new Scrutineer(options));
       doThrow(new Exception()).when(scrutineer).verify();
 
       Scrutineer.execute(scrutineer);
@@ -59,7 +60,7 @@ public class ScrutineerTest {
 
     @Test
     public void testVerify() {
-        Scrutineer scrutineer = Mockito.spy(new Scrutineer(options));
+        Scrutineer scrutineer = spy(new Scrutineer(options));
         doReturn(elasticSearchIdAndVersionStream).when(scrutineer).createElasticSearchIdAndVersionStream(eq(options));
         doReturn(jdbcIdAndVersionStream).when(scrutineer).createJdbcIdAndVersionStream(options);
         doNothing().when(scrutineer).verify(eq(elasticSearchIdAndVersionStream), eq(jdbcIdAndVersionStream), any(IdAndVersionStreamVerifier.class), any(IdAndVersionStreamVerifierListener.class));
@@ -72,7 +73,7 @@ public class ScrutineerTest {
     @Test
     public void testShouldUseCoincidentFilteredStreamListenerIfOptionProvided() {
         options.ignoreTimestampsDuringRun = true;
-        Scrutineer scrutineer = Mockito.spy(new Scrutineer(options));
+        Scrutineer scrutineer = spy(new Scrutineer(options));
 
         doReturn(coincidentListener).when(scrutineer).createCoincidentPrintStreamListener(any(Function.class));
         doReturn(standardListener).when(scrutineer).createStandardPrintStreamListener(any(Function.class));
@@ -85,7 +86,7 @@ public class ScrutineerTest {
 
     @Test
     public void testShouldUseStandardPrintStreamListenerIfOptionProvided() {
-        Scrutineer scrutineer = Mockito.spy(new Scrutineer(options));
+        Scrutineer scrutineer = spy(new Scrutineer(options));
 
         doReturn(coincidentListener).when(scrutineer).createCoincidentPrintStreamListener(any(Function.class));
         doReturn(standardListener).when(scrutineer).createStandardPrintStreamListener(any(Function.class));
@@ -99,7 +100,7 @@ public class ScrutineerTest {
     @Test
     public void testClose() throws Exception {
 
-        Scrutineer scrutineer = Mockito.spy(new Scrutineer(options));
+        Scrutineer scrutineer = spy(new Scrutineer(options));
         doNothing().when(scrutineer).closeJdbcConnection();
         doNothing().when(scrutineer).closeElasticSearchConnections();
 

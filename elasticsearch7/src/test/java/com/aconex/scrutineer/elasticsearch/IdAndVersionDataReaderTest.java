@@ -45,8 +45,8 @@ public class IdAndVersionDataReaderTest {
         when(objectInputStream.readUTF()).thenReturn(ID);
         when(objectInputStream.readLong()).thenReturn(VERSION);
         IdAndVersion idAndVersion = idAndVersionDataReader.readNext();
-        MatcherAssert.assertThat(idAndVersion.getId(), is(ID));
-        MatcherAssert.assertThat(idAndVersion.getVersion(), is(VERSION));
+        assertThat(idAndVersion.getId(), is(ID));
+        assertThat(idAndVersion.getVersion(), is(VERSION));
     }
 
     @Test

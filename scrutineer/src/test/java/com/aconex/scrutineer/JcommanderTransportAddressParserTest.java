@@ -1,10 +1,9 @@
 package com.aconex.scrutineer;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
 import com.beust.jcommander.JCommander;
-import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 
 public class JcommanderTransportAddressParserTest {
@@ -15,7 +14,7 @@ public class JcommanderTransportAddressParserTest {
         ScrutineerCommandLineOptions scrutineerCommandLineOptions = new ScrutineerCommandLineOptions();
         JCommander jCommander = new JCommander(scrutineerCommandLineOptions);
         jCommander.parse(args);
-        MatcherAssert.assertThat(scrutineerCommandLineOptions.elasticSearchHosts.size(), is(2));
+        assertThat(scrutineerCommandLineOptions.elasticSearchHosts.size(), is(2));
 
         // this is not a bug, the actual Java network code translates localhost =>127.0.0.1
         // this might prove to be a flakey test..

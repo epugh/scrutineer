@@ -51,7 +51,7 @@ public class IdAndVersionInputStreamIteratorTest {
         IdAndVersion idAndVersion = new StringIdAndVersion(ID, VERSION);
         when(idAndVersionDataReader.readNext()).thenReturn(idAndVersion);
         IdAndVersionInputStreamIterator idAndVersionInputStreamIterator = new IdAndVersionInputStreamIterator(idAndVersionDataReader);
-        assertThat(idAndVersionInputStreamIterator.next(), CoreMatchers.is(idAndVersion));
+        assertThat(idAndVersionInputStreamIterator.next(), is(idAndVersion));
     }
 
     @Test
@@ -59,7 +59,7 @@ public class IdAndVersionInputStreamIteratorTest {
     	IdAndVersion idAndVersion = new StringIdAndVersion(ID, VERSION);
         when(idAndVersionDataReader.readNext()).thenReturn(idAndVersion).thenReturn(null);
         IdAndVersionInputStreamIterator idAndVersionInputStreamIterator = new IdAndVersionInputStreamIterator(idAndVersionDataReader);
-        assertThat(idAndVersionInputStreamIterator.next(), CoreMatchers.is(idAndVersion));
+        assertThat(idAndVersionInputStreamIterator.next(), is(idAndVersion));
         assertThat(idAndVersionInputStreamIterator.hasNext(), is(false));
     }
 
