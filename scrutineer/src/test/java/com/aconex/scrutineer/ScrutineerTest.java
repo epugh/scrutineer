@@ -8,11 +8,11 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
-import java.util.Map;
-
 import com.aconex.scrutineer.elasticsearch.ElasticSearchIdAndVersionStream;
 import com.aconex.scrutineer.jdbc.JdbcIdAndVersionStream;
+import com.aconex.scrutineer.runtime.IdAndVersionStreamConnectorFactory;
 import com.google.common.base.Function;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -39,6 +39,9 @@ public class ScrutineerTest {
     @Mock
     private IdAndVersionStreamConnector jdbcIdAndVersionStreamConnector, elasticSearchIdAndVersionStreamConnector;
 
+    @Mock
+    private IdAndVersionStreamConnectorFactory idAndVersionStreamConnectorFactory;
+
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
@@ -63,9 +66,12 @@ public class ScrutineerTest {
 
     @Test
     public void testVerify() {
-        Scrutineer scrutineer = spy(new Scrutineer(options));
-        doReturn(elasticSearchIdAndVersionStream).when(scrutineer).createElasticSearchIdAndVersionStream(any(IdAndVersionStreamConnector.class), any(Map.class));
-        doReturn(jdbcIdAndVersionStream).when(scrutineer).createJdbcIdAndVersionStream(any(IdAndVersionStreamConnector.class), any(Map.class));
+        Scrutineer scrutineer = spy(new Scrutineer(options, idAndVersionStreamConnectorFactory));
+        doReturn(Pair.of(jdbcIdAndVersionStreamConnector, elasticSearchIdAndVersionStreamConnector)).when(idAndVersionStreamConnectorFactory).createStreamConnectors();
+
+        doReturn(jdbcIdAndVersionStream).when(jdbcIdAndVersionStreamConnector).create(any(IdAndVersionFactory.class));
+        doReturn(elasticSearchIdAndVersionStream).when(elasticSearchIdAndVersionStreamConnector).create(any(IdAndVersionFactory.class));
+
         doNothing().when(scrutineer).verify(eq(elasticSearchIdAndVersionStream), eq(jdbcIdAndVersionStream), any(IdAndVersionStreamVerifier.class), any(IdAndVersionStreamVerifierListener.class));
         scrutineer.verify();
 

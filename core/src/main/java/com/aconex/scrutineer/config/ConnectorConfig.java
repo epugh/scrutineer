@@ -9,6 +9,11 @@ import java.util.Map;
  * This class holds both the original configuration that was provided as well as the parsed (TODO: implement PropDefinition and passed props)
  */
 public abstract class ConnectorConfig {
+    /**
+     * Required property which specify the name of the stream connector class
+     */
+    public static final String STREAM_CONNECTOR_CLASS = "stream.connector.class";
+
     private Map<String, String> configs;
 
     // TODO: use PropDefinition which has type information to parse the original properties

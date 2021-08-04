@@ -1,11 +1,10 @@
 package com.aconex.scrutineer;
 
-import java.util.Map;
-
-import com.aconex.scrutineer.elasticsearch.ElasticSearchStreamConnector;
-import com.aconex.scrutineer.jdbc.JdbcStreamConnector;
+import com.aconex.scrutineer.runtime.IdAndVersionStreamConnectorFactory;
+import com.aconex.scrutineer.runtime.StreamConnectorPlugins;
 import com.beust.jcommander.JCommander;
 import com.google.common.base.Function;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 
 public class Scrutineer {
@@ -44,17 +43,18 @@ public class Scrutineer {
 
     @SuppressWarnings("PMD.NcssMethodCount")
     public void verify(IdAndVersionStreamVerifierListener verifierListener) {
-        idAndVersionFactory = createIdAndVersionFactory();
+        IdAndVersionFactory idAndVersionFactory = createIdAndVersionFactory();
+
+        Pair<IdAndVersionStreamConnector, IdAndVersionStreamConnector> streamConnectors
+                = idAndVersionStreamConnectorFactory.createStreamConnectors();
 
         // secondary
-        IdAndVersionStreamConnector elasticSearchStreamConnector = new ElasticSearchStreamConnector();
-        IdAndVersionStream elasticSearchIdAndVersionStream =
-                createElasticSearchIdAndVersionStream(elasticSearchStreamConnector, optionsExtension.getSecondaryConnectorConfigs());
+        IdAndVersionStreamConnector elasticSearchStreamConnector = streamConnectors.getRight();
+        IdAndVersionStream elasticSearchIdAndVersionStream = elasticSearchStreamConnector.create(idAndVersionFactory);
 
         // primary
-        IdAndVersionStreamConnector jdbcStreamConnector = new JdbcStreamConnector();
-        IdAndVersionStream jdbcIdAndVersionStream =
-                createJdbcIdAndVersionStream(jdbcStreamConnector, optionsExtension.getPrimaryConnectorConfigs());
+        IdAndVersionStreamConnector jdbcStreamConnector = streamConnectors.getLeft();
+        IdAndVersionStream jdbcIdAndVersionStream = jdbcStreamConnector.create(idAndVersionFactory);
 
         try {
             verify(elasticSearchIdAndVersionStream, jdbcIdAndVersionStream, new IdAndVersionStreamVerifier(), verifierListener);
@@ -104,25 +104,19 @@ public class Scrutineer {
         return new CoincidentFilteredStreamVerifierListener(new PrintStreamOutputVersionStreamVerifierListener(System.err, formatter));
     }
 
-
     public Scrutineer(ScrutineerCommandLineOptionsExtension options) {
+        this(options, new IdAndVersionStreamConnectorFactory(options, new StreamConnectorPlugins()));
+    }
+
+    public Scrutineer(ScrutineerCommandLineOptionsExtension options, IdAndVersionStreamConnectorFactory idAndVersionStreamConnectorFactory) {
         this.optionsExtension = options;
+        this.idAndVersionStreamConnectorFactory = idAndVersionStreamConnectorFactory;
     }
 
     private IdAndVersionFactory createIdAndVersionFactory() {
         return optionsExtension.numeric() ? LongIdAndVersion.FACTORY : StringIdAndVersion.FACTORY;
     }
 
-    IdAndVersionStream createElasticSearchIdAndVersionStream(IdAndVersionStreamConnector elasticSearchStreamConnector, Map<String, String> props) {
-        elasticSearchStreamConnector.configure(props);
-        return elasticSearchStreamConnector.create(idAndVersionFactory);
-    }
-
-    IdAndVersionStream createJdbcIdAndVersionStream(IdAndVersionStreamConnector jdbcStreamConnector, Map<String, String> props) {
-        jdbcStreamConnector.configure(props);
-        return jdbcStreamConnector.create(idAndVersionFactory);
-    }
-
     private final ScrutineerCommandLineOptionsExtension optionsExtension;
-    private IdAndVersionFactory idAndVersionFactory;
+    private final IdAndVersionStreamConnectorFactory idAndVersionStreamConnectorFactory;
 }
