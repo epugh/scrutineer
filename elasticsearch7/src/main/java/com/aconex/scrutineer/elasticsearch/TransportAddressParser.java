@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.elasticsearch.common.transport.TransportAddress;
 
@@ -29,6 +30,12 @@ public class TransportAddressParser {
         List<TransportAddress> transportAddresses = new ArrayList<>();
         parseHostPortPairs(values, transportAddresses);
         return transportAddresses;
+    }
+
+    public String toString(List<TransportAddress> transportAddresses) {
+        return transportAddresses.stream()
+                .map(TransportAddress::toString)
+                .collect(Collectors.joining(","));
     }
 
     private void parseHostPortPairs(String[] values, List<TransportAddress> transportAddresses) {

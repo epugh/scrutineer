@@ -8,19 +8,20 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
+import java.util.Map;
+
 import com.aconex.scrutineer.elasticsearch.ElasticSearchIdAndVersionStream;
 import com.aconex.scrutineer.jdbc.JdbcIdAndVersionStream;
 import com.google.common.base.Function;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 public class ScrutineerTest {
 
     @Mock
-    private ScrutineerCommandLineOptions options;
+    private ScrutineerCommandLineOptionsExtension options;
 
     @Mock
     private ElasticSearchIdAndVersionStream elasticSearchIdAndVersionStream;
@@ -61,8 +62,8 @@ public class ScrutineerTest {
     @Test
     public void testVerify() {
         Scrutineer scrutineer = spy(new Scrutineer(options));
-        doReturn(elasticSearchIdAndVersionStream).when(scrutineer).createElasticSearchIdAndVersionStream(eq(options));
-        doReturn(jdbcIdAndVersionStream).when(scrutineer).createJdbcIdAndVersionStream(options);
+        doReturn(elasticSearchIdAndVersionStream).when(scrutineer).createElasticSearchIdAndVersionStream(any(Map.class));
+        doReturn(jdbcIdAndVersionStream).when(scrutineer).createJdbcIdAndVersionStream(any(Map.class));
         doNothing().when(scrutineer).verify(eq(elasticSearchIdAndVersionStream), eq(jdbcIdAndVersionStream), any(IdAndVersionStreamVerifier.class), any(IdAndVersionStreamVerifierListener.class));
         scrutineer.verify();
 
@@ -72,7 +73,7 @@ public class ScrutineerTest {
 
     @Test
     public void testShouldUseCoincidentFilteredStreamListenerIfOptionProvided() {
-        options.ignoreTimestampsDuringRun = true;
+        doReturn(true).when(options).ignoreTimestampsDuringRun();
         Scrutineer scrutineer = spy(new Scrutineer(options));
 
         doReturn(coincidentListener).when(scrutineer).createCoincidentPrintStreamListener(any(Function.class));

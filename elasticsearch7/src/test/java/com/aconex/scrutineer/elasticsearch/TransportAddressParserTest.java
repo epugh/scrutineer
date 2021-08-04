@@ -27,6 +27,13 @@ public class TransportAddressParserTest {
         assertThat(transportAddress.getPort(), is(9300));
     }
 
+    @Test
+    public void shouldConvertBackToStringWithHostPortPair() {
+        TransportAddressParser transportAddressParser = new TransportAddressParser();
+        List<TransportAddress> transportAddresses = transportAddressParser.convert("127.0.0.1:9300,127.0.0.2:9301");
+        assertThat(transportAddressParser.toString(transportAddresses), is("127.0.0.1:9300,127.0.0.2:9301"));
+    }
+
     @Test(expected = RuntimeException.class)
     public void shouldThrowExceptionIfValueInvalid() {
         TransportAddressParser transportAddressParser = new TransportAddressParser();

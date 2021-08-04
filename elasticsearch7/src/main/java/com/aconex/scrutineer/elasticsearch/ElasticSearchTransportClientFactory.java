@@ -17,20 +17,20 @@ public class ElasticSearchTransportClientFactory {
     private static final String SOCKET_CONNECT_TIMEOUT = "60s";
 
 
-    public TransportClient getTransportClient(ElasticSearchConnectionConfig options) {
+    public TransportClient getTransportClient(ElasticSearchConnectorConfig options) {
 
         if (options.getEsUsername() != null && options.getEsPassword() != null) {
             return createTransportClientWithAuthentication(
                     new Credential(options.getEsUsername(), options.getEsPassword()),
-                    options.getEsSSLVerificationMode(),
-                    options.isEsSSLEnabled(),
-                    options.getElasticSearchHosts(),
+                    options.getSslVerificationMode(),
+                    options.isSslEnabled(),
+                    options.getHosts(),
                     options.getClusterName());
         } else {
             return createTransportClient(
-                    options.getElasticSearchHosts(),
-                    options.getEsSSLVerificationMode(),
-                    options.isEsSSLEnabled(),
+                    options.getHosts(),
+                    options.getSslVerificationMode(),
+                    options.isSslEnabled(),
                     options.getClusterName());
         }
     }
