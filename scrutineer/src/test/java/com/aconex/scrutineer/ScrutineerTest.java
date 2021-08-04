@@ -36,6 +36,9 @@ public class ScrutineerTest {
     @Mock
     private IdAndVersionStreamVerifierListener standardListener, coincidentListener;
 
+    @Mock
+    private IdAndVersionStreamConnector jdbcIdAndVersionStreamConnector, elasticSearchIdAndVersionStreamConnector;
+
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
@@ -48,7 +51,6 @@ public class ScrutineerTest {
 
         Scrutineer.execute(scrutineer);
         verify(scrutineer).verify();
-        verify(scrutineer).close();
     }
 
     @Test(expected=RuntimeException.class)
@@ -62,8 +64,8 @@ public class ScrutineerTest {
     @Test
     public void testVerify() {
         Scrutineer scrutineer = spy(new Scrutineer(options));
-        doReturn(elasticSearchIdAndVersionStream).when(scrutineer).createElasticSearchIdAndVersionStream(any(Map.class));
-        doReturn(jdbcIdAndVersionStream).when(scrutineer).createJdbcIdAndVersionStream(any(Map.class));
+        doReturn(elasticSearchIdAndVersionStream).when(scrutineer).createElasticSearchIdAndVersionStream(any(IdAndVersionStreamConnector.class), any(Map.class));
+        doReturn(jdbcIdAndVersionStream).when(scrutineer).createJdbcIdAndVersionStream(any(IdAndVersionStreamConnector.class), any(Map.class));
         doNothing().when(scrutineer).verify(eq(elasticSearchIdAndVersionStream), eq(jdbcIdAndVersionStream), any(IdAndVersionStreamVerifier.class), any(IdAndVersionStreamVerifierListener.class));
         scrutineer.verify();
 
@@ -99,15 +101,15 @@ public class ScrutineerTest {
     }
 
     @Test
-    public void testClose() throws Exception {
+    public void testClose() {
 
         Scrutineer scrutineer = spy(new Scrutineer(options));
-        doNothing().when(scrutineer).closeJdbcConnection();
-        doNothing().when(scrutineer).closeElasticSearchConnections();
+        doNothing().when(scrutineer).closeJdbcConnection(jdbcIdAndVersionStreamConnector);
+        doNothing().when(scrutineer).closeElasticSearchConnections(elasticSearchIdAndVersionStreamConnector);
 
-        scrutineer.close();
+        scrutineer.close(elasticSearchIdAndVersionStreamConnector, jdbcIdAndVersionStreamConnector);
 
-        verify(scrutineer).closeJdbcConnection();
-        verify(scrutineer).closeElasticSearchConnections();
+        verify(scrutineer).closeJdbcConnection(jdbcIdAndVersionStreamConnector);
+        verify(scrutineer).closeElasticSearchConnections(elasticSearchIdAndVersionStreamConnector);
     }
 }

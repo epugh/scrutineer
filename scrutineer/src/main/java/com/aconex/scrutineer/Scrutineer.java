@@ -1,29 +1,11 @@
 package com.aconex.scrutineer;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.Map;
 
-import com.aconex.scrutineer.elasticsearch.ElasticSearchConnectorConfig;
-import com.aconex.scrutineer.elasticsearch.ElasticSearchDownloader;
-import com.aconex.scrutineer.elasticsearch.ElasticSearchIdAndVersionStream;
-import com.aconex.scrutineer.elasticsearch.ElasticSearchSorter;
-import com.aconex.scrutineer.elasticsearch.ElasticSearchTransportClientFactory;
-import com.aconex.scrutineer.elasticsearch.IdAndVersionDataReaderFactory;
-import com.aconex.scrutineer.elasticsearch.IdAndVersionDataWriterFactory;
-import com.aconex.scrutineer.elasticsearch.IteratorFactory;
-import com.aconex.scrutineer.jdbc.JdbcConnectorConfig;
-import com.aconex.scrutineer.jdbc.JdbcIdAndVersionStream;
+import com.aconex.scrutineer.elasticsearch.ElasticSearchStreamConnector;
+import com.aconex.scrutineer.jdbc.JdbcStreamConnector;
 import com.beust.jcommander.JCommander;
-import com.fasterxml.sort.DataReaderFactory;
-import com.fasterxml.sort.DataWriterFactory;
-import com.fasterxml.sort.SortConfig;
-import com.fasterxml.sort.Sorter;
-import com.fasterxml.sort.util.NaturalComparator;
 import com.google.common.base.Function;
-import org.apache.commons.lang3.SystemUtils;
-import org.elasticsearch.client.transport.TransportClient;
 import org.slf4j.Logger;
 
 public class Scrutineer {
@@ -50,11 +32,7 @@ public class Scrutineer {
     }
 
     static void execute(Scrutineer scrutineer) {
-        try {
-            scrutineer.verify();
-        } finally {
-            scrutineer.close();
-        }
+        scrutineer.verify();
     }
 
     public void verify() {
@@ -64,38 +42,41 @@ public class Scrutineer {
         this.verify(verifierListener);
     }
 
+    @SuppressWarnings("PMD.NcssMethodCount")
     public void verify(IdAndVersionStreamVerifierListener verifierListener) {
         idAndVersionFactory = createIdAndVersionFactory();
-        ElasticSearchIdAndVersionStream elasticSearchIdAndVersionStream =
-                createElasticSearchIdAndVersionStream(optionsExtension.getSecondaryConnectorConfigs());
 
-        JdbcIdAndVersionStream jdbcIdAndVersionStream = createJdbcIdAndVersionStream(optionsExtension.getPrimaryConnectorConfigs());
+        // secondary
+        IdAndVersionStreamConnector elasticSearchStreamConnector = new ElasticSearchStreamConnector();
+        IdAndVersionStream elasticSearchIdAndVersionStream =
+                createElasticSearchIdAndVersionStream(elasticSearchStreamConnector, optionsExtension.getSecondaryConnectorConfigs());
 
-        verify(elasticSearchIdAndVersionStream, jdbcIdAndVersionStream, new IdAndVersionStreamVerifier(), verifierListener);
-    }
+        // primary
+        IdAndVersionStreamConnector jdbcStreamConnector = new JdbcStreamConnector();
+        IdAndVersionStream jdbcIdAndVersionStream =
+                createJdbcIdAndVersionStream(jdbcStreamConnector, optionsExtension.getPrimaryConnectorConfigs());
 
-    public void close() {
-        closeJdbcConnection();
-        closeElasticSearchConnections();
-    }
-
-    void closeElasticSearchConnections() {
-        if (client != null) {
-            client.close();
-        }
-    }
-
-    void closeJdbcConnection() {
         try {
-            if (connection != null) {
-                connection.close();
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+            verify(elasticSearchIdAndVersionStream, jdbcIdAndVersionStream, new IdAndVersionStreamVerifier(), verifierListener);
+        } finally {
+            close(jdbcStreamConnector, elasticSearchStreamConnector);
         }
     }
 
-    void verify(ElasticSearchIdAndVersionStream elasticSearchIdAndVersionStream, JdbcIdAndVersionStream jdbcIdAndVersionStream, IdAndVersionStreamVerifier idAndVersionStreamVerifier, IdAndVersionStreamVerifierListener verifierListener) {
+    public void close(IdAndVersionStreamConnector elasticSearchStreamConnector, IdAndVersionStreamConnector jdbcStreamConnector) {
+        closeJdbcConnection(jdbcStreamConnector);
+        closeElasticSearchConnections(elasticSearchStreamConnector);
+    }
+
+    void closeElasticSearchConnections(IdAndVersionStreamConnector elasticSearchStreamConnector) {
+        elasticSearchStreamConnector.close();
+    }
+
+    void closeJdbcConnection(IdAndVersionStreamConnector jdbcStreamConnector) {
+        jdbcStreamConnector.close();
+    }
+
+    void verify(IdAndVersionStream elasticSearchIdAndVersionStream, IdAndVersionStream jdbcIdAndVersionStream, IdAndVersionStreamVerifier idAndVersionStreamVerifier, IdAndVersionStreamVerifierListener verifierListener) {
         idAndVersionStreamVerifier.verify(jdbcIdAndVersionStream, elasticSearchIdAndVersionStream, verifierListener);
     }
 
@@ -132,44 +113,16 @@ public class Scrutineer {
         return optionsExtension.numeric() ? LongIdAndVersion.FACTORY : StringIdAndVersion.FACTORY;
     }
 
-    ElasticSearchIdAndVersionStream createElasticSearchIdAndVersionStream(Map<String, String> props) {
-        ElasticSearchConnectorConfig esConnectorConfig = new ElasticSearchConnectorConfig(props);
-        try {
-            this.client = new ElasticSearchTransportClientFactory().getTransportClient(esConnectorConfig);
-            return new ElasticSearchIdAndVersionStream(new ElasticSearchDownloader(client, esConnectorConfig.getIndexName(),
-                    esConnectorConfig.getEsQuery(), idAndVersionFactory), new ElasticSearchSorter(createSorter()), new IteratorFactory(idAndVersionFactory), SystemUtils.getJavaIoTmpDir().getAbsolutePath());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    IdAndVersionStream createElasticSearchIdAndVersionStream(IdAndVersionStreamConnector elasticSearchStreamConnector, Map<String, String> props) {
+        elasticSearchStreamConnector.configure(props);
+        return elasticSearchStreamConnector.create(idAndVersionFactory);
     }
 
-    private Sorter<IdAndVersion> createSorter() {
-        SortConfig sortConfig = new SortConfig().withMaxMemoryUsage(DEFAULT_SORT_MEM);
-        DataReaderFactory<IdAndVersion> dataReaderFactory = new IdAndVersionDataReaderFactory(idAndVersionFactory);
-        DataWriterFactory<IdAndVersion> dataWriterFactory = new IdAndVersionDataWriterFactory();
-        return new Sorter<IdAndVersion>(sortConfig, dataReaderFactory, dataWriterFactory, new NaturalComparator<IdAndVersion>());
+    IdAndVersionStream createJdbcIdAndVersionStream(IdAndVersionStreamConnector jdbcStreamConnector, Map<String, String> props) {
+        jdbcStreamConnector.configure(props);
+        return jdbcStreamConnector.create(idAndVersionFactory);
     }
 
-    JdbcIdAndVersionStream createJdbcIdAndVersionStream(Map<String, String> props) {
-        JdbcConnectorConfig jdbcConnectorConfig = new JdbcConnectorConfig(props);
-        this.connection = initializeJdbcDriverAndConnection(jdbcConnectorConfig);
-        return new JdbcIdAndVersionStream(connection, jdbcConnectorConfig.getSql(), idAndVersionFactory);
-    }
-
-    private Connection initializeJdbcDriverAndConnection(JdbcConnectorConfig jdbcConfig) {
-        try {
-            Class.forName(jdbcConfig.getDriverClass()).newInstance();
-            return DriverManager.getConnection(jdbcConfig.getUrl(), jdbcConfig.getUser(), jdbcConfig.getPassword());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    private static final int DEFAULT_SORT_MEM = 256 * 1024 * 1024;
     private final ScrutineerCommandLineOptionsExtension optionsExtension;
     private IdAndVersionFactory idAndVersionFactory;
-    private TransportClient client;
-    private Connection connection;
-
 }
