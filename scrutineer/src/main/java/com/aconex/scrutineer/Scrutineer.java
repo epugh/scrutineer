@@ -48,36 +48,26 @@ public class Scrutineer {
         Pair<IdAndVersionStreamConnector, IdAndVersionStreamConnector> streamConnectors
                 = idAndVersionStreamConnectorFactory.createStreamConnectors();
 
-        // secondary
-        IdAndVersionStreamConnector elasticSearchStreamConnector = streamConnectors.getRight();
-        IdAndVersionStream elasticSearchIdAndVersionStream = elasticSearchStreamConnector.create(idAndVersionFactory);
+        IdAndVersionStreamConnector secondaryStreamConnector = streamConnectors.getRight();
+        IdAndVersionStream secondaryStream = secondaryStreamConnector.create(idAndVersionFactory);
 
-        // primary
-        IdAndVersionStreamConnector jdbcStreamConnector = streamConnectors.getLeft();
-        IdAndVersionStream jdbcIdAndVersionStream = jdbcStreamConnector.create(idAndVersionFactory);
+        IdAndVersionStreamConnector primaryStreamConnector = streamConnectors.getLeft();
+        IdAndVersionStream primaryStream = primaryStreamConnector.create(idAndVersionFactory);
 
         try {
-            verify(elasticSearchIdAndVersionStream, jdbcIdAndVersionStream, new IdAndVersionStreamVerifier(), verifierListener);
+            verify(secondaryStream, primaryStream, new IdAndVersionStreamVerifier(), verifierListener);
         } finally {
-            close(jdbcStreamConnector, elasticSearchStreamConnector);
+            close(primaryStreamConnector, secondaryStreamConnector);
         }
     }
 
-    public void close(IdAndVersionStreamConnector elasticSearchStreamConnector, IdAndVersionStreamConnector jdbcStreamConnector) {
-        closeJdbcConnection(jdbcStreamConnector);
-        closeElasticSearchConnections(elasticSearchStreamConnector);
+    void close(IdAndVersionStreamConnector secondaryStreamConnector, IdAndVersionStreamConnector primaryStreamConnector) {
+        primaryStreamConnector.close();
+        secondaryStreamConnector.close();
     }
 
-    void closeElasticSearchConnections(IdAndVersionStreamConnector elasticSearchStreamConnector) {
-        elasticSearchStreamConnector.close();
-    }
-
-    void closeJdbcConnection(IdAndVersionStreamConnector jdbcStreamConnector) {
-        jdbcStreamConnector.close();
-    }
-
-    void verify(IdAndVersionStream elasticSearchIdAndVersionStream, IdAndVersionStream jdbcIdAndVersionStream, IdAndVersionStreamVerifier idAndVersionStreamVerifier, IdAndVersionStreamVerifierListener verifierListener) {
-        idAndVersionStreamVerifier.verify(jdbcIdAndVersionStream, elasticSearchIdAndVersionStream, verifierListener);
+    void verify(IdAndVersionStream secondaryIdAndVersionStream, IdAndVersionStream primaryIdAndVersionStream, IdAndVersionStreamVerifier idAndVersionStreamVerifier, IdAndVersionStreamVerifierListener verifierListener) {
+        idAndVersionStreamVerifier.verify(primaryIdAndVersionStream, secondaryIdAndVersionStream, verifierListener);
     }
 
     private Function<Long, Object> createFormatter() {

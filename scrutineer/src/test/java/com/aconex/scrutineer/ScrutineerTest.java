@@ -24,10 +24,10 @@ public class ScrutineerTest {
     private ScrutineerCommandLineOptionsExtension options;
 
     @Mock
-    private ElasticSearchIdAndVersionStream elasticSearchIdAndVersionStream;
+    private ElasticSearchIdAndVersionStream secondaryIdAndVersionStream;
 
     @Mock
-    private JdbcIdAndVersionStream jdbcIdAndVersionStream;
+    private JdbcIdAndVersionStream primaryIdAndVersionStream;
 
 
     @Mock
@@ -37,7 +37,7 @@ public class ScrutineerTest {
     private IdAndVersionStreamVerifierListener standardListener, coincidentListener;
 
     @Mock
-    private IdAndVersionStreamConnector jdbcIdAndVersionStreamConnector, elasticSearchIdAndVersionStreamConnector;
+    private IdAndVersionStreamConnector primaryIdAndVersionStreamConnector, secondaryIdAndVersionStreamConnector;
 
     @Mock
     private IdAndVersionStreamConnectorFactory idAndVersionStreamConnectorFactory;
@@ -67,15 +67,15 @@ public class ScrutineerTest {
     @Test
     public void testVerify() {
         Scrutineer scrutineer = spy(new Scrutineer(options, idAndVersionStreamConnectorFactory));
-        doReturn(Pair.of(jdbcIdAndVersionStreamConnector, elasticSearchIdAndVersionStreamConnector)).when(idAndVersionStreamConnectorFactory).createStreamConnectors();
+        doReturn(Pair.of(primaryIdAndVersionStreamConnector, secondaryIdAndVersionStreamConnector)).when(idAndVersionStreamConnectorFactory).createStreamConnectors();
 
-        doReturn(jdbcIdAndVersionStream).when(jdbcIdAndVersionStreamConnector).create(any(IdAndVersionFactory.class));
-        doReturn(elasticSearchIdAndVersionStream).when(elasticSearchIdAndVersionStreamConnector).create(any(IdAndVersionFactory.class));
+        doReturn(primaryIdAndVersionStream).when(primaryIdAndVersionStreamConnector).create(any(IdAndVersionFactory.class));
+        doReturn(secondaryIdAndVersionStream).when(secondaryIdAndVersionStreamConnector).create(any(IdAndVersionFactory.class));
 
-        doNothing().when(scrutineer).verify(eq(elasticSearchIdAndVersionStream), eq(jdbcIdAndVersionStream), any(IdAndVersionStreamVerifier.class), any(IdAndVersionStreamVerifierListener.class));
+        doNothing().when(scrutineer).verify(eq(secondaryIdAndVersionStream), eq(primaryIdAndVersionStream), any(IdAndVersionStreamVerifier.class), any(IdAndVersionStreamVerifierListener.class));
         scrutineer.verify();
 
-        verify(scrutineer).verify(eq(elasticSearchIdAndVersionStream), eq(jdbcIdAndVersionStream), any(IdAndVersionStreamVerifier.class), any(IdAndVersionStreamVerifierListener.class));
+        verify(scrutineer).verify(eq(secondaryIdAndVersionStream), eq(primaryIdAndVersionStream), any(IdAndVersionStreamVerifier.class), any(IdAndVersionStreamVerifierListener.class));
 
     }
 
@@ -87,9 +87,9 @@ public class ScrutineerTest {
         doReturn(coincidentListener).when(scrutineer).createCoincidentPrintStreamListener(any(Function.class));
         doReturn(standardListener).when(scrutineer).createStandardPrintStreamListener(any(Function.class));
 
-        scrutineer.verify(elasticSearchIdAndVersionStream, jdbcIdAndVersionStream, idAndVersionStreamVerifier, standardListener);
+        scrutineer.verify(secondaryIdAndVersionStream, primaryIdAndVersionStream, idAndVersionStreamVerifier, standardListener);
 
-        verify(scrutineer).verify(elasticSearchIdAndVersionStream, jdbcIdAndVersionStream, idAndVersionStreamVerifier, standardListener);
+        verify(scrutineer).verify(secondaryIdAndVersionStream, primaryIdAndVersionStream, idAndVersionStreamVerifier, standardListener);
         verify(idAndVersionStreamVerifier).verify(any(IdAndVersionStream.class), any(IdAndVersionStream.class), eq(standardListener));
     }
 
@@ -100,9 +100,9 @@ public class ScrutineerTest {
         doReturn(coincidentListener).when(scrutineer).createCoincidentPrintStreamListener(any(Function.class));
         doReturn(standardListener).when(scrutineer).createStandardPrintStreamListener(any(Function.class));
 
-        scrutineer.verify(elasticSearchIdAndVersionStream, jdbcIdAndVersionStream, idAndVersionStreamVerifier, standardListener);
+        scrutineer.verify(secondaryIdAndVersionStream, primaryIdAndVersionStream, idAndVersionStreamVerifier, standardListener);
 
-        verify(scrutineer).verify(elasticSearchIdAndVersionStream, jdbcIdAndVersionStream, idAndVersionStreamVerifier, standardListener);
+        verify(scrutineer).verify(secondaryIdAndVersionStream, primaryIdAndVersionStream, idAndVersionStreamVerifier, standardListener);
         verify(idAndVersionStreamVerifier).verify(any(IdAndVersionStream.class), any(IdAndVersionStream.class), eq(standardListener));
     }
 
@@ -110,12 +110,10 @@ public class ScrutineerTest {
     public void testClose() {
 
         Scrutineer scrutineer = spy(new Scrutineer(options));
-        doNothing().when(scrutineer).closeJdbcConnection(jdbcIdAndVersionStreamConnector);
-        doNothing().when(scrutineer).closeElasticSearchConnections(elasticSearchIdAndVersionStreamConnector);
 
-        scrutineer.close(elasticSearchIdAndVersionStreamConnector, jdbcIdAndVersionStreamConnector);
+        scrutineer.close(secondaryIdAndVersionStreamConnector, primaryIdAndVersionStreamConnector);
 
-        verify(scrutineer).closeJdbcConnection(jdbcIdAndVersionStreamConnector);
-        verify(scrutineer).closeElasticSearchConnections(elasticSearchIdAndVersionStreamConnector);
+        verify(primaryIdAndVersionStreamConnector).close();
+        verify(secondaryIdAndVersionStreamConnector).close();
     }
 }
