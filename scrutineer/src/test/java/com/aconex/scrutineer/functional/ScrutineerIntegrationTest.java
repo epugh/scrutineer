@@ -60,10 +60,14 @@ public class ScrutineerIntegrationTest extends DataSourceBasedDBTestCase {
 
         Scrutineer.main(args);
 
+        verifyThatErrorsWrittenToStandardError(printStream);
+
+    }
+
+    protected void verifyThatErrorsWrittenToStandardError(PrintStream printStream) {
         verify(printStream).println("NOTINSECONDARY\t2\t20(1970-01-01T04:00:00.020+04:00)");
         verify(printStream).println("MISMATCH\t3\t30(1970-01-01T04:00:00.030+04:00)\tsecondaryVersion=42(1970-01-01T04:00:00.042+04:00)");
         verify(printStream).println("NOTINPRIMARY\t4\t40(1970-01-01T04:00:00.040+04:00)");
-
 
     }
 

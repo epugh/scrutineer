@@ -1,5 +1,6 @@
 package com.aconex.scrutineer;
 
+import com.aconex.scrutineer.config.ConfigurationProvider;
 import com.aconex.scrutineer.runtime.IdAndVersionStreamConnectorFactory;
 import com.aconex.scrutineer.runtime.StreamConnectorPlugins;
 import com.beust.jcommander.JCommander;
@@ -94,12 +95,12 @@ public class Scrutineer {
         return new CoincidentFilteredStreamVerifierListener(new PrintStreamOutputVersionStreamVerifierListener(System.err, formatter));
     }
 
-    public Scrutineer(ScrutineerCommandLineOptionsExtension options) {
-        this(options, new IdAndVersionStreamConnectorFactory(options, new StreamConnectorPlugins()));
+    public Scrutineer(ConfigurationProvider configurationProvider) {
+        this(configurationProvider, new IdAndVersionStreamConnectorFactory(configurationProvider, new StreamConnectorPlugins()));
     }
 
-    public Scrutineer(ScrutineerCommandLineOptionsExtension options, IdAndVersionStreamConnectorFactory idAndVersionStreamConnectorFactory) {
-        this.optionsExtension = options;
+    public Scrutineer(ConfigurationProvider configurationProvider, IdAndVersionStreamConnectorFactory idAndVersionStreamConnectorFactory) {
+        this.optionsExtension = configurationProvider;
         this.idAndVersionStreamConnectorFactory = idAndVersionStreamConnectorFactory;
     }
 
@@ -107,6 +108,6 @@ public class Scrutineer {
         return optionsExtension.numeric() ? LongIdAndVersion.FACTORY : StringIdAndVersion.FACTORY;
     }
 
-    private final ScrutineerCommandLineOptionsExtension optionsExtension;
+    private final ConfigurationProvider optionsExtension;
     private final IdAndVersionStreamConnectorFactory idAndVersionStreamConnectorFactory;
 }
