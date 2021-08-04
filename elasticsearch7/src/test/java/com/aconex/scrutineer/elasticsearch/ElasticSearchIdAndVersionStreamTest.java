@@ -15,6 +15,7 @@ import java.io.OutputStream;
 import java.util.Iterator;
 
 import com.aconex.scrutineer.IdAndVersion;
+import com.aconex.scrutineer.elasticsearch.v7.ElasticSearchDownloader;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Before;
 import org.junit.Test;

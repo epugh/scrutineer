@@ -11,7 +11,7 @@ import java.util.Map;
 import com.aconex.scrutineer.IdAndVersionStreamConnector;
 import com.aconex.scrutineer.config.ConfigurationProvider;
 import com.aconex.scrutineer.config.ConnectorConfig;
-import com.aconex.scrutineer.elasticsearch.ElasticSearchStreamConnector;
+import com.aconex.scrutineer.elasticsearch.v7.ElasticSearchStreamConnector;
 import com.aconex.scrutineer.jdbc.JdbcStreamConnector;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;

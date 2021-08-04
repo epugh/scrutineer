@@ -36,7 +36,7 @@ public class StreamConnectorPluginsTest {
             fail();
         } catch (IllegalArgumentException ex) {
             assertThat(ex.getMessage(), is(
-                    "Fail to find any connector class that implements IdAndVersionStreamConnector that matches not-registered, available connectors are: com.aconex.scrutineer.jdbc.JdbcStreamConnector,com.aconex.scrutineer.elasticsearch.ElasticSearchStreamConnector"));
+                    "Fail to find any connector class that implements IdAndVersionStreamConnector that matches not-registered, available connectors are: com.aconex.scrutineer.jdbc.JdbcStreamConnector,com.aconex.scrutineer.elasticsearch.v7.ElasticSearchStreamConnector"));
         }
 
 

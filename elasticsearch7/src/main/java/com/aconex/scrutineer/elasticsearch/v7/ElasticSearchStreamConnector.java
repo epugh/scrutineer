@@ -1,4 +1,4 @@
-package com.aconex.scrutineer.elasticsearch;
+package com.aconex.scrutineer.elasticsearch.v7;
 
 import java.util.Map;
 
@@ -6,6 +6,11 @@ import com.aconex.scrutineer.IdAndVersion;
 import com.aconex.scrutineer.IdAndVersionFactory;
 import com.aconex.scrutineer.IdAndVersionStream;
 import com.aconex.scrutineer.IdAndVersionStreamConnector;
+import com.aconex.scrutineer.elasticsearch.ElasticSearchIdAndVersionStream;
+import com.aconex.scrutineer.elasticsearch.ElasticSearchSorter;
+import com.aconex.scrutineer.elasticsearch.IdAndVersionDataReaderFactory;
+import com.aconex.scrutineer.elasticsearch.IdAndVersionDataWriterFactory;
+import com.aconex.scrutineer.elasticsearch.IteratorFactory;
 import com.fasterxml.sort.DataReaderFactory;
 import com.fasterxml.sort.DataWriterFactory;
 import com.fasterxml.sort.SortConfig;

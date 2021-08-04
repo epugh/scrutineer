@@ -1,6 +1,6 @@
-package com.aconex.scrutineer.elasticsearch;
+package com.aconex.scrutineer.elasticsearch.v7;
 
-import static com.aconex.scrutineer.elasticsearch.ElasticSearchConnectorConfig.*;
+import static com.aconex.scrutineer.elasticsearch.v7.ElasticSearchConnectorConfig.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 

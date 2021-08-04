@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.aconex.scrutineer.IdAndVersionStreamConnector;
-import com.aconex.scrutineer.elasticsearch.ElasticSearchStreamConnector;
+import com.aconex.scrutineer.elasticsearch.v7.ElasticSearchStreamConnector;
 import com.aconex.scrutineer.jdbc.JdbcStreamConnector;
 
 public class StreamConnectorPlugins {

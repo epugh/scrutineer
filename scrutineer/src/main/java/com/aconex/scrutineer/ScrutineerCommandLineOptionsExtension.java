@@ -5,8 +5,8 @@ import java.util.Map;
 
 import com.aconex.scrutineer.config.ConfigurationProvider;
 import com.aconex.scrutineer.config.ConnectorConfig;
-import com.aconex.scrutineer.elasticsearch.ElasticSearchConnectorConfig;
-import com.aconex.scrutineer.elasticsearch.TransportAddressParser;
+import com.aconex.scrutineer.elasticsearch.v7.ElasticSearchConnectorConfig;
+import com.aconex.scrutineer.elasticsearch.v7.TransportAddressParser;
 import com.aconex.scrutineer.jdbc.JdbcConnectorConfig;
 
 /**
@@ -18,7 +18,7 @@ import com.aconex.scrutineer.jdbc.JdbcConnectorConfig;
 public class ScrutineerCommandLineOptionsExtension implements ConfigurationProvider{
 
     private static final String JDBC_STREAM_CONNECTOR_CLASS = "com.aconex.scrutineer.jdbc.JdbcStreamConnector";
-    private static final String ELASTICSEARCH_STREAM_CONNECTOR_CLASS = "com.aconex.scrutineer.elasticsearch.ElasticSearchStreamConnector";
+    private static final String ELASTICSEARCH_STREAM_CONNECTOR_CLASS = "com.aconex.scrutineer.elasticsearch.v7.ElasticSearchStreamConnector";
 
     private ScrutineerCommandLineOptions commandLineOptions;
 

@@ -1,4 +1,4 @@
-package com.aconex.scrutineer.elasticsearch;
+package com.aconex.scrutineer.elasticsearch.v7;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;

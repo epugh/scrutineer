@@ -1,4 +1,4 @@
-package com.aconex.scrutineer.elasticsearch;
+package com.aconex.scrutineer.elasticsearch.v7;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

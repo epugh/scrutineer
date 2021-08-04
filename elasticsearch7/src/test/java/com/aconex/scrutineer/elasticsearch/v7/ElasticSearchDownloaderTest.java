@@ -1,7 +1,7 @@
-package com.aconex.scrutineer.elasticsearch;
+package com.aconex.scrutineer.elasticsearch.v7;
 
-import static com.aconex.scrutineer.elasticsearch.ElasticSearchDownloader.BATCH_SIZE;
-import static com.aconex.scrutineer.elasticsearch.ElasticSearchDownloader.SCROLL_TIME_IN_MINUTES;
+import static com.aconex.scrutineer.elasticsearch.v7.ElasticSearchDownloader.BATCH_SIZE;
+import static com.aconex.scrutineer.elasticsearch.v7.ElasticSearchDownloader.SCROLL_TIME_IN_MINUTES;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -20,6 +20,7 @@ import java.io.ObjectOutputStream;
 
 import com.aconex.scrutineer.IdAndVersionFactory;
 import com.aconex.scrutineer.StringIdAndVersion;
+import com.aconex.scrutineer.elasticsearch.v7.ElasticSearchDownloader;
 import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;

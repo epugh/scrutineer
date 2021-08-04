@@ -1,8 +1,10 @@
-package com.aconex.scrutineer.elasticsearch;
+package com.aconex.scrutineer.elasticsearch.v7;
 
 import java.util.List;
 
 import com.aconex.scrutineer.LogUtils;
+import com.aconex.scrutineer.elasticsearch.Credential;
+import com.aconex.scrutineer.elasticsearch.v7.ElasticSearchConnectorConfig;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.ClusterName;
 import org.elasticsearch.common.settings.Settings;
