@@ -92,23 +92,26 @@ package.  We already have a JTDS driver in there if you're using SQL Server (tha
   Since it is common for an index to contain a type-per-db-table you can use the "_type:<type>" search query to filter for all values for that type.
 * **numeric** - use this if your query returns results numerically ordered 
 
-Running Scrutineer2 (use configuration files)
+Running Scrutineer2 with configuration files
 ==================
 
-We've introduced a new scrutineer executable `scrutineer2` which reads configurations from two manifest files
-
+We've introduced a new **scrutineer2** executable which reads configurations from two manifest files, from `scrutineer/target/appassembler`
+run:
+    
     bin/scrutineer \
-                --primary-config=jdbc.properties \
-                --secondary-config=elasticsearch7.properties \
+                --primary-config=example-jdbc.properties \
+                --secondary-config=example-elasticsearch7.properties \
                 --numeric
 
-* **primary-config** - the configuration file for the primary stream
-* **secondary-config** - the configuration file for the secondary stream
+* **primary-config** - the configuration file for the primary stream, placed under `config` folder
+* **secondary-config** - the configuration file for the secondary stream, placed under `config` folder
 * **numeric** - use this if your query returns results numerically ordered
 
 
-
-Provide `conf/jdbc.properties` to create the primary stream
+### Provide `primary-config`
+`primary-config` will be loaded to create the primary stream, it can be **ANY** type of connector that is supported, in this example 
+we use `conf/example-jdbc.properties` 
+  
 
 ```
 stream.connector.class=com.aconex.scrutineer.jdbc.JdbcStreamConnector
@@ -127,8 +130,10 @@ jdbc.password=itsasecret
 * **jdbc.sql** - The SQL used to generate a lexicographical stream of ID & Version values (in that column order)
 
 
+### Provide `secondary-config`
+`secondary-config` is loaded to create the secondary stream. Again, it can be **ANY** type of connector, in this example
+we use `conf/example-elasticsearch7.properties`
 
-Also provide `conf/elasticsearch7.properties` to create the secondary stream
 ```
 stream.connector.class=com.aconex.scrutineer.elasticsearch.v7.ElasticSearchStreamConnector
 es.cluster.name=myCluster
