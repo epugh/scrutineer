@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import com.aconex.scrutineer.config.ConfigurationProvider;
+import com.google.common.collect.ImmutableMap;
 
 @SuppressWarnings("PMD.NcssMethodCount")
 public class ScrutineerCommandLineOptionsV2Extension implements ConfigurationProvider {
@@ -51,7 +52,7 @@ public class ScrutineerCommandLineOptionsV2Extension implements ConfigurationPro
 
             Properties properties = new Properties();
             properties.load(is);
-            return new HashMap(properties);
+            return ImmutableMap.copyOf(new HashMap(properties));
         } catch (IOException e) {
             throw new RuntimeException(format("fail to load config property file: '%s'", configProperty), e);
         }

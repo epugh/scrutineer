@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
 
 import java.io.FileNotFoundException;
+import java.lang.instrument.UnmodifiableClassException;
 import java.util.Map;
 
 import org.junit.Before;
@@ -32,6 +33,17 @@ public class ScrutineerCommandLineOptionsV2ExtensionTest {
         Map<String, String> secondaryConnectorConfigs = commandLineOptionsV2Extension.getSecondaryConnectorConfigs();
         assertThat(secondaryConnectorConfigs.get("stream.connector.class"), is("com.aconex.scrutineer.opensearch.OpenSearchStreamConnector"));
         assertThat(secondaryConnectorConfigs.get("connection.url"), is("http://localhost:9200"));
+    }
+
+    @Test
+    public void shouldNotBeAbleToModifyTheReturnConfigMap() {
+        Map<String, String> primaryConnectorConfigs = commandLineOptionsV2Extension.getPrimaryConnectorConfigs();
+        try {
+            primaryConnectorConfigs.put("key", "value");
+            fail();
+        } catch (UnsupportedOperationException ex) {
+            // expected
+        }
     }
 
     @Test
