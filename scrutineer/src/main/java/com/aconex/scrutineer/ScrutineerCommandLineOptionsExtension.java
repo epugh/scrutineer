@@ -1,5 +1,7 @@
 package com.aconex.scrutineer;
 
+import static java.util.Collections.unmodifiableMap;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,7 +10,6 @@ import com.aconex.scrutineer.config.ConnectorConfig;
 import com.aconex.scrutineer.elasticsearch.v7.ElasticSearchConnectorConfig;
 import com.aconex.scrutineer.elasticsearch.v7.TransportAddressParser;
 import com.aconex.scrutineer.jdbc.JdbcConnectorConfig;
-import com.google.common.collect.ImmutableMap;
 
 /**
  * Provide scrutineer and stream configurations via through a ScrutineerCommandLineOptions delegate, this class
@@ -51,7 +52,7 @@ public class ScrutineerCommandLineOptionsExtension implements ConfigurationProvi
         props.put(JdbcConnectorConfig.CONFIG_JDBC_SQL, commandLineOptions.sql);
         props.put(JdbcConnectorConfig.CONFIG_JDBC_USER, commandLineOptions.jdbcUser);
         props.put(JdbcConnectorConfig.CONFIG_JDBC_PASSWORD, commandLineOptions.jdbcPassword);
-        return ImmutableMap.copyOf(props);
+        return unmodifiableMap(props);
     }
 
     @Override
@@ -67,7 +68,7 @@ public class ScrutineerCommandLineOptionsExtension implements ConfigurationProvi
         props.put(ElasticSearchConnectorConfig.CONFIG_ES_INDEX_NAME, commandLineOptions.indexName);
         props.put(ElasticSearchConnectorConfig.CONFIG_ES_QUERY, commandLineOptions.query);
 
-        return ImmutableMap.copyOf(props);
+        return unmodifiableMap(props);
     }
 
     private Map<String, String> initProperties(String connectorClass) {
