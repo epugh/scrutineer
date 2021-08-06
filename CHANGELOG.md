@@ -12,6 +12,8 @@ Scrutineer 7.9.4
 * introduced a new scrutineer executable `scrutineer2` which reads the configurations from two manifest files, e.g:
   `scrutineer/target/appassembler/bin/scrutineer2 --primary-config=jdbc.properties --secondary-config=elasticsearch7.properties --numeric`
 
+* enabled elasticsearch vs elasticsearch comparison
+
 Scrutineer 6.8.x
 -----------------
 *BREAKING* 
