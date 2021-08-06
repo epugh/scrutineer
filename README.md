@@ -122,13 +122,7 @@ jdbc.user=itasecret
 jdbc.password=itsasecret
 ```
 
-* **stream.connector.class** – The connector class to use to create the stream
-* **jdbc.url** – Standard JDBC URL you would use for your app to connect to your database
-* **jdbc.driver.class** - Fully qualified class name of your JDBC Driver (don't forget to put your JDBC Driver jar in the lib directory as said above!)
-* **jdbc.user** - user account to access your JDBC Database
-* **jdbc.password** -- password required for the user credentials
-* **jdbc.sql** - The SQL used to generate a lexicographical stream of ID & Version values (in that column order)
-
+See [scrutineer/config/example-jdbc.properties](scrutineer/config/example-jdbc.properties) for a COMPLETE list of `jdbc` config options
 
 ### Provide `secondary-config`
 `secondary-config` is loaded to create the secondary stream. Again, it can be **ANY** type of connector, in this example
@@ -142,13 +136,7 @@ es.index.name=TestIndex
 es.query=*
 ```
 
-* **stream.connector.class** – The connector class to use to create the stream
-* **es.cluster.name** - this is your ElasticSearch cluster name used to autodetect and connect to a node in your cluster
-* **es.hosts** - csv set of seed ElasticSearch host:port pairs to use as part of discovery
-* **es.index.name** - the name of the index on your ElasticSearch cluster
-* **es.query** - A query_parser compatible search query that returns all documents in your ElasticSearch index relating to the SQL query you're using
-  Since it is common for an index to contain a type-per-db-table you can use the "_type:<type>" search query to filter for all values for that type.
-
+See [scrutineer/config/example-elasticsearch7.properties](scrutineer/config/example-elasticsearch7.properties) for a COMPLETE list of `elasticsearch7` config options
 
 
 
