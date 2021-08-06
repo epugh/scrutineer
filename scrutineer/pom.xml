@@ -82,10 +82,20 @@
                     <useWildcardClassPath>true</useWildcardClassPath>
                     <repositoryLayout>flat</repositoryLayout>
                     <repositoryName>lib</repositoryName>
+                    <!--  Target directory of the configuration file -->
+                    <configurationDirectory>config</configurationDirectory>
+                    <!--  Copy the configuration file to the above directory -->
+                    <copyConfigurationDirectory>true</copyConfigurationDirectory>
+                    <configurationSourceDirectory>config</configurationSourceDirectory>
+                    <includeConfigurationDirectoryInClasspath>true</includeConfigurationDirectoryInClasspath>
                     <programs>
                         <program>
                             <mainClass>com.aconex.scrutineer.Scrutineer</mainClass>
                             <id>scrutineer</id>
+                        </program>
+                        <program>
+                            <mainClass>com.aconex.scrutineer.v2.Scrutineer2</mainClass>
+                            <id>scrutineer2</id>
                         </program>
                     </programs>
                 </configuration>

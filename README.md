@@ -58,8 +58,10 @@ Scrutineer picks up that:
 * ID '5' was deleted from the database at some point, but ElasticSearch still has it in there
 * ID '6' is visible in ElasticSearch but appears to have the wrong version
 
-Running Scrutineer
+Running Scrutineer 
 ==================
+
+### Deprecated, see below to migrate to `scrutineer2`
 
 The very first thing you'll need to do is get your JDBC Driver jar and place it in the 'lib' directory of the unpacked
 package.  We already have a JTDS driver in there if you're using SQL Server (that's just what we use).
@@ -89,6 +91,53 @@ package.  We already have a JTDS driver in there if you're using SQL Server (tha
 * **query** - A query_parser compatible search query that returns all documents in your ElasticSearch index relating to the SQL query you're using
   Since it is common for an index to contain a type-per-db-table you can use the "_type:<type>" search query to filter for all values for that type.
 * **numeric** - use this if your query returns results numerically ordered 
+
+Running Scrutineer2 with configuration files
+==================
+
+We've introduced a new **scrutineer2** executable which reads configurations from two manifest files, from `scrutineer/target/appassembler`
+run:
+    
+    bin/scrutineer \
+                --primary-config=example-jdbc.properties \
+                --secondary-config=example-elasticsearch7.properties \
+                --numeric
+
+* **primary-config** - the configuration file for the primary stream, placed under `config` folder
+* **secondary-config** - the configuration file for the secondary stream, placed under `config` folder
+* **numeric** - use this if your query returns results numerically ordered
+
+
+### Provide `primary-config`
+`primary-config` will be loaded to create the primary stream, it can be **ANY** type of connector that is supported, in this example 
+we use `conf/example-jdbc.properties` 
+  
+
+```
+stream.connector.class=com.aconex.scrutineer.jdbc.JdbcStreamConnector
+jdbc.driver.class=net.sourceforge.jtds.jdbc.Driver
+jdbc.url=jdbc:jtds:sqlserver://mydbhost/mydb
+jdbc.sql=select id,version from myobjecttype order by cast(id as varchar(100))
+jdbc.user=itasecret
+jdbc.password=itsasecret
+```
+
+See [scrutineer/config/example-jdbc.properties](scrutineer/config/example-jdbc.properties) for a COMPLETE list of `jdbc` config options
+
+### Provide `secondary-config`
+`secondary-config` is loaded to create the secondary stream. Again, it can be **ANY** type of connector, in this example
+we use `conf/example-elasticsearch7.properties`
+
+```
+stream.connector.class=com.aconex.scrutineer.elasticsearch.v7.ElasticSearchStreamConnector
+es.cluster.name=myCluster
+es.hosts=localhost:9300
+es.index.name=TestIndex
+es.query=*
+```
+
+See [scrutineer/config/example-elasticsearch7.properties](scrutineer/config/example-elasticsearch7.properties) for a COMPLETE list of `elasticsearch7` config options
+
 
 
 Output

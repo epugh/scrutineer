@@ -9,6 +9,9 @@ Scrutineer 7.9.4
   logic, `jdbc`/`elasticsearch7` contain implementations of IdAndVersionStream based on the system they're connecting to, `scrutineer
   (Commandline Runner)` has the same scope as the previous version.
 
+* introduced a new scrutineer executable `scrutineer2` which reads the configurations from two manifest files, e.g:
+  `scrutineer/target/appassembler/bin/scrutineer2 --primary-config=jdbc.properties --secondary-config=elasticsearch7.properties --numeric`
+
 Scrutineer 6.8.x
 -----------------
 *BREAKING* 

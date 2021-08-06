@@ -12,6 +12,7 @@ import java.util.Iterator;
 
 import com.aconex.scrutineer.IdAndVersion;
 import com.aconex.scrutineer.IdAndVersionStream;
+import com.aconex.scrutineer.elasticsearch.v7.ElasticSearchDownloader;
 
 public class ElasticSearchIdAndVersionStream implements IdAndVersionStream {
 

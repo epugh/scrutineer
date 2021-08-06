@@ -1,4 +1,4 @@
-package com.aconex.scrutineer.elasticsearch;
+package com.aconex.scrutineer.elasticsearch.v7;
 
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -7,9 +7,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.aconex.scrutineer.elasticsearch.v7.ElasticSearchConnectorConfig;
+import com.aconex.scrutineer.elasticsearch.v7.ElasticSearchTransportClientFactory;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
@@ -21,23 +24,23 @@ import org.junit.Test;
 public class ElasticSearchTransportClientFactoryTest {
 
     private TransportAddress address;
-    private ElasticSearchConnectionConfig options = new ElasticSearchConnectionConfig();
+    private ElasticSearchConnectorConfig options;
+    private Map<String, String> props;
 
     private ElasticSearchTransportClientFactory testInstance;
 
     @Before
     public void setUp() {
-        TransportAddressParser transportAddressParser = new TransportAddressParser();
-        this.address = transportAddressParser.convert("127.0.0.1:9300").get(0);
+        this.props = new HashMap<>();
+        props.put(ElasticSearchConnectorConfig.CONFIG_ES_CLUSTER_NAME, "mycluster");
+        props.put(ElasticSearchConnectorConfig.CONFIG_ES_USERNAME, "user");
+        props.put(ElasticSearchConnectorConfig.CONFIG_ES_PASSWORD, "secret");
+        props.put(ElasticSearchConnectorConfig.CONFIG_ES_SSL_VERIFICATION_MODE, "certificate");
+        props.put(ElasticSearchConnectorConfig.CONFIG_ES_SSL_ENABLED, "true");
+        props.put(ElasticSearchConnectorConfig.CONFIG_ES_HOSTS, "127.0.0.1:9300");
+        this.options = new ElasticSearchConnectorConfig(props);
 
-        this.options.setClusterName("mycluster");
-        this.options.setEsUsername("user");
-        this.options.setEsPassword("secret");
-        this.options.setEsSSLVerificationMode("certificate");
-        this.options.setEsSSLEnabled(true);
-        this.options.setElasticSearchHosts(Arrays.asList(this.address));
-
-
+        this.address = this.options.getHosts().get(0);
         this.testInstance = new ElasticSearchTransportClientFactory();
     }
 
@@ -60,9 +63,10 @@ public class ElasticSearchTransportClientFactoryTest {
 
     @Test
     public void shouldCreatePreBuiltTransportClientWhenAuthenticationNotRequired() {
-        this.options.setEsSSLEnabled(false);
-        this.options.setEsUsername(null);
-        this.options.setEsPassword(null);
+        props.put(ElasticSearchConnectorConfig.CONFIG_ES_SSL_ENABLED, "false");
+        props.put(ElasticSearchConnectorConfig.CONFIG_ES_USERNAME, null);
+        props.put(ElasticSearchConnectorConfig.CONFIG_ES_PASSWORD, null);
+        this.options = new ElasticSearchConnectorConfig(props);
 
         TransportClient transportClient = testInstance.getTransportClient(options);
 

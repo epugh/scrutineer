@@ -2,7 +2,7 @@ package com.aconex.scrutineer;
 
 import java.util.List;
 
-import com.aconex.scrutineer.elasticsearch.TransportAddressParser;
+import com.aconex.scrutineer.elasticsearch.v7.TransportAddressParser;
 import com.beust.jcommander.IStringConverter;
 import org.elasticsearch.common.transport.TransportAddress;
 

@@ -1,8 +1,10 @@
-package com.aconex.scrutineer.elasticsearch;
+package com.aconex.scrutineer.elasticsearch.v7;
 
 import java.util.List;
 
 import com.aconex.scrutineer.LogUtils;
+import com.aconex.scrutineer.elasticsearch.Credential;
+import com.aconex.scrutineer.elasticsearch.v7.ElasticSearchConnectorConfig;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.ClusterName;
 import org.elasticsearch.common.settings.Settings;
@@ -17,20 +19,20 @@ public class ElasticSearchTransportClientFactory {
     private static final String SOCKET_CONNECT_TIMEOUT = "60s";
 
 
-    public TransportClient getTransportClient(ElasticSearchConnectionConfig options) {
+    public TransportClient getTransportClient(ElasticSearchConnectorConfig options) {
 
         if (options.getEsUsername() != null && options.getEsPassword() != null) {
             return createTransportClientWithAuthentication(
                     new Credential(options.getEsUsername(), options.getEsPassword()),
-                    options.getEsSSLVerificationMode(),
-                    options.isEsSSLEnabled(),
-                    options.getElasticSearchHosts(),
+                    options.getSslVerificationMode(),
+                    options.isSslEnabled(),
+                    options.getHosts(),
                     options.getClusterName());
         } else {
             return createTransportClient(
-                    options.getElasticSearchHosts(),
-                    options.getEsSSLVerificationMode(),
-                    options.isEsSSLEnabled(),
+                    options.getHosts(),
+                    options.getSslVerificationMode(),
+                    options.isSslEnabled(),
                     options.getClusterName());
         }
     }

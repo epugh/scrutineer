@@ -9,6 +9,7 @@ import java.util.Iterator;
 import com.aconex.scrutineer.IdAndVersion;
 import com.aconex.scrutineer.IdAndVersionFactory;
 import com.aconex.scrutineer.StringIdAndVersion;
+import com.aconex.scrutineer.elasticsearch.v7.ElasticSearchDownloader;
 import com.fasterxml.sort.DataReaderFactory;
 import com.fasterxml.sort.DataWriterFactory;
 import com.fasterxml.sort.SortConfig;

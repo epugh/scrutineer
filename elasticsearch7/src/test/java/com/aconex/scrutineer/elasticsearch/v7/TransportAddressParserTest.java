@@ -1,4 +1,4 @@
-package com.aconex.scrutineer.elasticsearch;
+package com.aconex.scrutineer.elasticsearch.v7;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 
+import com.aconex.scrutineer.elasticsearch.v7.TransportAddressParser;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +26,13 @@ public class TransportAddressParserTest {
         TransportAddress transportAddress = transportAddressParser.convert("127.0.0.1:9300").get(0);
         assertThat(transportAddress.getAddress(), is("127.0.0.1"));
         assertThat(transportAddress.getPort(), is(9300));
+    }
+
+    @Test
+    public void shouldConvertBackToStringWithHostPortPair() {
+        TransportAddressParser transportAddressParser = new TransportAddressParser();
+        List<TransportAddress> transportAddresses = transportAddressParser.convert("127.0.0.1:9300,127.0.0.2:9301");
+        assertThat(transportAddressParser.toString(transportAddresses), is("127.0.0.1:9300,127.0.0.2:9301"));
     }
 
     @Test(expected = RuntimeException.class)

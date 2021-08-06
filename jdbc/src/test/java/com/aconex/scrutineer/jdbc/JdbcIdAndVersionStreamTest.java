@@ -69,7 +69,6 @@ public class JdbcIdAndVersionStreamTest {
     @Test
     public void shouldExecuteSQLQuery() throws SQLException {
         when(connection.createStatement()).thenReturn(statement);
-        //TODO: Handle scrolling properly
         when(statement.executeQuery(SQL)).thenReturn(resultSet);
         when(resultSet.getMetaData()).thenReturn(metaData);
         JdbcIdAndVersionStream jdbcIdAndVersionStream = new JdbcIdAndVersionStream(connection, SQL, idAndVersionFactory);
