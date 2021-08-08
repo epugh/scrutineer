@@ -1,5 +1,8 @@
 package com.aconex.scrutineer.elasticsearch.v7;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 
 import com.aconex.scrutineer.IdAndVersion;
@@ -21,6 +24,7 @@ import org.elasticsearch.client.Client;
 
 public class ElasticSearchStreamConnector implements IdAndVersionStreamConnector {
     private static final int DEFAULT_SORT_MEM = 256 * 1024 * 1024;
+    public static final String WORKING_DIRECTORY_PREFIX = "elastisearch-stream-";
 
     private Client client;
     private ElasticSearchConnectorConfig config;
@@ -34,7 +38,7 @@ public class ElasticSearchStreamConnector implements IdAndVersionStreamConnector
     public IdAndVersionStream create(IdAndVersionFactory idAndVersionFactory) {
         try {
             this.client = new ElasticSearchTransportClientFactory().getTransportClient(this.config);
-            return new ElasticSearchIdAndVersionStream(new ElasticSearchDownloader(client, config.getIndexName(), config.getEsQuery(), idAndVersionFactory), new ElasticSearchSorter(createSorter(idAndVersionFactory)), new IteratorFactory(idAndVersionFactory), SystemUtils.getJavaIoTmpDir().getAbsolutePath());
+            return new ElasticSearchIdAndVersionStream(new ElasticSearchDownloader(client, config.getIndexName(), config.getEsQuery(), idAndVersionFactory), new ElasticSearchSorter(createSorter(idAndVersionFactory)), new IteratorFactory(idAndVersionFactory), createWorkingDirectory());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -58,4 +62,8 @@ public class ElasticSearchStreamConnector implements IdAndVersionStreamConnector
         return new Sorter<IdAndVersion>(sortConfig, dataReaderFactory, dataWriterFactory, new NaturalComparator<IdAndVersion>());
     }
 
+    private String createWorkingDirectory() throws IOException {
+        Path javaIoTempDir = SystemUtils.getJavaIoTmpDir().toPath();
+        return Files.createTempDirectory(javaIoTempDir, WORKING_DIRECTORY_PREFIX).toFile().getAbsolutePath();
+    }
 }

@@ -21,16 +21,21 @@ public class ESIntegrationTestNode extends Node {
     }
 
     public static Node elasticSearchTestNode() throws NodeValidationException {
-        return elasticSearchTestNode(CLUSTER_NAME);
+        return elasticSearchTestNode(CLUSTER_NAME, 9300);
     }
 
     public static Node elasticSearchTestNode(String clusterName) throws NodeValidationException {
+        return elasticSearchTestNode(clusterName, 9300);
+    }
+
+    public static Node elasticSearchTestNode(String clusterName, int tcpPort) throws NodeValidationException {
         Node node = new ESIntegrationTestNode(
                 Settings.builder()
                         .put("cluster.name", clusterName)
                         .put("transport.type", "netty4")
+                        .put("transport.tcp.port", tcpPort + "")
                         .put("http.type", "netty4")
-                        .put("path.home", "data")
+                        .put("path.home", "data/" + clusterName)
                         .put("node.name", TEST_NODE_NAME)
                         .build(),
                 asList(Netty4Plugin.class));
