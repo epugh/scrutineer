@@ -15,7 +15,7 @@
     <properties>
         <main.basedir>${project.basedir}/..</main.basedir>
         <httpclient.version>4.5.13</httpclient.version>
-        <elasticsearch.version>7.9.3</elasticsearch.version>
+        <elasticsearch.version>7.10.2</elasticsearch.version>
         <!-- Common CVSS vulnerabilities mean we often have to declare specific dependencies on ES's netty  -->
         <netty.version>4.1.59.Final</netty.version>
     </properties>
