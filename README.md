@@ -230,12 +230,11 @@ simple to add further integration points for other Primary & Secondary sources (
 Version Numbering/Compatibility
 ===============================
 In 2021 we introduced `scrutineer2` which decoupled the underlying Connectors from the main verification library. The
-previous `scrutineer` code's version number was intrinsincly linked to the Elasticsearch version.  Since we watned
+previous `scrutineer` code's version number was intrinsically linked to the Elasticsearch version.  Since we wanted
 to be able to source data from different sources, it was important to decouple the Connector from the Verification process
 that Scrutineer provided.
 
-`scrutineer2` therefore has its own version number independent of the connectors.  The underlying Connector, however, 
-could be versioned against it's respective related version (e.g. related to the ES version it supports.) 
+`scrutineer2` therefore has its own version number independent of any underlying connected product version.  
 
 Connectors can therefore be upgraded independently.  `scrutineer2` own version might be bumped to bring in upgraded 
 Connectors, or because of other underlying fixes in the verification library.  
