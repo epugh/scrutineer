@@ -229,14 +229,17 @@ simple to add further integration points for other Primary & Secondary sources (
 
 Version Numbering/Compatibility
 ===============================
-The `scrutineer` version number (of the artifact/jar) is numbered to align with the underlying Elasticsearch version
-it is built against.    For example, `scrutineer-6.8.13` was build & linked against `elasticsearch-6.8.13`.  Generally
-this means the compatibility of scrutineer matches Elasticsearch's major version. ie. `scrutineer-6.8.13` really
-should work with any Elasticsearch version `6.x`.
+In 2021 we introduced `scrutineer2` which decoupled the underlying Connectors from the main verification library. The
+previous `scrutineer` code's version number was intrinsincly linked to the Elasticsearch version.  Since we watned
+to be able to source data from different sources, it was important to decouple the Connector from the Verification process
+that Scrutineer provided.
 
-If there are patches/bug fixes/changes that are _independent_ of the Elasticsearch version, then Scrutineer version
-numbers will include a "patch number".  For example, `scrutineer-6.8.13-4` is the 4th patch release of Scrutineer
-since aligning with Elasticsearch v6.8.13.
+`scrutineer2` therefore has its own version number independent of the connectors.  The underlying Connector, however, 
+could be versioned against it's respective related version (e.g. related to the ES version it supports.) 
+
+Connectors can therefore be upgraded independently.  `scrutineer2` own version might be bumped to bring in upgraded 
+Connectors, or because of other underlying fixes in the verification library.  
+
 
 JDBC Drivers
 ============

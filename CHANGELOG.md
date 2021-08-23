@@ -3,6 +3,12 @@ Scrutineer Changelog
 
 Outlines key changes across versions (not exhaustive)
 
+Scrutineer2 1.0.0
+------------------
+* Completely new `artifactId` to distinguish the change in Connector model, and independent version numbering
+
+=================================
+
 Scrutineer 7.9.4
 -----------------
 * the single scrutineer jar was broken into different modules, `core`/`verifier` contain the foundational code and verification
