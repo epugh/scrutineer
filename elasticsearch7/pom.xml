@@ -17,7 +17,7 @@
         <httpclient.version>4.5.13</httpclient.version>
         <elasticsearch.version>7.10.2</elasticsearch.version>
         <!-- Common CVSS vulnerabilities mean we often have to declare specific dependencies on ES's netty  -->
-        <netty.version>4.1.59.Final</netty.version>
+        <netty.version>4.1.67.Final</netty.version>
     </properties>
     <dependencies>
         <dependency>
@@ -65,13 +65,6 @@
             <version>1.27</version>
         </dependency>
         <!-- END CVSS overrides -->
-
-        <!-- this is referenced by Elasticsearch X-Pack plugin and needs to be updated due to CVS score -->
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>${httpclient.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>com.fasterxml.util</groupId>
