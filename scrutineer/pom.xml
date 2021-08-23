@@ -8,7 +8,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>scrutineer</artifactId>
+    <artifactId>scrutineer2</artifactId>
     <modelVersion>4.0.0</modelVersion>
 
     <name>Scrutineer (Stream Comparator) Commandline Runner</name>
@@ -20,7 +20,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>scrutineer-core</artifactId>
+            <artifactId>scrutineer2-core</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

@@ -19,7 +19,7 @@
     <dependencies>
         <dependency>
             <groupId>com.aconex.scrutineer</groupId>
-            <artifactId>scrutineer-core</artifactId>
+            <artifactId>scrutineer2-core</artifactId>
         </dependency>
 
         <dependency>

@@ -9,8 +9,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>scrutineer-core</artifactId>
-    <name>Scrutineer Core</name>
+    <artifactId>scrutineer2-core</artifactId>
+    <name>Scrutineer2 Core</name>
 
     <properties>
         <main.basedir>${project.basedir}/..</main.basedir>

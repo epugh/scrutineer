@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>verifier</artifactId>
-    <name>Scrutineer Verifier</name>
+    <name>Scrutineer2 Verifier</name>
     <description>
         Verification logic to compares 2 streams of Ids and Versions
     </description>
@@ -22,7 +22,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>scrutineer-core</artifactId>
+            <artifactId>scrutineer2-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
