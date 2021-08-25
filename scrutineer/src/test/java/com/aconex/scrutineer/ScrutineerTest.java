@@ -18,6 +18,8 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.io.IOException;
+
 public class ScrutineerTest {
 
     @Mock
@@ -69,8 +71,8 @@ public class ScrutineerTest {
         Scrutineer scrutineer = spy(new Scrutineer(options, idAndVersionStreamConnectorFactory));
         doReturn(Pair.of(primaryIdAndVersionStreamConnector, secondaryIdAndVersionStreamConnector)).when(idAndVersionStreamConnectorFactory).createStreamConnectors();
 
-        doReturn(primaryIdAndVersionStream).when(primaryIdAndVersionStreamConnector).create(any(IdAndVersionFactory.class));
-        doReturn(secondaryIdAndVersionStream).when(secondaryIdAndVersionStreamConnector).create(any(IdAndVersionFactory.class));
+        doReturn(primaryIdAndVersionStream).when(primaryIdAndVersionStreamConnector).connect(any(IdAndVersionFactory.class));
+        doReturn(secondaryIdAndVersionStream).when(secondaryIdAndVersionStreamConnector).connect(any(IdAndVersionFactory.class));
 
         doNothing().when(scrutineer).verify(eq(secondaryIdAndVersionStream), eq(primaryIdAndVersionStream), any(IdAndVersionStreamVerifier.class), any(IdAndVersionStreamVerifierListener.class));
         scrutineer.verify();
@@ -104,16 +106,5 @@ public class ScrutineerTest {
 
         verify(scrutineer).verify(secondaryIdAndVersionStream, primaryIdAndVersionStream, idAndVersionStreamVerifier, standardListener);
         verify(idAndVersionStreamVerifier).verify(any(IdAndVersionStream.class), any(IdAndVersionStream.class), eq(standardListener));
-    }
-
-    @Test
-    public void testClose() {
-
-        Scrutineer scrutineer = spy(new Scrutineer(options));
-
-        scrutineer.close(secondaryIdAndVersionStreamConnector, primaryIdAndVersionStreamConnector);
-
-        verify(primaryIdAndVersionStreamConnector).close();
-        verify(secondaryIdAndVersionStreamConnector).close();
     }
 }

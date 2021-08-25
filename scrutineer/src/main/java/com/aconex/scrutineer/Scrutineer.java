@@ -8,6 +8,8 @@ import com.google.common.base.Function;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 
+import java.io.IOException;
+
 public class Scrutineer {
 
     private static final Logger LOG = LogUtils.loggerForThisClass();
@@ -45,26 +47,17 @@ public class Scrutineer {
     @SuppressWarnings("PMD.NcssMethodCount")
     public void verify(IdAndVersionStreamVerifierListener verifierListener) {
         IdAndVersionFactory idAndVersionFactory = createIdAndVersionFactory();
-
         Pair<IdAndVersionStreamConnector, IdAndVersionStreamConnector> streamConnectors
                 = idAndVersionStreamConnectorFactory.createStreamConnectors();
 
-        IdAndVersionStreamConnector secondaryStreamConnector = streamConnectors.getRight();
-        IdAndVersionStream secondaryStream = secondaryStreamConnector.create(idAndVersionFactory);
-
-        IdAndVersionStreamConnector primaryStreamConnector = streamConnectors.getLeft();
-        IdAndVersionStream primaryStream = primaryStreamConnector.create(idAndVersionFactory);
-
-        try {
+        try (IdAndVersionStreamConnector primaryStreamConnector = streamConnectors.getLeft();
+             IdAndVersionStreamConnector secondaryStreamConnector = streamConnectors.getRight()){
+            IdAndVersionStream primaryStream = primaryStreamConnector.connect(idAndVersionFactory);
+            IdAndVersionStream secondaryStream = secondaryStreamConnector.connect(idAndVersionFactory);
             verify(secondaryStream, primaryStream, new IdAndVersionStreamVerifier(), verifierListener);
-        } finally {
-            close(primaryStreamConnector, secondaryStreamConnector);
+        } catch (IOException e){
+            LOG.warn("Failed to close connector", e);
         }
-    }
-
-    void close(IdAndVersionStreamConnector secondaryStreamConnector, IdAndVersionStreamConnector primaryStreamConnector) {
-        primaryStreamConnector.close();
-        secondaryStreamConnector.close();
     }
 
     void verify(IdAndVersionStream secondaryIdAndVersionStream, IdAndVersionStream primaryIdAndVersionStream, IdAndVersionStreamVerifier idAndVersionStreamVerifier, IdAndVersionStreamVerifierListener verifierListener) {

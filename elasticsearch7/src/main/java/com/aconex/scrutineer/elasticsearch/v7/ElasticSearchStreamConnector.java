@@ -35,7 +35,7 @@ public class ElasticSearchStreamConnector implements IdAndVersionStreamConnector
     }
 
     @Override
-    public IdAndVersionStream create(IdAndVersionFactory idAndVersionFactory) {
+    public IdAndVersionStream connect(IdAndVersionFactory idAndVersionFactory) {
         try {
             this.client = new ElasticSearchTransportClientFactory().getTransportClient(this.config);
             return new ElasticSearchIdAndVersionStream(new ElasticSearchDownloader(client, config.getIndexName(), config.getEsQuery(), idAndVersionFactory), new ElasticSearchSorter(createSorter(idAndVersionFactory)), new IteratorFactory(idAndVersionFactory), createWorkingDirectory());

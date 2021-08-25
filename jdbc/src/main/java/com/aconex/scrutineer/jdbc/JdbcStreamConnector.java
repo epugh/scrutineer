@@ -20,7 +20,7 @@ public class JdbcStreamConnector implements IdAndVersionStreamConnector {
     }
 
     @Override
-    public IdAndVersionStream create(IdAndVersionFactory idAndVersionFactory) {
+    public IdAndVersionStream connect(IdAndVersionFactory idAndVersionFactory) {
         this.connection = initializeJdbcDriverAndConnection();
         return new JdbcIdAndVersionStream(connection, configs.getSql(), idAndVersionFactory);
     }

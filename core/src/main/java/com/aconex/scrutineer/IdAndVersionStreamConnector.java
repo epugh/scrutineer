@@ -1,13 +1,12 @@
 package com.aconex.scrutineer;
 
+import java.io.Closeable;
 import java.util.Map;
 
 /**
  * Connects to a provider (e.g: jdbc, elasticsearch) to create a Stream
  */
-public interface IdAndVersionStreamConnector {
+public interface IdAndVersionStreamConnector extends Closeable {
     void configure(Map<String, String> props);
-    IdAndVersionStream create(IdAndVersionFactory idAndVersionFactory);
-
-    void close();
+    IdAndVersionStream connect(IdAndVersionFactory idAndVersionFactory);
 }

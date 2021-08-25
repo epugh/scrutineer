@@ -12,6 +12,7 @@
         <module>elasticsearch7</module>
         <module>verifier</module>
         <module>scrutineer</module>
+        <module>http</module>
     </modules>
 
     <name>Scrutineer (Parent Pom)</name>

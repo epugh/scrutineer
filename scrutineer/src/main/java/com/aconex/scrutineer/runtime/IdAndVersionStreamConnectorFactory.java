@@ -22,6 +22,7 @@ public class IdAndVersionStreamConnectorFactory {
     /**
      * Return a pair of primary (jdbc) and secondary (elasticsearch) stream connectors
      */
+    @SuppressWarnings("PMD.CloseResource")
     public Pair<IdAndVersionStreamConnector, IdAndVersionStreamConnector> createStreamConnectors() {
         IdAndVersionStreamConnector primaryConnector =
                 newConfiguredConnector(configurationProvider.getPrimaryConnectorConfigs());

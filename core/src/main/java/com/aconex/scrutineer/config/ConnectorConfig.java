@@ -23,4 +23,11 @@ public abstract class ConnectorConfig {
     protected String get(String key) {
         return configs.get(key);
     }
+
+    @Override
+    public String toString() {
+        return "ConnectorConfig{" +
+                "configs=" + configs +
+                '}';
+    }
 }
