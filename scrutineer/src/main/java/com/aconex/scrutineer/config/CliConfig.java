@@ -1,17 +1,17 @@
 package com.aconex.scrutineer.config;
 
-import java.util.Map;
+import com.aconex.scrutineer.ConnectorConfig;
 
 /**
  * Extension point for different implementations of scrutineer (and streams) configurations
  */
-public interface ConfigurationProvider {
+public interface CliConfig {
     default boolean numeric() {return false;}
     default boolean versionsAsTimestamps() { return false;}
     default boolean ignoreTimestampsDuringRun() {
         return false;
     }
 
-    Map<String, String> getPrimaryConnectorConfigs();
-    Map<String, String> getSecondaryConnectorConfigs();
+    ConnectorConfig getPrimaryConnectorConfig();
+    ConnectorConfig getSecondaryConnectorConfig();
 }

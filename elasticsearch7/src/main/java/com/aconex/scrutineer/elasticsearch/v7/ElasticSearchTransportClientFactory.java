@@ -1,10 +1,7 @@
 package com.aconex.scrutineer.elasticsearch.v7;
 
-import java.util.List;
-
 import com.aconex.scrutineer.LogUtils;
 import com.aconex.scrutineer.elasticsearch.Credential;
-import com.aconex.scrutineer.elasticsearch.v7.ElasticSearchConnectorConfig;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.ClusterName;
 import org.elasticsearch.common.settings.Settings;
@@ -13,27 +10,29 @@ import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.elasticsearch.xpack.client.PreBuiltXPackTransportClient;
 import org.slf4j.Logger;
 
+import java.util.List;
+
 public class ElasticSearchTransportClientFactory {
     private static final Logger LOG = LogUtils.loggerForThisClass();
 
     private static final String SOCKET_CONNECT_TIMEOUT = "60s";
 
 
-    public TransportClient getTransportClient(ElasticSearchConnectorConfig options) {
+    public TransportClient getTransportClient(ElasticSearchStreamConnector.Config config) {
 
-        if (options.getEsUsername() != null && options.getEsPassword() != null) {
+        if (config.getUsername() != null && config.getPassword() != null) {
             return createTransportClientWithAuthentication(
-                    new Credential(options.getEsUsername(), options.getEsPassword()),
-                    options.getSslVerificationMode(),
-                    options.isSslEnabled(),
-                    options.getHosts(),
-                    options.getClusterName());
+                    new Credential(config.getUsername(), config.getPassword()),
+                    config.getSslVerificationMode(),
+                    config.isSslEnabled(),
+                    config.getHosts(),
+                    config.getClusterName());
         } else {
             return createTransportClient(
-                    options.getHosts(),
-                    options.getSslVerificationMode(),
-                    options.isSslEnabled(),
-                    options.getClusterName());
+                    config.getHosts(),
+                    config.getSslVerificationMode(),
+                    config.isSslEnabled(),
+                    config.getClusterName());
         }
     }
 

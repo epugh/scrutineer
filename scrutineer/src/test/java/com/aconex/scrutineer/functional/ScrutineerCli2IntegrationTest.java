@@ -15,7 +15,7 @@ import javax.sql.DataSource;
 import com.aconex.scrutineer.elasticsearch.ESIntegrationTestNode;
 import com.aconex.scrutineer.elasticsearch.ElasticSearchTestHelper;
 import com.aconex.scrutineer.jdbc.HSQLHelper;
-import com.aconex.scrutineer.v2.Scrutineer2;
+import com.aconex.scrutineer.v2.ScrutineerCli2;
 import com.google.common.io.ByteStreams;
 import org.dbunit.DataSourceBasedDBTestCase;
 import org.dbunit.dataset.IDataSet;
@@ -29,7 +29,7 @@ import org.elasticsearch.node.NodeValidationException;
 import org.joda.time.DateTimeZone;
 import org.mockito.MockitoAnnotations;
 
-public class Scrutineer2IntegrationTest extends DataSourceBasedDBTestCase {
+public class ScrutineerCli2IntegrationTest extends DataSourceBasedDBTestCase {
     private static final String CLUSTER1_NAME = "scrutineer2integrationtest1";
     private static final String CLUSTER2_NAME = "scrutineer2integrationtest2";
 
@@ -58,7 +58,7 @@ public class Scrutineer2IntegrationTest extends DataSourceBasedDBTestCase {
 
         System.setErr(printStream);
 
-        Scrutineer2.main(args);
+        ScrutineerCli2.main(args);
 
         verifyThatErrorsWrittenToStandardError(printStream);
     }
@@ -83,7 +83,7 @@ public class Scrutineer2IntegrationTest extends DataSourceBasedDBTestCase {
 
         System.setErr(printStream);
 
-        Scrutineer2.main(args);
+        ScrutineerCli2.main(args);
 
         verifyThatErrorsWrittenToStandardError(printStream);
     }

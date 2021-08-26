@@ -1,15 +1,20 @@
 package com.aconex.scrutineer.v2;
 
+import com.aconex.scrutineer.IdAndVersionStreamVerifier;
 import com.aconex.scrutineer.LogUtils;
 import com.aconex.scrutineer.Scrutineer;
+import com.aconex.scrutineer.config.CliConfig;
+import com.aconex.scrutineer.v2.configconverter.CliOptionV2ToConfigConverter;
 import com.beust.jcommander.JCommander;
 import org.slf4j.Logger;
 
-public final class Scrutineer2 {
+public final class ScrutineerCli2 {
 
     private static final Logger LOG = LogUtils.loggerForThisClass();
+    private final ScrutineerCommandLineOptionsV2 optionsV2;
 
-    private Scrutineer2() {
+    private ScrutineerCli2(ScrutineerCommandLineOptionsV2 optionsV2) {
+        this.optionsV2 = optionsV2;
     }
 
     @SuppressWarnings("PMD.NcssMethodCount")
@@ -23,13 +28,16 @@ public final class Scrutineer2 {
                 jCommander.usage();
                 return;
             }
-
-            Scrutineer scrutineer = new Scrutineer(new ScrutineerCommandLineOptionsV2Extension(optionsV2));
-            scrutineer.verify();
+            new ScrutineerCli2(optionsV2).run();
         } catch (Exception e) {
             LOG.error("Failure during Scrutineering", e);
             System.exit(1);
         }
     }
 
+    private void run() {
+        CliConfig config = new CliOptionV2ToConfigConverter().convert(optionsV2);
+        Scrutineer scrutineer = new Scrutineer(config, new IdAndVersionStreamVerifier());
+        scrutineer.verify();
+    }
 }

@@ -39,6 +39,12 @@
         </dependency>
 
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>http</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.beust</groupId>
             <artifactId>jcommander</artifactId>
             <version>1.78</version>
@@ -90,11 +96,11 @@
                     <includeConfigurationDirectoryInClasspath>true</includeConfigurationDirectoryInClasspath>
                     <programs>
                         <program>
-                            <mainClass>com.aconex.scrutineer.Scrutineer</mainClass>
+                            <mainClass>com.aconex.scrutineer.ScrutineerCli</mainClass>
                             <id>scrutineer</id>
                         </program>
                         <program>
-                            <mainClass>com.aconex.scrutineer.v2.Scrutineer2</mainClass>
+                            <mainClass>com.aconex.scrutineer.v2.ScrutineerCli2</mainClass>
                             <id>scrutineer2</id>
                         </program>
                     </programs>

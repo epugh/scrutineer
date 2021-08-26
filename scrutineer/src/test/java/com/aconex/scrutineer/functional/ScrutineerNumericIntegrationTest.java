@@ -1,15 +1,6 @@
 package com.aconex.scrutineer.functional;
 
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.net.URL;
-import javax.sql.DataSource;
-
-import com.aconex.scrutineer.Scrutineer;
+import com.aconex.scrutineer.ScrutineerCli;
 import com.aconex.scrutineer.elasticsearch.ESIntegrationTestNode;
 import com.aconex.scrutineer.elasticsearch.ElasticSearchTestHelper;
 import com.aconex.scrutineer.jdbc.HSQLHelper;
@@ -25,6 +16,15 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeValidationException;
 import org.mockito.MockitoAnnotations;
+
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.net.URL;
+
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 public class ScrutineerNumericIntegrationTest extends DataSourceBasedDBTestCase {
 
@@ -51,7 +51,7 @@ public class ScrutineerNumericIntegrationTest extends DataSourceBasedDBTestCase 
 
         System.setErr(printStream);
 
-        Scrutineer.main(args);
+        ScrutineerCli.main(args);
 
         System.err.println(printStream);
 

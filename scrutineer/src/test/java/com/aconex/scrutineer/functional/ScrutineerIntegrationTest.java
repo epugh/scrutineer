@@ -1,17 +1,6 @@
 package com.aconex.scrutineer.functional;
 
-import static org.elasticsearch.common.xcontent.XContentType.JSON;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.net.URL;
-import java.util.TimeZone;
-import javax.sql.DataSource;
-
-import com.aconex.scrutineer.Scrutineer;
+import com.aconex.scrutineer.ScrutineerCli;
 import com.aconex.scrutineer.elasticsearch.ESIntegrationTestNode;
 import com.aconex.scrutineer.elasticsearch.ElasticSearchTestHelper;
 import com.aconex.scrutineer.jdbc.HSQLHelper;
@@ -27,6 +16,17 @@ import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeValidationException;
 import org.joda.time.DateTimeZone;
 import org.mockito.MockitoAnnotations;
+
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.net.URL;
+import java.util.TimeZone;
+
+import static org.elasticsearch.common.xcontent.XContentType.JSON;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 public class ScrutineerIntegrationTest extends DataSourceBasedDBTestCase {
 
@@ -58,7 +58,7 @@ public class ScrutineerIntegrationTest extends DataSourceBasedDBTestCase {
 
         System.setErr(printStream);
 
-        Scrutineer.main(args);
+        ScrutineerCli.main(args);
 
         verifyThatErrorsWrittenToStandardError(printStream);
 
@@ -130,8 +130,6 @@ public class ScrutineerIntegrationTest extends DataSourceBasedDBTestCase {
     protected IDataSet getDataSet() throws Exception {
         InputStream resourceAsStream = this.getClass().getResourceAsStream("fullintegrationtest.xml");
         return new XmlDataSet(resourceAsStream);
-
     }
-
 
 }

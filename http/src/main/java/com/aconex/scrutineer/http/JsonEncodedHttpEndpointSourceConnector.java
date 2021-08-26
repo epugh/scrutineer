@@ -1,9 +1,9 @@
 package com.aconex.scrutineer.http;
 
+import com.aconex.scrutineer.ConnectorConfig;
 import com.aconex.scrutineer.IdAndVersionFactory;
 import com.aconex.scrutineer.IdAndVersionStream;
 import com.aconex.scrutineer.IdAndVersionStreamConnector;
-import com.aconex.scrutineer.config.ConnectorConfig;
 import com.aconex.scrutineer.javautil.JavaIteratorIdAndVersionStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,26 +13,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Map;
 
 public class JsonEncodedHttpEndpointSourceConnector implements IdAndVersionStreamConnector {
     private final Logger logger = LoggerFactory.getLogger(JsonEncodedHttpEndpointSourceConnector.class);
     private HttpURLConnection httpConnection;
     private InputStream responseInputStream;
-    private ConnectorConfig connectorConfig;
+    private final Config config;
+    private IdAndVersionFactory idAndVersionFactory;
 
-    @Override
-    public void configure(Map<String, String> properties) {
-        connectorConfig = new Config(properties);
+    public JsonEncodedHttpEndpointSourceConnector(Config config, IdAndVersionFactory idAndVersionFactory) {
+        this.config = config;
+        this.idAndVersionFactory = idAndVersionFactory;
     }
 
     @Override
-    public IdAndVersionStream connect(IdAndVersionFactory idAndVersionFactory) {
+    public IdAndVersionStream connect() {
         try{
-            responseInputStream =sendRequest((Config)connectorConfig);
+            responseInputStream =sendRequest(config);
             return new JavaIteratorIdAndVersionStream (new JsonEncodedIdAndVersionInputStreamIterator(responseInputStream, idAndVersionFactory));
         } catch (Exception e){
-            throw new RuntimeException("Failed to list entities from source endpoint: "+connectorConfig, e);
+            throw new RuntimeException("Failed to list entities from source endpoint: "+ config, e);
         }
     }
 
@@ -48,8 +48,8 @@ public class JsonEncodedHttpEndpointSourceConnector implements IdAndVersionStrea
     private HttpURLConnection prepareConnection(Config config, String queryUrl) throws IOException {
         HttpURLConnection connection =  (HttpURLConnection) new URL(queryUrl).openConnection();
         connection.setRequestMethod("GET");
-        connection.setConnectTimeout(config.getHttpConnectionTimeout());
-        connection.setReadTimeout(config.getHttpReadTimeout());
+        connection.setConnectTimeout(config.getHttpConnectionTimeoutInMillisecond());
+        connection.setReadTimeout(config.getHttpReadTimeoutInMillisecond());
         return connection;
     }
 
@@ -79,22 +79,48 @@ public class JsonEncodedHttpEndpointSourceConnector implements IdAndVersionStrea
         }
     }
 
-    public static class Config extends ConnectorConfig {
-        public static final String HTTP_ENDPOINT_URL="http.endpoint.url";
-        public static final String HTTP_CONNECTION_TIMEOUT="http.connection.timeout";
-        public static final String HTTP_READ_TIMEOUT="http.read.timeout";
+    public static class Config implements ConnectorConfig {
+        private static final int DEFAULT_TIMEOUT_IN_MILLISECOND=1000;
+        private String httpEndpointUrl;
+        private int httpConnectionTimeoutInMillisecond =DEFAULT_TIMEOUT_IN_MILLISECOND;
+        private int httpReadTimeoutInMillisecond =DEFAULT_TIMEOUT_IN_MILLISECOND;
 
-        protected Config(Map<String, String> props) {
-            super(props);
+        public String getHttpEndpointUrl() {
+            return httpEndpointUrl;
         }
-        public String getHttpEndpointUrl(){
-            return get(HTTP_ENDPOINT_URL);
+
+        public void setHttpEndpointUrl(String httpEndpointUrl) {
+            this.httpEndpointUrl = httpEndpointUrl;
         }
-        public int getHttpConnectionTimeout(){
-            return Integer.parseInt(get(HTTP_CONNECTION_TIMEOUT));
+
+        public int getHttpConnectionTimeoutInMillisecond() {
+            return httpConnectionTimeoutInMillisecond;
         }
-        public int getHttpReadTimeout(){
-            return Integer.parseInt(get(HTTP_READ_TIMEOUT));
+
+        public void setHttpConnectionTimeoutInMillisecond(int httpConnectionTimeoutInMillisecond) {
+            this.httpConnectionTimeoutInMillisecond = httpConnectionTimeoutInMillisecond;
+        }
+
+        public int getHttpReadTimeoutInMillisecond() {
+            return httpReadTimeoutInMillisecond;
+        }
+
+        public void setHttpReadTimeoutInMillisecond(int httpReadTimeoutInMillisecond) {
+            this.httpReadTimeoutInMillisecond = httpReadTimeoutInMillisecond;
+        }
+
+        @Override
+        public String toString() {
+            return "Config{" +
+                    "httpEndpointUrl='" + httpEndpointUrl + '\'' +
+                    ", httpConnectionTimeoutInMillisecond=" + httpConnectionTimeoutInMillisecond +
+                    ", httpReadTimeoutInMillisecond=" + httpReadTimeoutInMillisecond +
+                    '}';
+        }
+
+        @Override
+        public IdAndVersionStreamConnector createConnector(IdAndVersionFactory idAndVersionFactory) {
+            return new JsonEncodedHttpEndpointSourceConnector(this, idAndVersionFactory);
         }
     }
 }

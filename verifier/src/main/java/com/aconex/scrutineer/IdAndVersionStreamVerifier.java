@@ -15,18 +15,19 @@ public class IdAndVersionStreamVerifier {
 
     //CHECKSTYLE:OFF
     @SuppressWarnings("PMD.NcssMethodCount")
-	public void verify(IdAndVersionStream primaryStream, IdAndVersionStream secondayStream, IdAndVersionStreamVerifierListener idAndVersionStreamVerifierListener) {
+	public void verify(IdAndVersionStreamConnector primaryStreamConnector, IdAndVersionStreamConnector secondaryStreamConnector, IdAndVersionStreamVerifierListener idAndVersionStreamVerifierListener) {
         idAndVersionStreamVerifierListener.onVerificationStarted();
 
         long numItems = 0;
         long begin = System.currentTimeMillis();
 
+        IdAndVersionStream primaryStream = primaryStreamConnector.connect();
+        IdAndVersionStream secondaryStream = secondaryStreamConnector.connect();
         try {
-
-            parallelOpenStreamsAndWait(primaryStream, secondayStream);
+            parallelOpenStreamsAndWait(primaryStream, secondaryStream);
 
             Iterator<IdAndVersion> primaryIterator = primaryStream.iterator();
-            Iterator<IdAndVersion> secondaryIterator = secondayStream.iterator();
+            Iterator<IdAndVersion> secondaryIterator = secondaryStream.iterator();
 
             IdAndVersion primaryItem = next(primaryIterator);
             IdAndVersion secondaryItem = next(secondaryIterator);
@@ -69,7 +70,7 @@ public class IdAndVersionStreamVerifier {
             idAndVersionStreamVerifierListener.onVerificationCompleted();
         } finally {
             closeWithoutThrowingException(primaryStream);
-            closeWithoutThrowingException(secondayStream);
+            closeWithoutThrowingException(secondaryStream);
         }
         LogUtils.infoTimeTaken(LOG, begin, numItems, "Completed verification");
     }
