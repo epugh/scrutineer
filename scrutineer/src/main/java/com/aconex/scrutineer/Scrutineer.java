@@ -4,7 +4,6 @@ import com.aconex.scrutineer.config.ConfigurationProvider;
 import com.aconex.scrutineer.runtime.IdAndVersionStreamConnectorFactory;
 import com.aconex.scrutineer.runtime.StreamConnectorPlugins;
 import com.beust.jcommander.JCommander;
-import com.google.common.base.Function;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 
@@ -13,6 +12,15 @@ import java.io.IOException;
 public class Scrutineer {
 
     private static final Logger LOG = LogUtils.loggerForThisClass();
+
+    public Scrutineer(ConfigurationProvider configurationProvider) {
+        this(configurationProvider, new IdAndVersionStreamConnectorFactory(configurationProvider, new StreamConnectorPlugins()));
+    }
+
+    public Scrutineer(ConfigurationProvider configurationProvider, IdAndVersionStreamConnectorFactory idAndVersionStreamConnectorFactory) {
+        this.optionsExtension = configurationProvider;
+        this.idAndVersionStreamConnectorFactory = idAndVersionStreamConnectorFactory;
+    }
 
     @SuppressWarnings("PMD.NcssMethodCount")
     public static void main(String[] args) {
@@ -26,21 +34,15 @@ public class Scrutineer {
                 return;
             }
 
-            execute(new Scrutineer(new ScrutineerCommandLineOptionsExtension(options)));
+            new Scrutineer(new ScrutineerCommandLineOptionsExtension(options)).verify();
         } catch (Exception e) {
             LOG.error("Failure during Scrutineering", e);
             System.exit(1);
         }
     }
 
-    static void execute(Scrutineer scrutineer) {
-        scrutineer.verify();
-    }
-
     public void verify() {
-        Function<Long, Object> formatter = createFormatter();
-        IdAndVersionStreamVerifierListener verifierListener = createVerifierListener(formatter);
-
+        IdAndVersionStreamVerifierListener verifierListener = createVerifierListener();
         this.verify(verifierListener);
     }
 
@@ -64,37 +66,20 @@ public class Scrutineer {
         idAndVersionStreamVerifier.verify(primaryIdAndVersionStream, secondaryIdAndVersionStream, verifierListener);
     }
 
-    private Function<Long, Object> createFormatter() {
-        Function<Long, Object> formatter = PrintStreamOutputVersionStreamVerifierListener.DEFAULT_FORMATTER;
-        if (optionsExtension.versionsAsTimestamps()) {
-            formatter = new TimestampFormatter();
-        }
-        return formatter;
-    }
-
-    private IdAndVersionStreamVerifierListener createVerifierListener(Function<Long, Object> formatter) {
+    private IdAndVersionStreamVerifierListener createVerifierListener() {
         if (optionsExtension.ignoreTimestampsDuringRun()) {
-            return createCoincidentPrintStreamListener(formatter);
+            return createCoincidentPrintStreamListener();
         } else {
-            return createStandardPrintStreamListener(formatter);
+            return createStandardPrintStreamListener();
         }
     }
 
-    IdAndVersionStreamVerifierListener createStandardPrintStreamListener(Function<Long, Object> formatter) {
-        return new PrintStreamOutputVersionStreamVerifierListener(System.err, formatter);
+    IdAndVersionStreamVerifierListener createStandardPrintStreamListener() {
+        return new PrintStreamOutputVersionStreamVerifierListener(System.err, optionsExtension.versionsAsTimestamps());
     }
 
-    IdAndVersionStreamVerifierListener createCoincidentPrintStreamListener(Function<Long, Object> formatter) {
-        return new CoincidentFilteredStreamVerifierListener(new PrintStreamOutputVersionStreamVerifierListener(System.err, formatter));
-    }
-
-    public Scrutineer(ConfigurationProvider configurationProvider) {
-        this(configurationProvider, new IdAndVersionStreamConnectorFactory(configurationProvider, new StreamConnectorPlugins()));
-    }
-
-    public Scrutineer(ConfigurationProvider configurationProvider, IdAndVersionStreamConnectorFactory idAndVersionStreamConnectorFactory) {
-        this.optionsExtension = configurationProvider;
-        this.idAndVersionStreamConnectorFactory = idAndVersionStreamConnectorFactory;
+    IdAndVersionStreamVerifierListener createCoincidentPrintStreamListener() {
+        return new CoincidentFilteredStreamVerifierListener(new PrintStreamOutputVersionStreamVerifierListener(System.err, optionsExtension.versionsAsTimestamps()));
     }
 
     private IdAndVersionFactory createIdAndVersionFactory() {

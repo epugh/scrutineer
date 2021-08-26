@@ -9,16 +9,18 @@ public class PrintStreamOutputVersionStreamVerifierListener implements IdAndVers
     public static final Function<Long, Object> DEFAULT_FORMATTER = new DefaultVersionFormatter();
 
     private final PrintStream printStream;
-    private final Function<Long, Object> versionFormatter;
+    private Function<Long, Object> versionFormatter = DEFAULT_FORMATTER;
 
 
     public PrintStreamOutputVersionStreamVerifierListener(PrintStream printStream) {
-        this(printStream, DEFAULT_FORMATTER);
+        this(printStream,false);
     }
 
-    public PrintStreamOutputVersionStreamVerifierListener(PrintStream printStream, Function<Long, Object> versionFormatter) {
+    public PrintStreamOutputVersionStreamVerifierListener(PrintStream printStream, boolean versionsAsTimestamps) {
         this.printStream = printStream;
-        this.versionFormatter = versionFormatter;
+        if (versionsAsTimestamps) {
+            versionFormatter = new TimestampFormatter();
+        }
     }
 
     @Override

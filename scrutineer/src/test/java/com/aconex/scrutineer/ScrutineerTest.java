@@ -18,7 +18,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.io.IOException;
 
 public class ScrutineerTest {
 
@@ -49,21 +48,13 @@ public class ScrutineerTest {
         MockitoAnnotations.initMocks(this);
     }
 
-    @Test
-    public void testExecute() {
-        Scrutineer scrutineer = spy(new Scrutineer(options));
-        doNothing().when(scrutineer).verify();
-
-        Scrutineer.execute(scrutineer);
-        verify(scrutineer).verify();
-    }
 
     @Test(expected=RuntimeException.class)
     public void shouldRethrowExceptionInExecute() {
       Scrutineer scrutineer = spy(new Scrutineer(options));
       doThrow(new Exception()).when(scrutineer).verify();
 
-      Scrutineer.execute(scrutineer);
+      scrutineer.verify();
     }
 
     @Test
@@ -86,8 +77,8 @@ public class ScrutineerTest {
         doReturn(true).when(options).ignoreTimestampsDuringRun();
         Scrutineer scrutineer = spy(new Scrutineer(options));
 
-        doReturn(coincidentListener).when(scrutineer).createCoincidentPrintStreamListener(any(Function.class));
-        doReturn(standardListener).when(scrutineer).createStandardPrintStreamListener(any(Function.class));
+        doReturn(coincidentListener).when(scrutineer).createCoincidentPrintStreamListener();
+        doReturn(standardListener).when(scrutineer).createStandardPrintStreamListener();
 
         scrutineer.verify(secondaryIdAndVersionStream, primaryIdAndVersionStream, idAndVersionStreamVerifier, standardListener);
 
@@ -99,8 +90,8 @@ public class ScrutineerTest {
     public void testShouldUseStandardPrintStreamListenerIfOptionProvided() {
         Scrutineer scrutineer = spy(new Scrutineer(options));
 
-        doReturn(coincidentListener).when(scrutineer).createCoincidentPrintStreamListener(any(Function.class));
-        doReturn(standardListener).when(scrutineer).createStandardPrintStreamListener(any(Function.class));
+        doReturn(coincidentListener).when(scrutineer).createCoincidentPrintStreamListener();
+        doReturn(standardListener).when(scrutineer).createStandardPrintStreamListener();
 
         scrutineer.verify(secondaryIdAndVersionStream, primaryIdAndVersionStream, idAndVersionStreamVerifier, standardListener);
 
