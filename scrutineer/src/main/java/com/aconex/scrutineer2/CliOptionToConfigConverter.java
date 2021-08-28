@@ -1,7 +1,7 @@
 package com.aconex.scrutineer2;
 
 import com.aconex.scrutineer2.config.CliConfig;
-import com.aconex.scrutineer2.elasticsearch.v7.ElasticSearchStreamConnector;
+import com.aconex.scrutineer2.elasticsearch.v7.ElasticSearchConnectorConfig;
 import com.aconex.scrutineer2.jdbc.JdbcStreamConnector;
 
 public class CliOptionToConfigConverter {
@@ -43,8 +43,8 @@ public class CliOptionToConfigConverter {
         }
         @SuppressWarnings("PMD.NcssMethodCount")
         @Override
-        public ElasticSearchStreamConnector.Config getSecondaryConnectorConfig() {
-            ElasticSearchStreamConnector.Config config = new ElasticSearchStreamConnector.Config();
+        public ElasticSearchConnectorConfig getSecondaryConnectorConfig() {
+            ElasticSearchConnectorConfig config = new ElasticSearchConnectorConfig();
             config.setClusterName(options.clusterName);
             config.setHosts(options.elasticSearchHosts);
             config.setIndexName(options.indexName);

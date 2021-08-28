@@ -21,13 +21,13 @@ import static org.junit.Assert.assertTrue;
 public class ElasticSearchTransportClientFactoryTest {
 
     private TransportAddress address;
-    private ElasticSearchStreamConnector.Config config;
+    private ElasticSearchConnectorConfig config;
 
     private ElasticSearchTransportClientFactory testInstance;
 
     @Before
     public void setUp() {
-        this.config = new ElasticSearchStreamConnector.Config();
+        this.config = new ElasticSearchConnectorConfig();
         config.setClusterName("mycluster");
         config.setUsername("user");
         config.setPassword("secret");

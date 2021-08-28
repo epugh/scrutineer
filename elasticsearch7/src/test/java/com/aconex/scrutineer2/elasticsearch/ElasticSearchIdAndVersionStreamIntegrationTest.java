@@ -4,6 +4,7 @@ package com.aconex.scrutineer2.elasticsearch;
 import com.aconex.scrutineer2.IdAndVersion;
 import com.aconex.scrutineer2.IdAndVersionFactory;
 import com.aconex.scrutineer2.StringIdAndVersion;
+import com.aconex.scrutineer2.elasticsearch.v7.ElasticSearchConnectorConfig;
 import com.aconex.scrutineer2.elasticsearch.v7.ElasticSearchStreamConnector;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.transport.TransportAddress;
@@ -51,7 +52,7 @@ public class ElasticSearchIdAndVersionStreamIntegrationTest {
     @Test
     @SuppressWarnings("unchecked")
     public void shouldGetStreamFromElasticSearch() {
-        ElasticSearchStreamConnector.Config config = new ElasticSearchStreamConnector.Config();
+        ElasticSearchConnectorConfig config = new ElasticSearchConnectorConfig();
         config.setHosts("127.0.0.1:9300");
         config.setClusterName(ESIntegrationTestNode.CLUSTER_NAME);
         config.setIndexName(INDEX_NAME);

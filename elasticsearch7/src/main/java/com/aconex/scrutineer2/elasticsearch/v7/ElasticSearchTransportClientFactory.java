@@ -18,7 +18,7 @@ public class ElasticSearchTransportClientFactory {
     private static final String SOCKET_CONNECT_TIMEOUT = "60s";
 
 
-    public TransportClient getTransportClient(ElasticSearchStreamConnector.Config config) {
+    public TransportClient getTransportClient(ElasticSearchConnectorConfig config) {
 
         if (config.getUsername() != null && config.getPassword() != null) {
             return createTransportClientWithAuthentication(

@@ -1,6 +1,7 @@
 package com.aconex.scrutineer2.v2;
 
 import com.aconex.scrutineer2.config.CliConfig;
+import com.aconex.scrutineer2.elasticsearch.v7.ElasticSearchConnectorConfig;
 import com.aconex.scrutineer2.v2.configconverter.CliOptionV2ToConfigConverter;
 import com.aconex.scrutineer2.elasticsearch.v7.ElasticSearchStreamConnector;
 import com.aconex.scrutineer2.jdbc.JdbcStreamConnector;
@@ -29,7 +30,7 @@ public class CliOptionV2ToConfigConverterTest {
         CliConfig config = converter.convert(commandLineOptionsV2);
 
         assertThat(((JdbcStreamConnector.Config)config.getPrimaryConnectorConfig()).getJdbcUrl(), is("jdbc:hsqldb:mem:test"));
-        assertThat(((ElasticSearchStreamConnector.Config)config.getSecondaryConnectorConfig()).getIndexName(), is("test"));
+        assertThat(((ElasticSearchConnectorConfig)config.getSecondaryConnectorConfig()).getIndexName(), is("test"));
     }
 
     @Test

@@ -1,6 +1,6 @@
 package com.aconex.scrutineer2.v2.configconverter;
 
-import com.aconex.scrutineer2.elasticsearch.v7.ElasticSearchStreamConnector;
+import com.aconex.scrutineer2.elasticsearch.v7.ElasticSearchConnectorConfig;
 
 import java.util.Map;
 
@@ -15,8 +15,8 @@ public class ElasticSearchConfigConverter extends ConnectorConfigConverter{
         private static final String CONFIG_ES_SSL_ENABLED = "es.ssl.enabled";
 
         @SuppressWarnings("PMD.NcssMethodCount")
-        ElasticSearchStreamConnector.Config convert(Map<String, String> props) {
-            ElasticSearchStreamConnector.Config config = new ElasticSearchStreamConnector.Config();
+        ElasticSearchConnectorConfig convert(Map<String, String> props) {
+            ElasticSearchConnectorConfig config = new ElasticSearchConnectorConfig();
             config.setClusterName(getRequiredProperty(props, CONFIG_ES_CLUSTER_NAME));
             config.setHosts(getRequiredProperty(props, CONFIG_ES_HOSTS));
             config.setIndexName(getRequiredProperty(props, CONFIG_ES_INDEX_NAME));
