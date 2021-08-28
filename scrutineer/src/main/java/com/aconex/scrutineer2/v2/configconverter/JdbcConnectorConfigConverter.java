@@ -4,7 +4,7 @@ import com.aconex.scrutineer2.jdbc.JdbcConnectorConfig;
 
 import java.util.Map;
 
-public class JdbcConfigConverter extends ConnectorConfigConverter{
+public class JdbcConnectorConfigConverter extends ConnectorConfigConverter{
         private static final String CONFIG_JDBC_DRIVER_CLASS = "jdbc.driver.class";
         private static final String CONFIG_JDBC_URL = "jdbc.url";
         private static final String CONFIG_JDBC_SQL = "jdbc.sql";

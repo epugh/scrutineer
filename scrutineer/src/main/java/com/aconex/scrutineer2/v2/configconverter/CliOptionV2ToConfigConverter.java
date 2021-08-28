@@ -58,9 +58,9 @@ public class CliOptionV2ToConfigConverter {
 
         private static final Map<String, Function<Map<String, String>, ConnectorConfig>> CONFIG_CONVERTER_MAPPING =
                 new HashMap<String, Function<Map<String, String>, ConnectorConfig>>() {{
-                    put(SOURCE_TYPE_JDBC, (props) -> new JdbcConfigConverter().convert(props));
-                    put(SOURCE_TYPE_ELASTICSEARCH, (props) -> new ElasticSearchConfigConverter().convert(props));
-                    put(SOURCE_TYPE_HTTP, (props) -> new HttpConfigConverter().convert(props));
+                    put(SOURCE_TYPE_JDBC, (props) -> new JdbcConnectorConfigConverter().convert(props));
+                    put(SOURCE_TYPE_ELASTICSEARCH, (props) -> new ElasticSearchConnectorConfigConverter().convert(props));
+                    put(SOURCE_TYPE_HTTP, (props) -> new HttpConnectorConfigConverter().convert(props));
                 }};
 
         private ConnectorConfig convertToConnectorConfig(Map<String, String> props) {

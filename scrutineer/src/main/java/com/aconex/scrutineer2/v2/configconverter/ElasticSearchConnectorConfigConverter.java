@@ -4,7 +4,7 @@ import com.aconex.scrutineer2.elasticsearch.ElasticSearchConnectorConfig;
 
 import java.util.Map;
 
-public class ElasticSearchConfigConverter extends ConnectorConfigConverter{
+public class ElasticSearchConnectorConfigConverter extends ConnectorConfigConverter{
         private static final String CONFIG_ES_CLUSTER_NAME = "es.cluster.name";
         private static final String CONFIG_ES_HOSTS = "es.hosts";
         private static final String CONFIG_ES_INDEX_NAME = "es.index.name";
