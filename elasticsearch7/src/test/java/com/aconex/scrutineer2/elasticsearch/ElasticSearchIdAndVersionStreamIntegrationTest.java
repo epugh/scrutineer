@@ -1,22 +1,12 @@
 package com.aconex.scrutineer2.elasticsearch;
 
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-import java.util.Iterator;
-
 import com.aconex.scrutineer2.IdAndVersion;
 import com.aconex.scrutineer2.IdAndVersionFactory;
 import com.aconex.scrutineer2.StringIdAndVersion;
-import com.aconex.scrutineer2.elasticsearch.v7.ElasticSearchDownloader;
-import com.fasterxml.sort.DataReaderFactory;
-import com.fasterxml.sort.DataWriterFactory;
-import com.fasterxml.sort.SortConfig;
-import com.fasterxml.sort.Sorter;
-import com.fasterxml.sort.util.NaturalComparator;
-import org.apache.commons.lang3.SystemUtils;
+import com.aconex.scrutineer2.elasticsearch.v7.ElasticSearchStreamConnector;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.index.VersionType;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeValidationException;
@@ -24,12 +14,20 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+
 public class ElasticSearchIdAndVersionStreamIntegrationTest {
 
     private static final String INDEX_NAME = "local";
 	private final IdAndVersionFactory idAndVersionFactory = StringIdAndVersion.FACTORY;
     private Client client;
-    private ElasticSearchTestHelper elasticSearchTestHelper;
 
     @Before
     public void setup() throws NodeValidationException {
@@ -53,27 +51,27 @@ public class ElasticSearchIdAndVersionStreamIntegrationTest {
     @Test
     @SuppressWarnings("unchecked")
     public void shouldGetStreamFromElasticSearch() {
+        ElasticSearchStreamConnector.Config config = new ElasticSearchStreamConnector.Config();
+        config.setHosts("127.0.0.1:9300");
+        config.setClusterName(ESIntegrationTestNode.CLUSTER_NAME);
+        config.setIndexName(INDEX_NAME);
+        config.setQuery("*");
 
-        SortConfig sortConfig = new SortConfig().withMaxMemoryUsage(256*1024*1024);
-        DataReaderFactory<IdAndVersion> dataReaderFactory = new IdAndVersionDataReaderFactory(idAndVersionFactory);
-        DataWriterFactory<IdAndVersion> dataWriterFactory = new IdAndVersionDataWriterFactory();
-        Sorter sorter = new Sorter(sortConfig, dataReaderFactory, dataWriterFactory, new NaturalComparator<IdAndVersion>());
-        ElasticSearchDownloader elasticSearchDownloader = new ElasticSearchDownloader(client, INDEX_NAME, "*", idAndVersionFactory);
-        ElasticSearchIdAndVersionStream elasticSearchIdAndVersionStream =
-                new ElasticSearchIdAndVersionStream(elasticSearchDownloader, new ElasticSearchSorter(sorter), new IteratorFactory(idAndVersionFactory), SystemUtils.getJavaIoTmpDir().getAbsolutePath());
+        try(ElasticSearchStreamConnector connector = new ElasticSearchStreamConnector(config, idAndVersionFactory)) {
+            Iterator<IdAndVersion> iterator = connector.connect().iterator();
+            List<IdAndVersion> results = new ArrayList<>();
+            iterator.forEachRemaining(results::add);
 
-        elasticSearchIdAndVersionStream.open();
-        Iterator<IdAndVersion> iterator = elasticSearchIdAndVersionStream.iterator();
-
-        assertThat(iterator.next(), equalTo(new StringIdAndVersion("1",1)));
-        assertThat(iterator.next(), equalTo(new StringIdAndVersion("2",2)));
-        assertThat(iterator.next(), equalTo(new StringIdAndVersion("3",3)));
-
-        elasticSearchIdAndVersionStream.close();
+            assertThat(results, containsInAnyOrder(
+                    new StringIdAndVersion("1", 1),
+                    new StringIdAndVersion("2", 2),
+                    new StringIdAndVersion("3", 3)
+            ));
+        }
     }
 
     private void deleteIndexIfExists() {
-        elasticSearchTestHelper = new ElasticSearchTestHelper(client);
+        ElasticSearchTestHelper elasticSearchTestHelper = new ElasticSearchTestHelper(client);
         elasticSearchTestHelper.deleteIndexIfItExists(INDEX_NAME);
     }
 

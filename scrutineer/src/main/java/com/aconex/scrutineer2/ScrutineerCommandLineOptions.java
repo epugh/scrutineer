@@ -1,10 +1,7 @@
 package com.aconex.scrutineer2;
 
-import java.util.List;
-
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import org.elasticsearch.common.transport.TransportAddress;
 
 // CHECKSTYLE:OFF This is the standard JCommander pattern
 @Parameters(separators = "=")
@@ -15,8 +12,8 @@ public class ScrutineerCommandLineOptions {
     @Parameter(names = "--clusterName", description = "ElasticSearch cluster name identifier", required = true)
     public String clusterName;
 
-    @Parameter(names= "--esHosts", description = "CSV set of seed ElasticSearch host:port pairs to use as part of discovery", required = true, listConverter= JcommanderTransportAddressParser.class)
-    public List<TransportAddress> elasticSearchHosts;
+    @Parameter(names= "--esHosts", description = "CSV set of seed ElasticSearch host:port pairs to use as part of discovery", required = true)
+    public String elasticSearchHosts;
 
     @Parameter(names = "--esUsername", description = "Elasticsearch Username")
     public String esUsername;

@@ -1,7 +1,6 @@
 package com.aconex.scrutineer2.v2.configconverter;
 
 import com.aconex.scrutineer2.elasticsearch.v7.ElasticSearchStreamConnector;
-import com.aconex.scrutineer2.elasticsearch.v7.TransportAddressParser;
 
 import java.util.Map;
 
@@ -19,7 +18,7 @@ public class ElasticSearchConfigConverter extends ConnectorConfigConverter{
         ElasticSearchStreamConnector.Config convert(Map<String, String> props) {
             ElasticSearchStreamConnector.Config config = new ElasticSearchStreamConnector.Config();
             config.setClusterName(getRequiredProperty(props, CONFIG_ES_CLUSTER_NAME));
-            config.setHosts(new TransportAddressParser().convert(getRequiredProperty(props, CONFIG_ES_HOSTS)));
+            config.setHosts(getRequiredProperty(props, CONFIG_ES_HOSTS));
             config.setIndexName(getRequiredProperty(props, CONFIG_ES_INDEX_NAME));
             config.setQuery(getRequiredProperty(props, CONFIG_ES_QUERY));
 

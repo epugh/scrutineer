@@ -1,32 +1,26 @@
 package com.aconex.scrutineer2.elasticsearch.v7;
 
 import com.aconex.scrutineer2.ConnectorConfig;
-import com.aconex.scrutineer2.IdAndVersion;
 import com.aconex.scrutineer2.IdAndVersionFactory;
 import com.aconex.scrutineer2.IdAndVersionStream;
 import com.aconex.scrutineer2.IdAndVersionStreamConnector;
-import com.aconex.scrutineer2.elasticsearch.ElasticSearchIdAndVersionStream;
-import com.aconex.scrutineer2.elasticsearch.ElasticSearchSorter;
-import com.aconex.scrutineer2.elasticsearch.IdAndVersionDataReaderFactory;
-import com.aconex.scrutineer2.elasticsearch.IdAndVersionDataWriterFactory;
-import com.aconex.scrutineer2.elasticsearch.IteratorFactory;
-import com.fasterxml.sort.DataReaderFactory;
-import com.fasterxml.sort.DataWriterFactory;
-import com.fasterxml.sort.SortConfig;
-import com.fasterxml.sort.Sorter;
-import com.fasterxml.sort.util.NaturalComparator;
-import org.apache.commons.lang3.SystemUtils;
+import com.aconex.scrutineer2.javautil.JavaIteratorIdAndVersionStream;
+import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.transport.TransportAddress;
+import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.index.query.Operator;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.QueryStringQueryBuilder;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 public class ElasticSearchStreamConnector implements IdAndVersionStreamConnector {
-    private static final int DEFAULT_SORT_MEM = 256 * 1024 * 1024;
-    public static final String WORKING_DIRECTORY_PREFIX = "elastisearch-stream-";
+    static final int BATCH_SIZE = 10000;
+    static final int SCROLL_TIME_IN_MINUTES = 10;
 
     private Client client;
     private final Config config;
@@ -42,12 +36,8 @@ public class ElasticSearchStreamConnector implements IdAndVersionStreamConnector
     public IdAndVersionStream connect() {
         try {
             this.client = new ElasticSearchTransportClientFactory().getTransportClient(this.config);
-            return new ElasticSearchIdAndVersionStream(
-                    new ElasticSearchDownloader(client, config.getIndexName(), config.getQuery(), idAndVersionFactory),
-                    new ElasticSearchSorter(createSorter(idAndVersionFactory)),
-                    new IteratorFactory(idAndVersionFactory),
-                    createWorkingDirectory()
-            );
+            SearchResponse initialSearchResponse = startScroll();
+            return new JavaIteratorIdAndVersionStream(new IdAndVersionElasticSearchScrollResultIterator(client, initialSearchResponse, idAndVersionFactory));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -58,32 +48,41 @@ public class ElasticSearchStreamConnector implements IdAndVersionStreamConnector
         closeElasticSearchConnections();
     }
 
-    void closeElasticSearchConnections() {
+    private void closeElasticSearchConnections() {
         if (client != null) {
             client.close();
         }
     }
 
-    private Sorter<IdAndVersion> createSorter(IdAndVersionFactory idAndVersionFactory) {
-        SortConfig sortConfig = new SortConfig().withMaxMemoryUsage(DEFAULT_SORT_MEM);
-        DataReaderFactory<IdAndVersion> dataReaderFactory = new IdAndVersionDataReaderFactory(idAndVersionFactory);
-        DataWriterFactory<IdAndVersion> dataWriterFactory = new IdAndVersionDataWriterFactory();
-        return new Sorter<>(sortConfig, dataReaderFactory, dataWriterFactory, new NaturalComparator<IdAndVersion>());
+    private SearchResponse startScroll() {
+        //https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/java-search-scrolling.html
+        SearchRequestBuilder searchRequestBuilder = client.prepareSearch(config.getIndexName());
+
+        searchRequestBuilder.addSort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC)
+                .setQuery(createQuery())
+                .setSize(BATCH_SIZE)
+                .setExplain(false)
+                .setFetchSource(false)
+                .setVersion(true)
+                .setScroll(TimeValue.timeValueMinutes(SCROLL_TIME_IN_MINUTES));
+
+        return searchRequestBuilder.execute().actionGet();
+    }
+    private QueryStringQueryBuilder createQuery() {
+        return QueryBuilders.queryStringQuery(config.query).defaultOperator(Operator.AND).defaultField("*");
     }
 
-    private String createWorkingDirectory() throws IOException {
-        Path javaIoTempDir = SystemUtils.getJavaIoTmpDir().toPath();
-        return Files.createTempDirectory(javaIoTempDir, WORKING_DIRECTORY_PREFIX).toFile().getAbsolutePath();
-    }
     public static class Config implements ConnectorConfig {
         private String clusterName;
         private List<TransportAddress> hosts;
         private String indexName;
         private String query;
+
+        // optional
         private String username;
         private String password;
-        private String sslVerificationMode;
-        private boolean sslEnabled;
+        private String sslVerificationMode="certificate";
+        private boolean sslEnabled=false;
 
         public String getClusterName() {
             return clusterName;
@@ -97,8 +96,8 @@ public class ElasticSearchStreamConnector implements IdAndVersionStreamConnector
             return hosts;
         }
 
-        public void setHosts(List<TransportAddress> hosts) {
-            this.hosts = hosts;
+        public void setHosts(String hostsSeparatedByComma) {
+            this.hosts = new TransportAddressParser().convert(hostsSeparatedByComma);
         }
 
         public String getIndexName() {

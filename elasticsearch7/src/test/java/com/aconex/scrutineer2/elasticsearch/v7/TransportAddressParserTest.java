@@ -69,9 +69,5 @@ public class TransportAddressParserTest {
         assertThat(first.getPort(), is(9300));
         assertThat(second.address().getHostName(), is("scratchy"));
         assertThat(second.getPort(), is(9301));
-
     }
-
-
-
 }
