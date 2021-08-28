@@ -1,6 +1,5 @@
 package com.aconex.scrutineer2.http;
 
-import com.aconex.scrutineer2.ConnectorConfig;
 import com.aconex.scrutineer2.IdAndVersionFactory;
 import com.aconex.scrutineer2.IdAndVersionStream;
 import com.aconex.scrutineer2.IdAndVersionStreamConnector;
@@ -18,10 +17,10 @@ public class JsonEncodedHttpEndpointSourceConnector implements IdAndVersionStrea
     private final Logger logger = LoggerFactory.getLogger(JsonEncodedHttpEndpointSourceConnector.class);
     private HttpURLConnection httpConnection;
     private InputStream responseInputStream;
-    private final Config config;
+    private final HttpConnectorConfig config;
     private IdAndVersionFactory idAndVersionFactory;
 
-    public JsonEncodedHttpEndpointSourceConnector(Config config, IdAndVersionFactory idAndVersionFactory) {
+    public JsonEncodedHttpEndpointSourceConnector(HttpConnectorConfig config, IdAndVersionFactory idAndVersionFactory) {
         this.config = config;
         this.idAndVersionFactory = idAndVersionFactory;
     }
@@ -36,7 +35,7 @@ public class JsonEncodedHttpEndpointSourceConnector implements IdAndVersionStrea
         }
     }
 
-    private InputStream sendRequest(Config config) throws IOException {
+    private InputStream sendRequest(HttpConnectorConfig config) throws IOException {
         String queryUrl = config.getHttpEndpointUrl();
         logger.info("Querying http endpoint: {}", queryUrl);
 
@@ -45,7 +44,7 @@ public class JsonEncodedHttpEndpointSourceConnector implements IdAndVersionStrea
         return new BufferedInputStream(httpConnection.getInputStream());
     }
 
-    private HttpURLConnection prepareConnection(Config config, String queryUrl) throws IOException {
+    private HttpURLConnection prepareConnection(HttpConnectorConfig config, String queryUrl) throws IOException {
         HttpURLConnection connection =  (HttpURLConnection) new URL(queryUrl).openConnection();
         connection.setRequestMethod("GET");
         connection.setConnectTimeout(config.getHttpConnectionTimeoutInMillisecond());
@@ -76,51 +75,6 @@ public class JsonEncodedHttpEndpointSourceConnector implements IdAndVersionStrea
             }catch (Exception e){
                 logger.warn("Failed to disconnect http url connection", e);
             }
-        }
-    }
-
-    public static class Config implements ConnectorConfig {
-        private static final int DEFAULT_TIMEOUT_IN_MILLISECOND=1000;
-        private String httpEndpointUrl;
-        private int httpConnectionTimeoutInMillisecond =DEFAULT_TIMEOUT_IN_MILLISECOND;
-        private int httpReadTimeoutInMillisecond =DEFAULT_TIMEOUT_IN_MILLISECOND;
-
-        public String getHttpEndpointUrl() {
-            return httpEndpointUrl;
-        }
-
-        public void setHttpEndpointUrl(String httpEndpointUrl) {
-            this.httpEndpointUrl = httpEndpointUrl;
-        }
-
-        public int getHttpConnectionTimeoutInMillisecond() {
-            return httpConnectionTimeoutInMillisecond;
-        }
-
-        public void setHttpConnectionTimeoutInMillisecond(int httpConnectionTimeoutInMillisecond) {
-            this.httpConnectionTimeoutInMillisecond = httpConnectionTimeoutInMillisecond;
-        }
-
-        public int getHttpReadTimeoutInMillisecond() {
-            return httpReadTimeoutInMillisecond;
-        }
-
-        public void setHttpReadTimeoutInMillisecond(int httpReadTimeoutInMillisecond) {
-            this.httpReadTimeoutInMillisecond = httpReadTimeoutInMillisecond;
-        }
-
-        @Override
-        public String toString() {
-            return "Config{" +
-                    "httpEndpointUrl='" + httpEndpointUrl + '\'' +
-                    ", httpConnectionTimeoutInMillisecond=" + httpConnectionTimeoutInMillisecond +
-                    ", httpReadTimeoutInMillisecond=" + httpReadTimeoutInMillisecond +
-                    '}';
-        }
-
-        @Override
-        public IdAndVersionStreamConnector createConnector(IdAndVersionFactory idAndVersionFactory) {
-            return new JsonEncodedHttpEndpointSourceConnector(this, idAndVersionFactory);
         }
     }
 }
