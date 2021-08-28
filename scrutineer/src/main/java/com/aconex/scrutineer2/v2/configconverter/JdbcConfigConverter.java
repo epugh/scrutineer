@@ -1,6 +1,6 @@
 package com.aconex.scrutineer2.v2.configconverter;
 
-import com.aconex.scrutineer2.jdbc.JdbcStreamConnector;
+import com.aconex.scrutineer2.jdbc.JdbcConnectorConfig;
 
 import java.util.Map;
 
@@ -12,8 +12,8 @@ public class JdbcConfigConverter extends ConnectorConfigConverter{
         private static final String CONFIG_JDBC_PASSWORD = "jdbc.password";
 
         @SuppressWarnings("PMD.NcssMethodCount")
-        JdbcStreamConnector.Config convert(Map<String, String> props) {
-            JdbcStreamConnector.Config config = new JdbcStreamConnector.Config();
+        JdbcConnectorConfig convert(Map<String, String> props) {
+            JdbcConnectorConfig config = new JdbcConnectorConfig();
             config.setDriverClass(getRequiredProperty(props, CONFIG_JDBC_DRIVER_CLASS));
             config.setJdbcUrl(getRequiredProperty(props, CONFIG_JDBC_URL));
             config.setSql(getRequiredProperty(props, CONFIG_JDBC_SQL));

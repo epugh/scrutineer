@@ -2,7 +2,7 @@ package com.aconex.scrutineer2;
 
 import com.aconex.scrutineer2.config.CliConfig;
 import com.aconex.scrutineer2.elasticsearch.ElasticSearchConnectorConfig;
-import com.aconex.scrutineer2.jdbc.JdbcStreamConnector;
+import com.aconex.scrutineer2.jdbc.JdbcConnectorConfig;
 
 public class CliOptionToConfigConverter {
     public CliConfig convert(ScrutineerCommandLineOptions options) {
@@ -32,8 +32,8 @@ public class CliOptionToConfigConverter {
 
         @SuppressWarnings("PMD.NcssMethodCount")
         @Override
-        public JdbcStreamConnector.Config getPrimaryConnectorConfig() {
-            JdbcStreamConnector.Config config = new JdbcStreamConnector.Config();
+        public JdbcConnectorConfig getPrimaryConnectorConfig() {
+            JdbcConnectorConfig config = new JdbcConnectorConfig();
             config.setDriverClass(options.jdbcDriverClass);
             config.setJdbcUrl(options.jdbcURL);
             config.setUser(options.jdbcUser);
