@@ -1,7 +1,6 @@
-package com.aconex.scrutineer2.elasticsearch.v7;
+package com.aconex.scrutineer2.elasticsearch;
 
 import com.aconex.scrutineer2.LogUtils;
-import com.aconex.scrutineer2.elasticsearch.Credential;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.ClusterName;
 import org.elasticsearch.common.settings.Settings;

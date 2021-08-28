@@ -1,6 +1,6 @@
 package com.aconex.scrutineer2.v2.configconverter;
 
-import com.aconex.scrutineer2.elasticsearch.v7.ElasticSearchConnectorConfig;
+import com.aconex.scrutineer2.elasticsearch.ElasticSearchConnectorConfig;
 
 import java.util.Map;
 

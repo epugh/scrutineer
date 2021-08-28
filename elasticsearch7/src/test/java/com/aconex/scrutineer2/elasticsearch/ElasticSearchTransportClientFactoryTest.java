@@ -1,6 +1,8 @@
-package com.aconex.scrutineer2.elasticsearch.v7;
+package com.aconex.scrutineer2.elasticsearch;
 
 
+import com.aconex.scrutineer2.elasticsearch.ElasticSearchConnectorConfig;
+import com.aconex.scrutineer2.elasticsearch.ElasticSearchTransportClientFactory;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
@@ -10,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;

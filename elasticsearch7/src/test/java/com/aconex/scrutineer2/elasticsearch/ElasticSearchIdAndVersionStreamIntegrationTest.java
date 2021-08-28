@@ -4,10 +4,7 @@ package com.aconex.scrutineer2.elasticsearch;
 import com.aconex.scrutineer2.IdAndVersion;
 import com.aconex.scrutineer2.IdAndVersionFactory;
 import com.aconex.scrutineer2.StringIdAndVersion;
-import com.aconex.scrutineer2.elasticsearch.v7.ElasticSearchConnectorConfig;
-import com.aconex.scrutineer2.elasticsearch.v7.ElasticSearchStreamConnector;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.index.VersionType;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeValidationException;
@@ -15,12 +12,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 

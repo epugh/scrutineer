@@ -1,7 +1,7 @@
 package com.aconex.scrutineer2;
 
 import com.aconex.scrutineer2.config.CliConfig;
-import com.aconex.scrutineer2.elasticsearch.v7.ElasticSearchConnectorConfig;
+import com.aconex.scrutineer2.elasticsearch.ElasticSearchConnectorConfig;
 import com.aconex.scrutineer2.jdbc.JdbcStreamConnector;
 
 public class CliOptionToConfigConverter {

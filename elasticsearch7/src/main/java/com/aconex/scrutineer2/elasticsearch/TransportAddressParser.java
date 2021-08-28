@@ -1,4 +1,4 @@
-package com.aconex.scrutineer2.elasticsearch.v7;
+package com.aconex.scrutineer2.elasticsearch;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
