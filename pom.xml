@@ -9,7 +9,7 @@
     <modules>
         <module>core</module>
         <module>jdbc</module>
-        <module>elasticsearch7</module>
+        <module>elasticsearch</module>
         <module>verifier</module>
         <module>cli</module>
         <module>http</module>
