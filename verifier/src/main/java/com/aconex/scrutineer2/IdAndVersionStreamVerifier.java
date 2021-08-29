@@ -21,13 +21,11 @@ public class IdAndVersionStreamVerifier {
         long numItems = 0;
         long begin = System.currentTimeMillis();
 
-        IdAndVersionStream primaryStream = primaryStreamConnector.connect();
-        IdAndVersionStream secondaryStream = secondaryStreamConnector.connect();
         try {
-            parallelOpenStreamsAndWait(primaryStream, secondaryStream);
+            parallelOpenStreamsAndWait(primaryStreamConnector, secondaryStreamConnector);
 
-            Iterator<IdAndVersion> primaryIterator = primaryStream.iterator();
-            Iterator<IdAndVersion> secondaryIterator = secondaryStream.iterator();
+            Iterator<IdAndVersion> primaryIterator = primaryStreamConnector.stream().iterator();
+            Iterator<IdAndVersion> secondaryIterator = secondaryStreamConnector.stream().iterator();
 
             IdAndVersion primaryItem = next(primaryIterator);
             IdAndVersion secondaryItem = next(secondaryIterator);
@@ -69,20 +67,20 @@ public class IdAndVersionStreamVerifier {
 
             idAndVersionStreamVerifierListener.onVerificationCompleted();
         } finally {
-            closeWithoutThrowingException(primaryStream);
-            closeWithoutThrowingException(secondaryStream);
+            closeQuietly(primaryStreamConnector);
+            closeQuietly(secondaryStreamConnector);
         }
         LogUtils.infoTimeTaken(LOG, begin, numItems, "Completed verification");
     }
     //CHECKSTYLE:ON
 
     @SuppressWarnings("PMD.NcssMethodCount")
-	private void parallelOpenStreamsAndWait(IdAndVersionStream primaryStream, IdAndVersionStream secondaryStream) {
+	private void parallelOpenStreamsAndWait(IdAndVersionStreamConnector primaryStreamConnector, IdAndVersionStreamConnector secondaryStreamConnector) {
 		try {
 			ExecutorService executorService = Executors.newFixedThreadPool(1, new NamedDaemonThreadFactory("StreamOpener"));
-			Future<?> secondaryStreamFuture = executorService.submit(new OpenStreamRunner(secondaryStream));
+			Future<?> secondaryStreamFuture = executorService.submit(new OpenStreamRunner(secondaryStreamConnector));
 
-			primaryStream.open();
+			primaryStreamConnector.open();
 			secondaryStreamFuture.get();
 
 			executorService.shutdown();
@@ -115,24 +113,24 @@ public class IdAndVersionStreamVerifier {
 		}
 	}
 
-    private void closeWithoutThrowingException(IdAndVersionStream idAndVersionStream) {
+    private void closeQuietly(IdAndVersionStreamConnector connector) {
         try {
-            idAndVersionStream.close();
+            connector.close();
         } catch (Exception e) {
-            LogUtils.warn(LOG, "Unable to close IdAndVersionStream", e);
+            LogUtils.warn(LOG, "Unable to close IdAndVersionStreamConnector", e);
         }
     }
 
     private static class OpenStreamRunner implements Runnable {
-        private final IdAndVersionStream stream;
+        private final IdAndVersionStreamConnector streamConnector;
 
-        OpenStreamRunner(IdAndVersionStream stream) {
-            this.stream = stream;
+        OpenStreamRunner(IdAndVersionStreamConnector streamConnector) {
+            this.streamConnector = streamConnector;
         }
 
         @Override
         public void run() {
-        	stream.open();
+            streamConnector.open();
         }
     }
 

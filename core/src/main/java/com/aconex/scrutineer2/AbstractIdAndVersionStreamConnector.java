@@ -21,7 +21,7 @@ public abstract class AbstractIdAndVersionStreamConnector implements IdAndVersio
     protected abstract IdAndVersionStream fetchFromSource();
 
     @Override
-    public IdAndVersionStream connect() {
+    public IdAndVersionStream stream() {
         IdAndVersionStream idAndVersionStream = fetchFromSource();
         if(connectorConfig.isPresorted()){
             return idAndVersionStream;

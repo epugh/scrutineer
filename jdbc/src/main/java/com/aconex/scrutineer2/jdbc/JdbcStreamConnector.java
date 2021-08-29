@@ -2,7 +2,6 @@ package com.aconex.scrutineer2.jdbc;
 
 import com.aconex.scrutineer2.AbstractIdAndVersionStreamConnector;
 import com.aconex.scrutineer2.ConnectorConfig;
-import com.aconex.scrutineer2.IdAndVersion;
 import com.aconex.scrutineer2.IdAndVersionFactory;
 import com.aconex.scrutineer2.IdAndVersionStream;
 import com.aconex.scrutineer2.LogUtils;
@@ -14,7 +13,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Iterator;
 
 public class JdbcStreamConnector extends AbstractIdAndVersionStreamConnector {
     private static final Logger LOG = LogUtils.loggerForThisClass();
@@ -26,22 +24,25 @@ public class JdbcStreamConnector extends AbstractIdAndVersionStreamConnector {
         super(connectorConfig, idAndVersionFactory);
     }
 
-    public IdAndVersionStream fetchFromSource() {
-        this.connection = initializeJdbcDriverAndConnection();
+    @Override
+    public void open() {
         long begin = System.currentTimeMillis();
-        Iterator<IdAndVersion> iterator = createIterator();
-        LogUtils.info(LOG, "Executed JDBC query in %dms", (System.currentTimeMillis() - begin));
-        return new JavaIteratorIdAndVersionStream(iterator);
-    }
-
-    private Iterator<IdAndVersion> createIterator() {
         try {
-            statement = connection.createStatement();
-            resultSet = statement.executeQuery(getConfig().getSql());
-            return new IdAndVersionResultSetIterator(resultSet, getIdAndVersionFactory());
-        } catch (SQLException e) {
+            executeQuery();
+        }catch (SQLException e){
             throw new RuntimeException(e);
         }
+        LogUtils.info(LOG, "Executed JDBC query in %dms", (System.currentTimeMillis() - begin));
+    }
+
+    private void executeQuery() throws SQLException {
+        this.connection = initializeJdbcDriverAndConnection();
+        statement = connection.createStatement();
+        resultSet = statement.executeQuery(getConfig().getSql());
+    }
+
+    public IdAndVersionStream fetchFromSource() {
+        return new JavaIteratorIdAndVersionStream(new IdAndVersionResultSetIterator(resultSet, getIdAndVersionFactory()));
     }
 
     @Override

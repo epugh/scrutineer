@@ -14,17 +14,8 @@ public class JavaIteratorIdAndVersionStream implements IdAndVersionStream
     }
 
     @Override
-    public void open() {
-        //Empty
-    }
-
-    @Override
     public Iterator<IdAndVersion> iterator() {
         return this.iterator;
     }
 
-    @Override
-    public void close() {
-        //Empty
-    }
 }

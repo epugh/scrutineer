@@ -23,13 +23,18 @@ public class JsonEncodedHttpEndpointSourceConnector extends AbstractIdAndVersion
         super(connectorConfig, idAndVersionFactory);
     }
 
-    public IdAndVersionStream fetchFromSource() {
+    @Override
+    public void open() {
         try{
             responseInputStream =sendRequest(getConfig());
-            return new JavaIteratorIdAndVersionStream (new JsonEncodedIdAndVersionInputStreamIterator(responseInputStream, getIdAndVersionFactory()));
         } catch (Exception e){
             throw new RuntimeException("Failed to list entities from source endpoint: "+ getConfig(), e);
         }
+    }
+    public IdAndVersionStream fetchFromSource() {
+        return new JavaIteratorIdAndVersionStream (
+                new JsonEncodedIdAndVersionInputStreamIterator(responseInputStream, getIdAndVersionFactory())
+        );
     }
 
     private InputStream sendRequest(HttpConnectorConfig config) throws IOException {
@@ -51,6 +56,7 @@ public class JsonEncodedHttpEndpointSourceConnector extends AbstractIdAndVersion
 
     @Override
     public void close() {
+
         closeResponseInputStream();
         closeHttpConnection();
     }

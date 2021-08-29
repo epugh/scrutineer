@@ -22,19 +22,20 @@ import java.util.Iterator;
 public class ElasticSearchStreamConnector extends AbstractIdAndVersionStreamConnector {
     private Client client;
     private String scrollId;
+    private SearchResponse initialSearchResponse;
 
     protected ElasticSearchStreamConnector(ConnectorConfig connectorConfig, IdAndVersionFactory idAndVersionFactory) {
         super(connectorConfig, idAndVersionFactory);
     }
 
-    public IdAndVersionStream fetchFromSource() {
+    @Override
+    public void open() {
         this.client = new ElasticSearchTransportClientFactory().getTransportClient(this.getConfig());
-        SearchResponse initialSearchResponse = startScroll();
+        initialSearchResponse = startScroll();
         scrollId = initialSearchResponse.getScrollId();
-        return createStream(initialSearchResponse);
     }
 
-    private JavaIteratorIdAndVersionStream createStream(SearchResponse initialSearchResponse) {
+    public IdAndVersionStream fetchFromSource() {
         return new JavaIteratorIdAndVersionStream(
                 new IdAndVersionBatchResultIterator(this::scroll, extractHits(initialSearchResponse))
         );
@@ -80,4 +81,6 @@ public class ElasticSearchStreamConnector extends AbstractIdAndVersionStreamConn
     private ElasticSearchConnectorConfig getConfig(){
         return (ElasticSearchConnectorConfig) getConnectorConfig();
     }
+
+
 }

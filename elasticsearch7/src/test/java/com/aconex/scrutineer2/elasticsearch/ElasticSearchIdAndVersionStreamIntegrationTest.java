@@ -54,7 +54,8 @@ public class ElasticSearchIdAndVersionStreamIntegrationTest {
         config.setQuery("*");
 
         try(ElasticSearchStreamConnector connector = new ElasticSearchStreamConnector(config, idAndVersionFactory)) {
-            Iterator<IdAndVersion> iterator = connector.connect().iterator();
+            connector.open();
+            Iterator<IdAndVersion> iterator = connector.stream().iterator();
             List<IdAndVersion> results = new ArrayList<>();
             iterator.forEachRemaining(results::add);
 

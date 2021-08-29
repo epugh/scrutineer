@@ -1,27 +1,36 @@
 package com.aconex.scrutineer2;
 
+import org.slf4j.Logger;
+
+import java.io.IOException;
 import java.util.Iterator;
 
 public class DeletionVerifier {
-    private final IdAndVersionStream primaryStream;
+    private static final Logger LOG = LogUtils.loggerForThisClass();
+    private final IdAndVersionStreamConnector primaryStreamConnector;
     private final ExistenceChecker existenceChecker;
     private final IdAndVersionStreamVerifierListener listener;
 
-    public DeletionVerifier(IdAndVersionStream primaryStream, ExistenceChecker existenceChecker, IdAndVersionStreamVerifierListener listener) {
-        this.primaryStream = primaryStream;
+    public DeletionVerifier(IdAndVersionStreamConnector primaryStreamConnector, ExistenceChecker existenceChecker, IdAndVersionStreamVerifierListener listener) {
+        this.primaryStreamConnector = primaryStreamConnector;
         this.existenceChecker = existenceChecker;
         this.listener = listener;
     }
 
     public void verify() {
-        primaryStream.open();
-
         try {
-            Iterator<IdAndVersion> iterator = primaryStream.iterator();
-            iterateAndCheck(iterator);
-
+            primaryStreamConnector.open();
+            iterateAndCheck(primaryStreamConnector.stream().iterator());
         } finally {
-            primaryStream.close();
+            closeQuietly(primaryStreamConnector);
+        }
+    }
+
+    private void closeQuietly(IdAndVersionStreamConnector streamConnector) {
+        try {
+            streamConnector.close();
+        } catch (IOException e) {
+            LOG.warn("Failed to close IdAndVersionStreamConnector.");
         }
     }
 

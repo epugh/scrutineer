@@ -5,6 +5,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,7 +20,9 @@ public class DeletionVerifierTest {
     private IdAndVersionStreamVerifierListener listener;
 
     @Mock
-    private IdAndVersionStream primaryDeletedStream, secondaryStream;
+    private IdAndVersionStreamConnector primaryDeletedStreamConnector;
+    @Mock
+    private IdAndVersionStream primaryDeletedStream;
 
     @Mock
     private ExistenceChecker existenceChecker;
@@ -31,23 +34,23 @@ public class DeletionVerifierTest {
     }
 
     @Test
-    public void shouldConfirmADeleteWasMissed() {
-
+    public void shouldConfirmADeleteWasMissed() throws IOException {
         IdAndVersion expectedNotDeletedIdAndVersion = new LongIdAndVersion(2, 2);
         IdAndVersion expectedDeletedIdAndVersion = new LongIdAndVersion(1, 1);
 
         List<IdAndVersion> longIdAndVersions = Arrays.asList(expectedDeletedIdAndVersion, expectedNotDeletedIdAndVersion);
+        when(primaryDeletedStreamConnector.stream()).thenReturn(primaryDeletedStream);
         when(primaryDeletedStream.iterator()).thenReturn(longIdAndVersions.iterator());
 
         when(existenceChecker.exists(expectedDeletedIdAndVersion)).thenReturn(false);
         when(existenceChecker.exists(expectedNotDeletedIdAndVersion)).thenReturn(true);
 
-        DeletionVerifier deletionVerifier = new DeletionVerifier(primaryDeletedStream, existenceChecker, listener);
+        DeletionVerifier deletionVerifier = new DeletionVerifier(primaryDeletedStreamConnector, existenceChecker, listener);
 
         deletionVerifier.verify();
 
         verify(existenceChecker, times(2)).exists(any(IdAndVersion.class));
-        verify(primaryDeletedStream).close();
+        verify(primaryDeletedStreamConnector).close();
         verify(listener).onMissingInPrimaryStream(expectedNotDeletedIdAndVersion);
     }
 }

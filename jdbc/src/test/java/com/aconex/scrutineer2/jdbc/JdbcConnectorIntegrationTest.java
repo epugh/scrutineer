@@ -30,7 +30,8 @@ public class JdbcConnectorIntegrationTest extends DataSourceBasedDBTestCase {
         connectorConfig.setPassword(HSQLHelper.DB_PASSWORD);
 
         JdbcStreamConnector jdbcStreamConnector = new JdbcStreamConnector(connectorConfig, idAndVersionFactory);
-        Iterator<IdAndVersion> iterator = jdbcStreamConnector.connect().iterator();
+        jdbcStreamConnector.open();
+        Iterator<IdAndVersion> iterator = jdbcStreamConnector.stream().iterator();
 
         assertThat(iterator.next(), equalTo(new StringIdAndVersion("1",10)));
         assertThat(iterator.next(), equalTo(new StringIdAndVersion("2",20)));
