@@ -24,8 +24,8 @@ public class IdAndVersionStreamVerifier {
         try {
             parallelOpenStreamsAndWait(primaryStreamConnector, secondaryStreamConnector);
 
-            Iterator<IdAndVersion> primaryIterator = primaryStreamConnector.stream().iterator();
-            Iterator<IdAndVersion> secondaryIterator = secondaryStreamConnector.stream().iterator();
+            Iterator<IdAndVersion> primaryIterator = primaryStreamConnector.stream();
+            Iterator<IdAndVersion> secondaryIterator = secondaryStreamConnector.stream();
 
             IdAndVersion primaryItem = next(primaryIterator);
             IdAndVersion secondaryItem = next(secondaryIterator);

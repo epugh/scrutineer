@@ -21,8 +21,6 @@ public class DeletionVerifierTest {
 
     @Mock
     private IdAndVersionStreamConnector primaryDeletedStreamConnector;
-    @Mock
-    private IdAndVersionStream primaryDeletedStream;
 
     @Mock
     private ExistenceChecker existenceChecker;
@@ -39,8 +37,7 @@ public class DeletionVerifierTest {
         IdAndVersion expectedDeletedIdAndVersion = new LongIdAndVersion(1, 1);
 
         List<IdAndVersion> longIdAndVersions = Arrays.asList(expectedDeletedIdAndVersion, expectedNotDeletedIdAndVersion);
-        when(primaryDeletedStreamConnector.stream()).thenReturn(primaryDeletedStream);
-        when(primaryDeletedStream.iterator()).thenReturn(longIdAndVersions.iterator());
+        when(primaryDeletedStreamConnector.stream()).thenReturn(longIdAndVersions.iterator());
 
         when(existenceChecker.exists(expectedDeletedIdAndVersion)).thenReturn(false);
         when(existenceChecker.exists(expectedNotDeletedIdAndVersion)).thenReturn(true);

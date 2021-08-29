@@ -20,7 +20,7 @@ public class DeletionVerifier {
     public void verify() {
         try {
             primaryStreamConnector.open();
-            iterateAndCheck(primaryStreamConnector.stream().iterator());
+            iterateAndCheck(primaryStreamConnector.stream());
         } finally {
             closeQuietly(primaryStreamConnector);
         }

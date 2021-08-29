@@ -2,10 +2,9 @@ package com.aconex.scrutineer2.jdbc;
 
 import com.aconex.scrutineer2.AbstractIdAndVersionStreamConnector;
 import com.aconex.scrutineer2.ConnectorConfig;
+import com.aconex.scrutineer2.IdAndVersion;
 import com.aconex.scrutineer2.IdAndVersionFactory;
-import com.aconex.scrutineer2.IdAndVersionStream;
 import com.aconex.scrutineer2.LogUtils;
-import com.aconex.scrutineer2.javautil.JavaIteratorIdAndVersionStream;
 import org.slf4j.Logger;
 
 import java.sql.Connection;
@@ -13,6 +12,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Iterator;
 
 public class JdbcStreamConnector extends AbstractIdAndVersionStreamConnector {
     private static final Logger LOG = LogUtils.loggerForThisClass();
@@ -41,8 +41,8 @@ public class JdbcStreamConnector extends AbstractIdAndVersionStreamConnector {
         resultSet = statement.executeQuery(getConfig().getSql());
     }
 
-    public IdAndVersionStream fetchFromSource() {
-        return new JavaIteratorIdAndVersionStream(new IdAndVersionResultSetIterator(resultSet, getIdAndVersionFactory()));
+    public Iterator<IdAndVersion> fetchFromSource() {
+        return new IdAndVersionResultSetIterator(resultSet, getIdAndVersionFactory());
     }
 
     @Override

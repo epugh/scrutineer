@@ -31,7 +31,7 @@ public class JdbcConnectorIntegrationTest extends DataSourceBasedDBTestCase {
 
         JdbcStreamConnector jdbcStreamConnector = new JdbcStreamConnector(connectorConfig, idAndVersionFactory);
         jdbcStreamConnector.open();
-        Iterator<IdAndVersion> iterator = jdbcStreamConnector.stream().iterator();
+        Iterator<IdAndVersion> iterator = jdbcStreamConnector.stream();
 
         assertThat(iterator.next(), equalTo(new StringIdAndVersion("1",10)));
         assertThat(iterator.next(), equalTo(new StringIdAndVersion("2",20)));

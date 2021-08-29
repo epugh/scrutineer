@@ -2,9 +2,8 @@ package com.aconex.scrutineer2.http;
 
 import com.aconex.scrutineer2.AbstractIdAndVersionStreamConnector;
 import com.aconex.scrutineer2.ConnectorConfig;
+import com.aconex.scrutineer2.IdAndVersion;
 import com.aconex.scrutineer2.IdAndVersionFactory;
-import com.aconex.scrutineer2.IdAndVersionStream;
-import com.aconex.scrutineer2.javautil.JavaIteratorIdAndVersionStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Iterator;
 
 public class JsonEncodedHttpEndpointSourceConnector extends AbstractIdAndVersionStreamConnector {
     private final Logger logger = LoggerFactory.getLogger(JsonEncodedHttpEndpointSourceConnector.class);
@@ -31,10 +31,8 @@ public class JsonEncodedHttpEndpointSourceConnector extends AbstractIdAndVersion
             throw new RuntimeException("Failed to list entities from source endpoint: "+ getConfig(), e);
         }
     }
-    public IdAndVersionStream fetchFromSource() {
-        return new JavaIteratorIdAndVersionStream (
-                new JsonEncodedIdAndVersionInputStreamIterator(responseInputStream, getIdAndVersionFactory())
-        );
+    public Iterator<IdAndVersion> fetchFromSource() {
+        return new JsonEncodedIdAndVersionInputStreamIterator(responseInputStream, getIdAndVersionFactory());
     }
 
     private InputStream sendRequest(HttpConnectorConfig config) throws IOException {

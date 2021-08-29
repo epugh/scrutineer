@@ -4,8 +4,6 @@ import com.aconex.scrutineer2.AbstractIdAndVersionStreamConnector;
 import com.aconex.scrutineer2.ConnectorConfig;
 import com.aconex.scrutineer2.IdAndVersion;
 import com.aconex.scrutineer2.IdAndVersionFactory;
-import com.aconex.scrutineer2.IdAndVersionStream;
-import com.aconex.scrutineer2.javautil.JavaIteratorIdAndVersionStream;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -35,10 +33,8 @@ public class ElasticSearchStreamConnector extends AbstractIdAndVersionStreamConn
         scrollId = initialSearchResponse.getScrollId();
     }
 
-    public IdAndVersionStream fetchFromSource() {
-        return new JavaIteratorIdAndVersionStream(
-                new IdAndVersionBatchResultIterator(this::scroll, extractHits(initialSearchResponse))
-        );
+    public Iterator<IdAndVersion> fetchFromSource() {
+        return new IdAndVersionBatchResultIterator(this::scroll, extractHits(initialSearchResponse));
     }
 
     @Override

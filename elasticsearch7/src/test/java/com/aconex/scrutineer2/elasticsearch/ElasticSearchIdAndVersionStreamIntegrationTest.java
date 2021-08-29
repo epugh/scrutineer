@@ -55,7 +55,7 @@ public class ElasticSearchIdAndVersionStreamIntegrationTest {
 
         try(ElasticSearchStreamConnector connector = new ElasticSearchStreamConnector(config, idAndVersionFactory)) {
             connector.open();
-            Iterator<IdAndVersion> iterator = connector.stream().iterator();
+            Iterator<IdAndVersion> iterator = connector.stream();
             List<IdAndVersion> results = new ArrayList<>();
             iterator.forEachRemaining(results::add);
 

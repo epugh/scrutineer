@@ -1,21 +1,21 @@
 package com.aconex.scrutineer2;
 
+import com.google.common.collect.Iterators;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 import static com.google.common.collect.Lists.newArrayList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-
-import com.aconex.scrutineer2.javautil.JavaIteratorIdAndVersionStream;
-import com.google.common.collect.Iterators;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
 
 public class IdAndVersionStreamVerifierTest {
 
@@ -31,12 +31,6 @@ public class IdAndVersionStreamVerifierTest {
     private IdAndVersionStreamConnector secondaryStreamConnector;
 
     @Mock
-    private IdAndVersionStream primaryStream;
-
-    @Mock
-    private IdAndVersionStream secondaryStream;
-
-    @Mock
     private IdAndVersionStreamVerifierListener idAndVersionStreamVerifierListener;
     private IdAndVersionStreamVerifier idAndVersionStreamVerifier;
 
@@ -44,10 +38,8 @@ public class IdAndVersionStreamVerifierTest {
     public void setup() {
         initMocks(this);
         idAndVersionStreamVerifier = new IdAndVersionStreamVerifier();
-        when(primaryStreamConnector.stream()).thenReturn(primaryStream);
-        when(secondaryStreamConnector.stream()).thenReturn(secondaryStream);
-        when(primaryStream.iterator()).thenReturn(LIST.iterator());
-        when(secondaryStream.iterator()).thenReturn(LIST.iterator());
+        when(primaryStreamConnector.stream()).thenReturn(LIST.iterator());
+        when(secondaryStreamConnector.stream()).thenReturn(LIST.iterator());
     }
 
 
@@ -267,8 +259,8 @@ public class IdAndVersionStreamVerifierTest {
         verify(idAndVersionStreamVerifierListener).onVerificationCompleted();
     }
 
-    private static JavaIteratorIdAndVersionStream streamOf(IdAndVersion... items) {
-        return new JavaIteratorIdAndVersionStream(Iterators.forArray(items));
+    private static Iterator<IdAndVersion> streamOf(IdAndVersion... items) {
+        return Iterators.forArray(items);
     }
 
     static IdAndVersion item(long version) {

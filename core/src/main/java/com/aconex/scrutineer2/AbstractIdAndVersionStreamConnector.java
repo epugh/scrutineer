@@ -1,10 +1,10 @@
 package com.aconex.scrutineer2;
 
-import com.aconex.scrutineer2.javautil.JavaIteratorIdAndVersionStream;
 import com.fasterxml.sort.SortConfig;
 import com.fasterxml.sort.Sorter;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 public abstract class AbstractIdAndVersionStreamConnector implements IdAndVersionStreamConnector {
     private static final int DEFAULT_SORT_MEM = 256 * 1024 * 1024;
@@ -18,22 +18,22 @@ public abstract class AbstractIdAndVersionStreamConnector implements IdAndVersio
         SortConfig sortConfig = new SortConfig().withMaxMemoryUsage(DEFAULT_SORT_MEM);
         sorter = new Sorter<>(sortConfig);
     }
-    protected abstract IdAndVersionStream fetchFromSource();
+    protected abstract Iterator<IdAndVersion> fetchFromSource();
 
     @Override
-    public IdAndVersionStream stream() {
-        IdAndVersionStream idAndVersionStream = fetchFromSource();
+    public Iterator<IdAndVersion> stream() {
+        Iterator<IdAndVersion> idAndVersionIterator = fetchFromSource();
         if(connectorConfig.isPresorted()){
-            return idAndVersionStream;
+            return idAndVersionIterator;
         } else {
-            return sort(idAndVersionStream);
+            return sort(idAndVersionIterator);
         }
 
     }
 
-    private IdAndVersionStream sort(IdAndVersionStream idAndVersionStream) {
+    private Iterator<IdAndVersion> sort(Iterator<IdAndVersion> idAndVersionIterator) {
         try {
-            return  new JavaIteratorIdAndVersionStream(sorter.sort(new IdAndVersionCollectionStreamDataReader(idAndVersionStream.iterator())));
+            return  sorter.sort(new IdAndVersionCollectionStreamDataReader(idAndVersionIterator));
         } catch (IOException e) {
             throw new IllegalStateException("Failed to sort IdAndVersionStream", e);
         }
