@@ -13,8 +13,9 @@ import org.dbunit.dataset.ITableMetaData;
 import org.hsqldb.jdbc.JDBCDataSource;
 
 public class HSQLHelper {
-
     public static final String INMEM_TEST_DB = "mem:scrutineer";
+    public static final String DB_USERNAME = "sa";
+    public static final String DB_PASSWORD = "";
 
     public HSQLHelper() {
     }
@@ -22,8 +23,8 @@ public class HSQLHelper {
     public DataSource setupHSQLDBDataSource() {
         JDBCDataSource dataSource = new JDBCDataSource();
         dataSource.setDatabase(INMEM_TEST_DB);
-        dataSource.setUser("sa");
-        dataSource.setPassword("");
+        dataSource.setUser(DB_USERNAME);
+        dataSource.setPassword(DB_PASSWORD);
         return dataSource;
     }
 
