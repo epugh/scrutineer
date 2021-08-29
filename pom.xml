@@ -11,7 +11,7 @@
         <module>jdbc</module>
         <module>elasticsearch7</module>
         <module>verifier</module>
-        <module>scrutineer</module>
+        <module>cli</module>
         <module>http</module>
     </modules>
 
