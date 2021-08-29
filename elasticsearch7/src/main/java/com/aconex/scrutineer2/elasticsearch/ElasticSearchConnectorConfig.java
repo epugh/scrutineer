@@ -8,12 +8,17 @@ import org.elasticsearch.common.transport.TransportAddress;
 import java.util.List;
 
 public class ElasticSearchConnectorConfig implements ConnectorConfig {
+    private static final int DEFAULT_BATCH_SIZE = 10000;
+    private static final int DEFAULT_SCROLL_TIME_IN_MINUTES = 10;
+
     private String clusterName;
     private List<TransportAddress> hosts;
     private String indexName;
     private String query;
 
     // optional
+    private int batchSize=DEFAULT_BATCH_SIZE;
+    private int scrollTimeInMinutes=DEFAULT_SCROLL_TIME_IN_MINUTES;
     private String username;
     private String password;
     private String sslVerificationMode = "certificate";
@@ -86,5 +91,21 @@ public class ElasticSearchConnectorConfig implements ConnectorConfig {
     @Override
     public IdAndVersionStreamConnector createConnector(IdAndVersionFactory idAndVersionFactory) {
         return new ElasticSearchStreamConnector(this, idAndVersionFactory);
+    }
+
+    public int getBatchSize() {
+        return batchSize;
+    }
+
+    public void setBatchSize(int batchSize) {
+        this.batchSize = batchSize;
+    }
+
+    public int getScrollTimeInMinutes() {
+        return scrollTimeInMinutes;
+    }
+
+    public void setScrollTimeInMinutes(int scrollTimeInMinutes) {
+        this.scrollTimeInMinutes = scrollTimeInMinutes;
     }
 }

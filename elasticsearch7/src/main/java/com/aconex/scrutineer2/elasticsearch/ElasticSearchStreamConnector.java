@@ -1,5 +1,6 @@
 package com.aconex.scrutineer2.elasticsearch;
 
+import com.aconex.scrutineer2.IdAndVersion;
 import com.aconex.scrutineer2.IdAndVersionFactory;
 import com.aconex.scrutineer2.IdAndVersionStream;
 import com.aconex.scrutineer2.IdAndVersionStreamConnector;
@@ -14,29 +15,33 @@ import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 
-public class ElasticSearchStreamConnector implements IdAndVersionStreamConnector {
-    static final int BATCH_SIZE = 10000;
-    static final int SCROLL_TIME_IN_MINUTES = 10;
+import java.util.Arrays;
+import java.util.Iterator;
 
+public class ElasticSearchStreamConnector implements IdAndVersionStreamConnector {
     private Client client;
     private final ElasticSearchConnectorConfig config;
     private final IdAndVersionFactory idAndVersionFactory;
+    private String scrollId;
+
 
     public ElasticSearchStreamConnector(ElasticSearchConnectorConfig config, IdAndVersionFactory idAndVersionFactory) {
         this.config = config;
         this.idAndVersionFactory = idAndVersionFactory;
     }
 
-
     @Override
     public IdAndVersionStream connect() {
-        try {
-            this.client = new ElasticSearchTransportClientFactory().getTransportClient(this.config);
-            SearchResponse initialSearchResponse = startScroll();
-            return new JavaIteratorIdAndVersionStream(new IdAndVersionElasticSearchScrollResultIterator(client, initialSearchResponse, idAndVersionFactory));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        this.client = new ElasticSearchTransportClientFactory().getTransportClient(this.config);
+        SearchResponse initialSearchResponse = startScroll();
+        scrollId = initialSearchResponse.getScrollId();
+        return createStream(initialSearchResponse);
+    }
+
+    private JavaIteratorIdAndVersionStream createStream(SearchResponse initialSearchResponse) {
+        return new JavaIteratorIdAndVersionStream(
+                new IdAndVersionBatchResultIterator(this::scroll, extractHits(initialSearchResponse))
+        );
     }
 
     @Override
@@ -56,17 +61,24 @@ public class ElasticSearchStreamConnector implements IdAndVersionStreamConnector
 
         searchRequestBuilder.addSort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC)
                 .setQuery(createQuery())
-                .setSize(BATCH_SIZE)
+                .setSize(config.getBatchSize())
                 .setExplain(false)
                 .setFetchSource(false)
                 .setVersion(true)
-                .setScroll(TimeValue.timeValueMinutes(SCROLL_TIME_IN_MINUTES));
+                .setScroll(TimeValue.timeValueMinutes(config.getScrollTimeInMinutes()));
 
         return searchRequestBuilder.execute().actionGet();
     }
     private QueryStringQueryBuilder createQuery() {
         return QueryBuilders.queryStringQuery(config.getQuery()).defaultOperator(Operator.AND).defaultField("*");
     }
-
-
+    private Iterator<IdAndVersion> scroll() {
+        return extractHits(client.prepareSearchScroll(scrollId)
+                .setScroll(TimeValue.timeValueMinutes(config.getScrollTimeInMinutes()))
+                .execute()
+                .actionGet());
+    }
+    private Iterator<IdAndVersion> extractHits(SearchResponse searchResponse) {
+        return Arrays.stream(searchResponse.getHits().getHits()).map(hit-> idAndVersionFactory.create(hit.getId(), hit.getVersion())).iterator();
+    }
 }
