@@ -18,7 +18,7 @@ public class JsonEncodedHttpEndpointSourceConnector implements IdAndVersionStrea
     private HttpURLConnection httpConnection;
     private InputStream responseInputStream;
     private final HttpConnectorConfig config;
-    private IdAndVersionFactory idAndVersionFactory;
+    private final IdAndVersionFactory idAndVersionFactory;
 
     public JsonEncodedHttpEndpointSourceConnector(HttpConnectorConfig config, IdAndVersionFactory idAndVersionFactory) {
         this.config = config;

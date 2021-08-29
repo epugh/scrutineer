@@ -4,7 +4,7 @@ import com.aconex.scrutineer2.ConnectorConfig;
 import com.aconex.scrutineer2.IdAndVersionFactory;
 import com.aconex.scrutineer2.IdAndVersionStreamConnector;
 
-public class HttpConnectorConfig implements ConnectorConfig {
+public class HttpConnectorConfig extends ConnectorConfig {
     private static final int DEFAULT_TIMEOUT_IN_MILLISECOND = 1000;
     private String httpEndpointUrl;
     private int httpConnectionTimeoutInMillisecond = DEFAULT_TIMEOUT_IN_MILLISECOND;

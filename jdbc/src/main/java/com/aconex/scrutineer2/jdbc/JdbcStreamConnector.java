@@ -11,7 +11,7 @@ import java.sql.SQLException;
 public class JdbcStreamConnector implements IdAndVersionStreamConnector {
     private Connection connection;
     private final JdbcConnectorConfig config;
-    private IdAndVersionFactory idAndVersionFactory;
+    private final IdAndVersionFactory idAndVersionFactory;
 
     public JdbcStreamConnector(JdbcConnectorConfig config, IdAndVersionFactory idAndVersionFactory) {
         this.config = config;

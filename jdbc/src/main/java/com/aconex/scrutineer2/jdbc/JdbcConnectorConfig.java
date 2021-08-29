@@ -4,7 +4,7 @@ import com.aconex.scrutineer2.ConnectorConfig;
 import com.aconex.scrutineer2.IdAndVersionFactory;
 import com.aconex.scrutineer2.IdAndVersionStreamConnector;
 
-public class JdbcConnectorConfig implements ConnectorConfig {
+public class JdbcConnectorConfig extends ConnectorConfig {
     private String jdbcUrl;
     private String driverClass;
     private String sql;

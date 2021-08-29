@@ -7,7 +7,7 @@ import org.elasticsearch.common.transport.TransportAddress;
 
 import java.util.List;
 
-public class ElasticSearchConnectorConfig implements ConnectorConfig {
+public class ElasticSearchConnectorConfig extends ConnectorConfig {
     private static final int DEFAULT_BATCH_SIZE = 10000;
     private static final int DEFAULT_SCROLL_TIME_IN_MINUTES = 10;
 
