@@ -1,8 +1,9 @@
 package com.aconex.scrutineer2.http;
 
+import com.aconex.scrutineer2.AbstractIdAndVersionStreamConnector;
+import com.aconex.scrutineer2.ConnectorConfig;
 import com.aconex.scrutineer2.IdAndVersionFactory;
 import com.aconex.scrutineer2.IdAndVersionStream;
-import com.aconex.scrutineer2.IdAndVersionStreamConnector;
 import com.aconex.scrutineer2.javautil.JavaIteratorIdAndVersionStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,25 +14,21 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class JsonEncodedHttpEndpointSourceConnector implements IdAndVersionStreamConnector {
+public class JsonEncodedHttpEndpointSourceConnector extends AbstractIdAndVersionStreamConnector {
     private final Logger logger = LoggerFactory.getLogger(JsonEncodedHttpEndpointSourceConnector.class);
     private HttpURLConnection httpConnection;
     private InputStream responseInputStream;
-    private final HttpConnectorConfig config;
-    private final IdAndVersionFactory idAndVersionFactory;
 
-    public JsonEncodedHttpEndpointSourceConnector(HttpConnectorConfig config, IdAndVersionFactory idAndVersionFactory) {
-        this.config = config;
-        this.idAndVersionFactory = idAndVersionFactory;
+    protected JsonEncodedHttpEndpointSourceConnector(ConnectorConfig connectorConfig, IdAndVersionFactory idAndVersionFactory) {
+        super(connectorConfig, idAndVersionFactory);
     }
 
-    @Override
-    public IdAndVersionStream connect() {
+    public IdAndVersionStream fetchFromSource() {
         try{
-            responseInputStream =sendRequest(config);
-            return new JavaIteratorIdAndVersionStream (new JsonEncodedIdAndVersionInputStreamIterator(responseInputStream, idAndVersionFactory));
+            responseInputStream =sendRequest(getConfig());
+            return new JavaIteratorIdAndVersionStream (new JsonEncodedIdAndVersionInputStreamIterator(responseInputStream, getIdAndVersionFactory()));
         } catch (Exception e){
-            throw new RuntimeException("Failed to list entities from source endpoint: "+ config, e);
+            throw new RuntimeException("Failed to list entities from source endpoint: "+ getConfig(), e);
         }
     }
 
@@ -76,5 +73,8 @@ public class JsonEncodedHttpEndpointSourceConnector implements IdAndVersionStrea
                 logger.warn("Failed to disconnect http url connection", e);
             }
         }
+    }
+    private HttpConnectorConfig getConfig(){
+        return (HttpConnectorConfig) getConnectorConfig();
     }
 }

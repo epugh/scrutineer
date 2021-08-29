@@ -34,6 +34,7 @@ public class CliOptionToConfigConverter {
         @Override
         public JdbcConnectorConfig getPrimaryConnectorConfig() {
             JdbcConnectorConfig config = new JdbcConnectorConfig();
+            config.setPresorted(true);
             config.setDriverClass(options.jdbcDriverClass);
             config.setJdbcUrl(options.jdbcURL);
             config.setUser(options.jdbcUser);

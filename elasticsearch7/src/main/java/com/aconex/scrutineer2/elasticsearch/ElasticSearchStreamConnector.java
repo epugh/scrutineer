@@ -1,9 +1,10 @@
 package com.aconex.scrutineer2.elasticsearch;
 
+import com.aconex.scrutineer2.AbstractIdAndVersionStreamConnector;
+import com.aconex.scrutineer2.ConnectorConfig;
 import com.aconex.scrutineer2.IdAndVersion;
 import com.aconex.scrutineer2.IdAndVersionFactory;
 import com.aconex.scrutineer2.IdAndVersionStream;
-import com.aconex.scrutineer2.IdAndVersionStreamConnector;
 import com.aconex.scrutineer2.javautil.JavaIteratorIdAndVersionStream;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -18,21 +19,16 @@ import org.elasticsearch.search.sort.SortOrder;
 import java.util.Arrays;
 import java.util.Iterator;
 
-public class ElasticSearchStreamConnector implements IdAndVersionStreamConnector {
+public class ElasticSearchStreamConnector extends AbstractIdAndVersionStreamConnector {
     private Client client;
-    private final ElasticSearchConnectorConfig config;
-    private final IdAndVersionFactory idAndVersionFactory;
     private String scrollId;
 
-
-    public ElasticSearchStreamConnector(ElasticSearchConnectorConfig config, IdAndVersionFactory idAndVersionFactory) {
-        this.config = config;
-        this.idAndVersionFactory = idAndVersionFactory;
+    protected ElasticSearchStreamConnector(ConnectorConfig connectorConfig, IdAndVersionFactory idAndVersionFactory) {
+        super(connectorConfig, idAndVersionFactory);
     }
 
-    @Override
-    public IdAndVersionStream connect() {
-        this.client = new ElasticSearchTransportClientFactory().getTransportClient(this.config);
+    public IdAndVersionStream fetchFromSource() {
+        this.client = new ElasticSearchTransportClientFactory().getTransportClient(this.getConfig());
         SearchResponse initialSearchResponse = startScroll();
         scrollId = initialSearchResponse.getScrollId();
         return createStream(initialSearchResponse);
@@ -57,28 +53,31 @@ public class ElasticSearchStreamConnector implements IdAndVersionStreamConnector
 
     private SearchResponse startScroll() {
         //https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/java-search-scrolling.html
-        SearchRequestBuilder searchRequestBuilder = client.prepareSearch(config.getIndexName());
+        SearchRequestBuilder searchRequestBuilder = client.prepareSearch(getConfig().getIndexName());
 
         searchRequestBuilder.addSort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC)
                 .setQuery(createQuery())
-                .setSize(config.getBatchSize())
+                .setSize(getConfig().getBatchSize())
                 .setExplain(false)
                 .setFetchSource(false)
                 .setVersion(true)
-                .setScroll(TimeValue.timeValueMinutes(config.getScrollTimeInMinutes()));
+                .setScroll(TimeValue.timeValueMinutes(getConfig().getScrollTimeInMinutes()));
 
         return searchRequestBuilder.execute().actionGet();
     }
     private QueryStringQueryBuilder createQuery() {
-        return QueryBuilders.queryStringQuery(config.getQuery()).defaultOperator(Operator.AND).defaultField("*");
+        return QueryBuilders.queryStringQuery(getConfig().getQuery()).defaultOperator(Operator.AND).defaultField("*");
     }
     private Iterator<IdAndVersion> scroll() {
         return extractHits(client.prepareSearchScroll(scrollId)
-                .setScroll(TimeValue.timeValueMinutes(config.getScrollTimeInMinutes()))
+                .setScroll(TimeValue.timeValueMinutes(getConfig().getScrollTimeInMinutes()))
                 .execute()
                 .actionGet());
     }
     private Iterator<IdAndVersion> extractHits(SearchResponse searchResponse) {
-        return Arrays.stream(searchResponse.getHits().getHits()).map(hit-> idAndVersionFactory.create(hit.getId(), hit.getVersion())).iterator();
+        return Arrays.stream(searchResponse.getHits().getHits()).map(hit-> getIdAndVersionFactory().create(hit.getId(), hit.getVersion())).iterator();
+    }
+    private ElasticSearchConnectorConfig getConfig(){
+        return (ElasticSearchConnectorConfig) getConnectorConfig();
     }
 }

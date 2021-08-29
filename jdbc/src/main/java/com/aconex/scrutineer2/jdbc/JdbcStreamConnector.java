@@ -1,27 +1,24 @@
 package com.aconex.scrutineer2.jdbc;
 
+import com.aconex.scrutineer2.AbstractIdAndVersionStreamConnector;
+import com.aconex.scrutineer2.ConnectorConfig;
 import com.aconex.scrutineer2.IdAndVersionFactory;
 import com.aconex.scrutineer2.IdAndVersionStream;
-import com.aconex.scrutineer2.IdAndVersionStreamConnector;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class JdbcStreamConnector implements IdAndVersionStreamConnector {
+public class JdbcStreamConnector extends AbstractIdAndVersionStreamConnector {
     private Connection connection;
-    private final JdbcConnectorConfig config;
-    private final IdAndVersionFactory idAndVersionFactory;
 
-    public JdbcStreamConnector(JdbcConnectorConfig config, IdAndVersionFactory idAndVersionFactory) {
-        this.config = config;
-        this.idAndVersionFactory = idAndVersionFactory;
+    protected JdbcStreamConnector(ConnectorConfig connectorConfig, IdAndVersionFactory idAndVersionFactory) {
+        super(connectorConfig, idAndVersionFactory);
     }
 
-    @Override
-    public IdAndVersionStream connect() {
+    public IdAndVersionStream fetchFromSource() {
         this.connection = initializeJdbcDriverAndConnection();
-        return new JdbcIdAndVersionStream(connection, config.getSql(), idAndVersionFactory);
+        return new JdbcIdAndVersionStream(connection, getConfig().getSql(), getIdAndVersionFactory());
     }
 
     @Override
@@ -42,7 +39,7 @@ public class JdbcStreamConnector implements IdAndVersionStreamConnector {
     private Connection initializeJdbcDriverAndConnection() {
         validateDriverClass();
         try {
-            return DriverManager.getConnection(config.getJdbcUrl(), config.getUser(), config.getPassword());
+            return DriverManager.getConnection(getConfig().getJdbcUrl(), getConfig().getUser(), getConfig().getPassword());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -50,9 +47,13 @@ public class JdbcStreamConnector implements IdAndVersionStreamConnector {
 
     private void validateDriverClass() {
         try {
-            Class.forName(config.getDriverClass()).getDeclaredConstructor().newInstance();
+            Class.forName(getConfig().getDriverClass()).getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+    private JdbcConnectorConfig getConfig(){
+        return (JdbcConnectorConfig) getConnectorConfig();
+    }
+
 }
