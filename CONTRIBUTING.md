@@ -29,7 +29,7 @@ which will run all quality checks.  Sorry to be super-anal, but we just like Cle
 ## High level design
 Scrutineer provides both a standalone application and a library for integration. 
 The application is to compare two data source according to the specified config and output the differences to stdout.
-The library `com.aconex.scrutineer2:verifier` is for integration with other service to handle the differences.
+The library `com.aconex.scrutineer:verifier` is for integration with other service to handle the differences.
 
 ### Modules
 * the standalone application entry point: [cli](cli) 
