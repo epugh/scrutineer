@@ -20,7 +20,7 @@
     <dependencies>
         <dependency>
             <groupId>com.aconex.scrutineer</groupId>
-            <artifactId>scrutineer2-core</artifactId>
+            <artifactId>core</artifactId>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
