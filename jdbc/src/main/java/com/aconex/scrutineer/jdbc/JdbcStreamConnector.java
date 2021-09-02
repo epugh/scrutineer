@@ -1,59 +1,85 @@
 package com.aconex.scrutineer.jdbc;
 
+import com.aconex.scrutineer.AbstractIdAndVersionStreamConnector;
+import com.aconex.scrutineer.ConnectorConfig;
+import com.aconex.scrutineer.IdAndVersion;
+import com.aconex.scrutineer.IdAndVersionFactory;
+import com.aconex.scrutineer.LogUtils;
+import org.slf4j.Logger;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Map;
+import java.sql.Statement;
+import java.util.Iterator;
 
-import com.aconex.scrutineer.IdAndVersionFactory;
-import com.aconex.scrutineer.IdAndVersionStream;
-import com.aconex.scrutineer.IdAndVersionStreamConnector;
-
-public class JdbcStreamConnector implements IdAndVersionStreamConnector {
+public class JdbcStreamConnector extends AbstractIdAndVersionStreamConnector {
+    private static final Logger LOG = LogUtils.loggerForThisClass();
     private Connection connection;
-    private JdbcConnectorConfig configs;
+    private Statement statement;
+    private ResultSet resultSet;
 
-    @Override
-    public void configure(Map<String, String> props) {
-        this.configs = new JdbcConnectorConfig(props);
-        tryInstantiateDriverClass(); // validation only
+    protected JdbcStreamConnector(ConnectorConfig connectorConfig, IdAndVersionFactory idAndVersionFactory) {
+        super(connectorConfig, idAndVersionFactory);
     }
 
     @Override
-    public IdAndVersionStream create(IdAndVersionFactory idAndVersionFactory) {
+    public void open() {
+        long begin = System.currentTimeMillis();
+        try {
+            executeQuery();
+        }catch (SQLException e){
+            throw new RuntimeException(e);
+        }
+        LogUtils.info(LOG, "Executed JDBC query in %dms", (System.currentTimeMillis() - begin));
+    }
+
+    private void executeQuery() throws SQLException {
         this.connection = initializeJdbcDriverAndConnection();
-        return new JdbcIdAndVersionStream(connection, configs.getSql(), idAndVersionFactory);
+        statement = connection.createStatement();
+        resultSet = statement.executeQuery(getConfig().getSql());
+    }
+
+    public Iterator<IdAndVersion> fetchFromSource() {
+        return new IdAndVersionResultSetIterator(resultSet, getIdAndVersionFactory());
     }
 
     @Override
     public void close() {
-        closeJdbcConnection();
+        closeQuietly(resultSet);
+        closeQuietly(statement);
+        closeQuietly(connection);
     }
 
-    private void closeJdbcConnection() {
+    private void closeQuietly(AutoCloseable resource) {
         try {
-            if (connection != null) {
-                connection.close();
+            if (resource != null) {
+                resource.close();
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            LOG.warn("Failed to close resource: "+resource);
         }
     }
 
     private Connection initializeJdbcDriverAndConnection() {
-        tryInstantiateDriverClass();
+        validateDriverClass();
         try {
-            return DriverManager.getConnection(configs.getUrl(), configs.getUser(), configs.getPassword());
+            return DriverManager.getConnection(getConfig().getJdbcUrl(), getConfig().getUser(), getConfig().getPassword());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void tryInstantiateDriverClass() {
+    private void validateDriverClass() {
         try {
-            Class.forName(configs.getDriverClass()).newInstance();
+            Class.forName(getConfig().getDriverClass()).getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+    private JdbcConnectorConfig getConfig(){
+        return (JdbcConnectorConfig) getConnectorConfig();
+    }
+
 }

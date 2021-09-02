@@ -1,20 +1,21 @@
 package com.aconex.scrutineer;
 
+import com.google.common.collect.Iterators;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 import static com.google.common.collect.Lists.newArrayList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-
-import java.util.Collections;
-import java.util.List;
-
-import com.aconex.scrutineer.javautil.JavaIteratorIdAndVersionStream;
-import com.google.common.collect.Iterators;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
 
 public class IdAndVersionStreamVerifierTest {
 
@@ -24,10 +25,10 @@ public class IdAndVersionStreamVerifierTest {
             item("3", 3)));
 
     @Mock
-    private IdAndVersionStream primaryStream;
+    private IdAndVersionStreamConnector primaryStreamConnector;
 
     @Mock
-    private IdAndVersionStream secondayStream;
+    private IdAndVersionStreamConnector secondaryStreamConnector;
 
     @Mock
     private IdAndVersionStreamVerifierListener idAndVersionStreamVerifierListener;
@@ -37,72 +38,79 @@ public class IdAndVersionStreamVerifierTest {
     public void setup() {
         initMocks(this);
         idAndVersionStreamVerifier = new IdAndVersionStreamVerifier();
-        when(primaryStream.iterator()).thenReturn(LIST.iterator());
-        when(secondayStream.iterator()).thenReturn(LIST.iterator());
+        when(primaryStreamConnector.stream()).thenReturn(LIST.iterator());
+        when(secondaryStreamConnector.stream()).thenReturn(LIST.iterator());
     }
 
 
     @Test
     public void shouldOpenBothStreams() {
-        idAndVersionStreamVerifier.verify(primaryStream, secondayStream, idAndVersionStreamVerifierListener);
-        verify(primaryStream).open();
-        verify(secondayStream).open();
+        idAndVersionStreamVerifier.verify(primaryStreamConnector, secondaryStreamConnector, idAndVersionStreamVerifierListener);
+        verify(primaryStreamConnector).open();
+        verify(secondaryStreamConnector).open();
     }
 
     @Test
-    public void shouldCloseBothStreams() {
-        idAndVersionStreamVerifier.verify(primaryStream, secondayStream, idAndVersionStreamVerifierListener);
-        verify(primaryStream).close();
-        verify(secondayStream).close();
+    public void shouldCloseBothStreams() throws IOException {
+        idAndVersionStreamVerifier.verify(primaryStreamConnector, secondaryStreamConnector, idAndVersionStreamVerifierListener);
+        verify(primaryStreamConnector).close();
+        verify(secondaryStreamConnector).close();
     }
 
     @Test
-    public void shouldCloseWhenOpenThrowsAnException() {
-        doThrow(new RuntimeException()).when(secondayStream).open();
+    public void shouldCloseWhenOpenThrowsAnException() throws IOException {
+        doThrow(new RuntimeException()).when(secondaryStreamConnector).open();
         try {
-            idAndVersionStreamVerifier.verify(primaryStream, secondayStream, idAndVersionStreamVerifierListener);
+            idAndVersionStreamVerifier.verify(primaryStreamConnector, secondaryStreamConnector, idAndVersionStreamVerifierListener);
         } catch (RuntimeException e) {
             //Expected
         }
-        verify(primaryStream).close();
-        verify(secondayStream).close();
+        verify(primaryStreamConnector).close();
+        verify(secondaryStreamConnector).close();
     }
 
     @Test
-    public void shouldCloseSecondaryWhenPrimaryCloseThrowsException() {
-        doThrow(new RuntimeException()).when(primaryStream).close();
+    public void shouldCloseSecondaryWhenPrimaryCloseThrowsException() throws IOException {
+        doThrow(new RuntimeException()).when(primaryStreamConnector).close();
         try {
-            idAndVersionStreamVerifier.verify(primaryStream, secondayStream, idAndVersionStreamVerifierListener);
+            idAndVersionStreamVerifier.verify(primaryStreamConnector, secondaryStreamConnector, idAndVersionStreamVerifierListener);
         } catch (RuntimeException e) {
             //Expected
         }
-        verify(secondayStream).close();
+        verify(secondaryStreamConnector).close();
     }
-
 
     @Test
     public void shouldNotReportErrorsIfStreamsAreEqual() {
+        when(primaryStreamConnector.stream()).thenReturn(streamOf(item(1), item(2), item(3)));
+        when(secondaryStreamConnector.stream()).thenReturn(streamOf(item(1), item(2), item(3)));
+
         idAndVersionStreamVerifier.verify(
-                streamOf(item(1), item(2), item(3)),
-                streamOf(item(1), item(2), item(3)),
+                primaryStreamConnector,
+                secondaryStreamConnector,
                 idAndVersionStreamVerifierListener);
         verifyOnCompletion(idAndVersionStreamVerifierListener);
     }
 
     @Test
     public void shouldNotReportErrorsIfStreamsAreEmpty() {
+        when(primaryStreamConnector.stream()).thenReturn(streamOf());
+        when(secondaryStreamConnector.stream()).thenReturn(streamOf());
+
         idAndVersionStreamVerifier.verify(
-                streamOf(),
-                streamOf(),
+                primaryStreamConnector,
+                secondaryStreamConnector,
                 idAndVersionStreamVerifierListener);
         verifyOnCompletion(idAndVersionStreamVerifierListener);
     }
 
     @Test
     public void shouldReportMissingValuesIfPrimaryStreamIsEmpty() {
+        when(primaryStreamConnector.stream()).thenReturn(streamOf());
+        when(secondaryStreamConnector.stream()).thenReturn(streamOf(item(1), item(2)));
         idAndVersionStreamVerifier.verify(
-                streamOf(),
-                streamOf(item(1), item(2)),
+                primaryStreamConnector,
+                secondaryStreamConnector,
                 idAndVersionStreamVerifierListener);
         verify(idAndVersionStreamVerifierListener).onMissingInPrimaryStream(eq(new StringIdAndVersion("1", 1)));
         verify(idAndVersionStreamVerifierListener).onMissingInPrimaryStream(eq(new StringIdAndVersion("2", 2)));
@@ -111,9 +119,11 @@ public class IdAndVersionStreamVerifierTest {
 
     @Test
     public void shouldReportMissingValuesIfSecondaryStreamIsEmpty() {
+        when(primaryStreamConnector.stream()).thenReturn(streamOf(item(1), item(2)));
+        when(secondaryStreamConnector.stream()).thenReturn(streamOf());
         idAndVersionStreamVerifier.verify(
-                streamOf(item(1), item(2)),
-                streamOf(),
+                primaryStreamConnector,
+                secondaryStreamConnector,
                 idAndVersionStreamVerifierListener);
         verify(idAndVersionStreamVerifierListener).onMissingInSecondaryStream(eq(new StringIdAndVersion("1", 1)));
         verify(idAndVersionStreamVerifierListener).onMissingInSecondaryStream(eq(new StringIdAndVersion("2", 2)));
@@ -122,9 +132,11 @@ public class IdAndVersionStreamVerifierTest {
 
     @Test
     public void shouldReportMissingItemsAtTheEndOfTheSecondaryStream() {
+        when(primaryStreamConnector.stream()).thenReturn(streamOf(item(1), item(2), item(3), item(4)));
+        when(secondaryStreamConnector.stream()).thenReturn(streamOf(item(1), item(2), item(3)));
         idAndVersionStreamVerifier.verify(
-                streamOf(item(1), item(2), item(3), item(4)),
-                streamOf(item(1), item(2), item(3)),
+                primaryStreamConnector,
+                secondaryStreamConnector,
                 idAndVersionStreamVerifierListener);
         verify(idAndVersionStreamVerifierListener).onMissingInSecondaryStream(eq(new StringIdAndVersion("4", 4)));
         verifyOnCompletion(idAndVersionStreamVerifierListener);
@@ -132,9 +144,11 @@ public class IdAndVersionStreamVerifierTest {
 
     @Test
     public void shouldReportMissingItemsAtTheEndOfThePrimaryStream() {
+        when(primaryStreamConnector.stream()).thenReturn(streamOf(item(1), item(2), item(3)));
+        when(secondaryStreamConnector.stream()).thenReturn(streamOf(item(1), item(2), item(3), item(4)));
         idAndVersionStreamVerifier.verify(
-                streamOf(item(1), item(2), item(3)),
-                streamOf(item(1), item(2), item(3), item(4)),
+                primaryStreamConnector,
+                secondaryStreamConnector,
                 idAndVersionStreamVerifierListener);
         verify(idAndVersionStreamVerifierListener).onMissingInPrimaryStream(eq(new StringIdAndVersion("4", 4)));
         verifyOnCompletion(idAndVersionStreamVerifierListener);
@@ -142,9 +156,11 @@ public class IdAndVersionStreamVerifierTest {
 
     @Test
     public void shouldReportMissingItemsAtTheStartOfTheSecondaryStream() {
+        when(primaryStreamConnector.stream()).thenReturn(streamOf(item(1), item(2), item(3), item(4)));
+        when(secondaryStreamConnector.stream()).thenReturn(streamOf(item(2), item(3), item(4)));
         idAndVersionStreamVerifier.verify(
-                streamOf(item(1), item(2), item(3), item(4)),
-                streamOf(item(2), item(3), item(4)),
+                primaryStreamConnector,
+                secondaryStreamConnector,
                 idAndVersionStreamVerifierListener);
         verify(idAndVersionStreamVerifierListener).onMissingInSecondaryStream(eq(new StringIdAndVersion("1", 1)));
         verifyOnCompletion(idAndVersionStreamVerifierListener);
@@ -152,9 +168,11 @@ public class IdAndVersionStreamVerifierTest {
 
     @Test
     public void shouldReportMissingItemsAtTheStartOfThePrimaryStream() {
+        when(primaryStreamConnector.stream()).thenReturn(streamOf(item(2), item(3), item(4)));
+        when(secondaryStreamConnector.stream()).thenReturn(streamOf(item(1), item(2), item(3), item(4)));
         idAndVersionStreamVerifier.verify(
-                streamOf(item(2), item(3), item(4)),
-                streamOf(item(1), item(2), item(3), item(4)),
+                primaryStreamConnector,
+                secondaryStreamConnector,
                 idAndVersionStreamVerifierListener);
         verify(idAndVersionStreamVerifierListener).onMissingInPrimaryStream(eq(new StringIdAndVersion("1", 1)));
         verifyOnCompletion(idAndVersionStreamVerifierListener);
@@ -163,9 +181,11 @@ public class IdAndVersionStreamVerifierTest {
 
     @Test
     public void shouldReportMissingItemsInTheMiddleOfTheSecondaryStream() {
+        when(primaryStreamConnector.stream()).thenReturn(streamOf(item(1), item(2), item(3), item(4)));
+        when(secondaryStreamConnector.stream()).thenReturn(streamOf(item(1), item(2), item(4)));
         idAndVersionStreamVerifier.verify(
-                streamOf(item(1), item(2), item(3), item(4)),
-                streamOf(item(1), item(2), item(4)),
+                primaryStreamConnector,
+                secondaryStreamConnector,
                 idAndVersionStreamVerifierListener);
         verify(idAndVersionStreamVerifierListener).onMissingInSecondaryStream(eq(new StringIdAndVersion("3", 3)));
         verifyOnCompletion(idAndVersionStreamVerifierListener);
@@ -173,9 +193,11 @@ public class IdAndVersionStreamVerifierTest {
 
     @Test
     public void shouldReportMissingItemsInTheMiddleOfThePrimaryStream() {
+        when(primaryStreamConnector.stream()).thenReturn(streamOf(item(1), item(3), item(4)));
+        when(secondaryStreamConnector.stream()).thenReturn(streamOf(item(1), item(2), item(3), item(4)));
         idAndVersionStreamVerifier.verify(
-                streamOf(item(1), item(3), item(4)),
-                streamOf(item(1), item(2), item(3), item(4)),
+                primaryStreamConnector,
+                secondaryStreamConnector,
                 idAndVersionStreamVerifierListener);
         verify(idAndVersionStreamVerifierListener).onMissingInPrimaryStream(eq(new StringIdAndVersion("2", 2)));
         verifyOnCompletion(idAndVersionStreamVerifierListener);
@@ -183,9 +205,11 @@ public class IdAndVersionStreamVerifierTest {
 
     @Test
     public void shouldReportVersionMisMatches() {
+        when(primaryStreamConnector.stream()).thenReturn(streamOf(item(1), item("2", 2), item(3), item(4)));
+        when(secondaryStreamConnector.stream()).thenReturn(streamOf(item(1), item("2", 5), item(3), item(4)));
         idAndVersionStreamVerifier.verify(
-                streamOf(item(1), item("2", 2), item(3), item(4)),
-                streamOf(item(1), item("2", 5), item(3), item(4)),
+                primaryStreamConnector,
+                secondaryStreamConnector,
                 idAndVersionStreamVerifierListener);
         verify(idAndVersionStreamVerifierListener).onVersionMisMatch(eq(new StringIdAndVersion("2", 2)), eq(new StringIdAndVersion("2", 5)));
         verifyOnCompletion(idAndVersionStreamVerifierListener);
@@ -193,33 +217,37 @@ public class IdAndVersionStreamVerifierTest {
 
     @Test
     public void shouldReportMismatchedAtEndOfStream() {
+        when(primaryStreamConnector.stream()).thenReturn(streamOf(item(1), item(2), item("3", 55)));
+        when(secondaryStreamConnector.stream()).thenReturn(streamOf(item(1), item(2), item("3", 33)));
         idAndVersionStreamVerifier.verify(
-                streamOf(item(1), item(2), item("3", 55)),
-                streamOf(item(1), item(2), item("3", 33)),
+                primaryStreamConnector,
+                secondaryStreamConnector,
                 idAndVersionStreamVerifierListener);
         verify(idAndVersionStreamVerifierListener).onVersionMisMatch(eq(new StringIdAndVersion("3", 55)), eq(new StringIdAndVersion("3", 33)));
         verifyOnCompletion(idAndVersionStreamVerifierListener);
-
     }
 
     @Test
     public void shouldReportMismatchIfPreceededByMissingItem() {
+        when(primaryStreamConnector.stream()).thenReturn(streamOf(item(1), item("2", 2), item(3), item(4)));
+        when(secondaryStreamConnector.stream()).thenReturn(streamOf(item(1), item("3", 42), item(4)));
         idAndVersionStreamVerifier.verify(
-                streamOf(item(1), item("2", 2), item(3), item(4)),
-                streamOf(item(1), item("3", 42), item(4)),
+                primaryStreamConnector,
+                secondaryStreamConnector,
                 idAndVersionStreamVerifierListener);
 
         verify(idAndVersionStreamVerifierListener).onMissingInSecondaryStream(eq(new StringIdAndVersion("2", 2)));
         verify(idAndVersionStreamVerifierListener).onVersionMisMatch(eq(new StringIdAndVersion("3", 3)), eq(new StringIdAndVersion("3", 42)));
         verifyOnCompletion(idAndVersionStreamVerifierListener);
-
     }
 
     @Test
     public void shouldNotifyOnPrimaryStreamProcessed() {
+        when(primaryStreamConnector.stream()).thenReturn(streamOf(item(1), item(2)));
+        when(secondaryStreamConnector.stream()).thenReturn(streamOf(item(1), item(2), item(3)));
         idAndVersionStreamVerifier.verify(
-                streamOf(item(1), item(2)),
-                streamOf(item(1), item(2), item(3)),
+                primaryStreamConnector,
+                secondaryStreamConnector,
                 idAndVersionStreamVerifierListener);
 
         verify(idAndVersionStreamVerifierListener).onStreamComparison(item(1), item(1));
@@ -231,8 +259,8 @@ public class IdAndVersionStreamVerifierTest {
         verify(idAndVersionStreamVerifierListener).onVerificationCompleted();
     }
 
-    private static JavaIteratorIdAndVersionStream streamOf(IdAndVersion... items) {
-        return new JavaIteratorIdAndVersionStream(Iterators.forArray(items));
+    private static Iterator<IdAndVersion> streamOf(IdAndVersion... items) {
+        return Iterators.forArray(items);
     }
 
     static IdAndVersion item(long version) {

@@ -114,7 +114,7 @@ we use `conf/example-jdbc.properties`
   
 
 ```
-stream.connector.class=com.aconex.scrutineer.jdbc.JdbcStreamConnector
+source.type=jdbc
 jdbc.driver.class=net.sourceforge.jtds.jdbc.Driver
 jdbc.url=jdbc:jtds:sqlserver://mydbhost/mydb
 jdbc.sql=select id,version from myobjecttype order by cast(id as varchar(100))
@@ -129,7 +129,7 @@ See [scrutineer/config/example-jdbc.properties](scrutineer/config/example-jdbc.p
 we use `conf/example-elasticsearch7.properties`
 
 ```
-stream.connector.class=com.aconex.scrutineer.elasticsearch.v7.ElasticSearchStreamConnector
+source.type=elasticsearch
 es.cluster.name=myCluster
 es.hosts=localhost:9300
 es.index.name=TestIndex

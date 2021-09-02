@@ -1,5 +1,7 @@
 package com.aconex.scrutineer;
 
+import com.aconex.scrutineer.IdAndVersion;
+
 public interface IdAndVersionStreamVerifierListener {
 
     void onMissingInSecondaryStream(IdAndVersion idAndVersion);

@@ -7,11 +7,12 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>cli</module>
         <module>core</module>
         <module>jdbc</module>
         <module>elasticsearch7</module>
         <module>verifier</module>
-        <module>scrutineer</module>
+        <module>http</module>
     </modules>
 
     <name>Scrutineer (Parent Pom)</name>
@@ -119,7 +120,7 @@
         <dependencies>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>scrutineer2-core</artifactId>
+                <artifactId>core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

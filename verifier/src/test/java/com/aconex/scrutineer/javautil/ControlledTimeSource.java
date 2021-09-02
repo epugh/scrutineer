@@ -1,5 +1,7 @@
 package com.aconex.scrutineer.javautil;
 
+import com.aconex.scrutineer.javautil.TimeSource;
+
 public class ControlledTimeSource implements TimeSource {
     private long expectedTime;
 
