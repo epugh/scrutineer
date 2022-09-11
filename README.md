@@ -1,6 +1,12 @@
-[![Build Status](https://github.com/Aconex/scrutineer/actions/workflows/maven.yml/badge.svg?branch=master)
+[![Build Status](https://github.com/rock-yu/scrutineer/actions/workflows/maven.yml/badge.svg?branch=master)
 
 Analyses a secondary stream of information against a known point-of-truth and reports inconsistencies.
+
+
+## Welcome!
+
+**OpenScrutineer** is an _open source fork_ of the original [Aconex Scurtineer](https://github.com/aconex/scrutineer) (which has since been delinted) following the [acquisition by Oracle](https://www.afr.com/technology/oracles-16b-acquisition-of-australian-startup-aconex-15-years-in-the-making-20181016-h16pic) in 2018. We're looking to sustain (and evolve!) a very practical tool for the community who are dependent on the rights granted by the original, [Apache v2.0 License](LICENSE.md).
+
 
 The Why
 =======
